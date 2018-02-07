@@ -11,6 +11,14 @@
 
   <artifactId>model-serving-xgboost</artifactId>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>model-serving-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <finalName>${project.artifactId}</finalName>
 

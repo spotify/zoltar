@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>ml-serving-example</name>
+  <artifactId>ml-serving-example</artifactId>
+
+  <version>0.0.1-SNAPSHOT</version>
+
+  <parent>
+    <groupId>com.spotify</groupId>
+    <artifactId>root</artifactId>
+    <version>16</version>
+  </parent>
+
+  <properties>
+    <service.mainClass>com.spotify.mlservingexample.Main</service.mainClass>
+    <findbugs.excludeFilterFile>findbugsexclude.xml</findbugs.excludeFilterFile>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.install.skip>true</maven.install.skip>
+    <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
+    <gcpProjectId>ml-sketchbook</gcpProjectId>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>apollo-spotify-bom</artifactId>
+        <version>1.4.1</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- compile scope -->
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>apollo-standalone-service</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>apollo-entity</artifactId>
+    </dependency>
+    <!-- provided scope -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <version>3.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test scope -->
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>apollo-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>helios-testing</artifactId>
+      <version>0.9.45</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>spotify-helios-testing</artifactId>
+      <version>1.7</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <!--
+          If you have customized the name of your Docker image in your
+          pom.xml to not refer to ${gcpProjectId}, then you can safely
+          remove this check and the entire execution element
+          -->
+          <execution>
+            <id>verify-gcp-project-id-set</id>
+            <!-- this check is only bound to install in order to run it just before 'deploy' phase -->
+            <phase>install</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireProperty>
+                  <property>gcpProjectId</property>
+                  <message>The gcpProjectId must be set in order to build and push a Docker image to Google Container Registry</message>
+                  <regex>\w+.*</regex>
+                  <regexMessage>The gcpProjectId must be set and non-empty in order to build and push a Docker image to Google Container Registry</regexMessage>
+                </requireProperty>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>sysmodel-validator-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

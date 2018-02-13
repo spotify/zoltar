@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<FindBugsFilter>
+  <Match>
+    <!--
+    <Or> This element combines Match clauses as disjuncts. I.e., you can put two Method elements in an Or clause in order to match either method.
+      You can specify a package name as a string.
+      <Package name="com.spotify.ml-serving-example.path.to.eg.data.objects"/>
+      Or multiple packages as a regex. The below filter will match any package containing the substring "proto".
+      <Package name="~.*\.proto"/>
+      See more findbugs filter methods: http://findbugs.sourceforge.net/manual/filter.html
+    </Or>
+    -->
+  </Match>
+</FindBugsFilter>

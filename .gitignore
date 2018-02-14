@@ -18,6 +18,7 @@ target
 *~
 .#*
 
+.bigquery
 dependency-reduced-pom.xml
 .helios/helios-job-ids
 created_job_ids

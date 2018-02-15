@@ -52,6 +52,9 @@ def train(_):
                 split_features_label_fn=split_features_label_fn,
                 run_config=config)
 
+    input_recv = tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_context.features)
+    classifier.export_savedmodel(FLAGS.job_dir + "/export", input_recv)
+
 
 def main():
     tf.app.run(main=train)

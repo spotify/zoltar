@@ -15,6 +15,11 @@ final class LocalFileSystem implements FileSystem {
 
   @Override
   public InputStream open(String path) throws IOException {
-    return new FileInputStream(new File(path));
+    return new FileInputStream(parse(path));
+  }
+
+  private File parse(String path) {
+    String p = path.startsWith("file:///") ? path.substring("file://".length()) : path;
+    return new File(p);
   }
 }

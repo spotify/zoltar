@@ -1,4 +1,4 @@
-package com.spotify.ml.models.fs;
+package com.spotify.modelserving;
 
 import org.junit.Test;
 

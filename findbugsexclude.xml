@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<FindBugsFilter>
+  <Match>
+    <Package name="~.*\.proto"/>
+  </Match>
+  <Match>
+    <Class name="~.*\.*Builder.*"/>
+  </Match>
+  <Match>
+    <Class name="~.*\.*Test.*"/>
+  </Match>
+  <Match>
+    <Class name="~.*\.*IT.*"/>
+  </Match>
+</FindBugsFilter>

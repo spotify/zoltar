@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 ID := $(shell date +%Y-%m-%d--%H-%M-%S)
 USERNAME ?= $(shell whoami)
-JOB_DIR ?= gs://ml-sketchbook-temp/iris/train/$(USERNAME)_$(ID)
+JOB_DIR ?= gs://ml-sketchbook-temp/iris/train/$(USERNAME)/$(ID)
 TRAINING_SET ?= gs://ml-sketchbook-temp/iris
 EXTRA_FLAGS ?=
 

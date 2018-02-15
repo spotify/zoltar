@@ -45,9 +45,9 @@ class IrisTest extends PipelineSpec {
       .args("--output=out")
       .input(BigQueryIO[Iris](Iris.table), input)
       .output(TextIO("out/train/_tf_record_spec.json"))(_ should containSingleValue(expectedFeatureSpec))
-      .output(TextIO("out/test/_tf_record_spec.json"))(_ should containSingleValue(expectedFeatureSpec))
+      .output(TextIO("out/eval/_tf_record_spec.json"))(_ should containSingleValue(expectedFeatureSpec))
       .output(TFExampleIO("out/train"))(_ should satisfy[Example](_.size === 9000+-500))
-      .output(TFExampleIO("out/test"))(_ should satisfy[Example](_.size === 1000+-500))
+      .output(TFExampleIO("out/eval"))(_ should satisfy[Example](_.size === 1000+-500))
       .run()
   // scalastyle:on line.size.limit
   }

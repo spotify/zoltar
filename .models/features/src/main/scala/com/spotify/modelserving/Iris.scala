@@ -32,10 +32,10 @@ object IrisFeaturesSpec {
   class Iris
 
   val irisFeaturesSpec: FeatureSpec[Iris] = FeatureSpec.of[Iris]
-    .optional(_.petal_length.map(Array(_)))(Normalizer("petal_length", expectedLength = 1))
-    .optional(_.petal_width.map(Array(_)))(Normalizer("petal_width", expectedLength = 1))
-    .optional(_.sepal_length.map(Array(_)))(Normalizer("sepal_length", expectedLength = 1))
-    .optional(_.sepal_width.map(Array(_)))(Normalizer("sepal_width", expectedLength = 1))
+    .optional(_.petal_length)(StandardScaler("petal_length", withMean=true))
+    .optional(_.petal_width)(StandardScaler("petal_width", withMean=true))
+    .optional(_.sepal_length)(StandardScaler("sepal_length", withMean=true))
+    .optional(_.sepal_width)(StandardScaler("sepal_width", withMean=true))
 
   val irisLabelSpec: FeatureSpec[Iris] = FeatureSpec.of[Iris]
     .optional(_.class_name)(OneHotEncoder("class_name"))
@@ -57,7 +57,7 @@ object IrisFeaturesJob {
       .randomSplit(.9)
 
     train.saveAsTfExampleFile(args("output") + "/train", extractedFeatures)
-    test.saveAsTfExampleFile(args("output") + "/test", extractedFeatures)
+    test.saveAsTfExampleFile(args("output") + "/eval", extractedFeatures)
 
     sc.close()
   }

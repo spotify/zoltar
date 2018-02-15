@@ -14,4 +14,4 @@ help:
 .DEFAULT_GOAL := help
 
 train: ## Train TF model
-	./iris.py --job_dir=$(JOB_DIR) --training_set=$(TRAINING_SET) $(EXTRA_FLAGS)
+	./iris.py --job_dir=$(JOB_DIR) --training_set=$(TRAINING_SET) --batch_size=12 $(EXTRA_FLAGS)

@@ -1,14 +1,14 @@
 package com.spotify.modelserving.fs;
 
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Scanner;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -37,13 +37,8 @@ public class LocalFileSystemTest {
   }
 
   @Test
-  public void testOpen() throws IOException {
-    assertEquals("test", readAll(FileSystems.open(relativePath.toString())));
-    assertEquals("test", readAll(FileSystems.open("file://" + absolutePath.toString())));
-  }
-
-  private String readAll(InputStream is) {
-    Scanner scanner = new Scanner(is).useDelimiter("\\A");
-    return scanner.hasNext() ? scanner.next() : "";
+  public void testReadString() throws IOException {
+    assertEquals("test", FileSystems.readString(relativePath.toString()));
+    assertEquals("test", FileSystems.readString("file://" + absolutePath.toString()));
   }
 }

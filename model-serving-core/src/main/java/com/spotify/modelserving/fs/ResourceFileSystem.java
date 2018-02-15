@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-public class ResourceFileSystem implements FileSystem {
+public final class ResourceFileSystem implements FileSystem {
 
   private static final ResourceFileSystem instance = new ResourceFileSystem();
 
@@ -16,7 +16,7 @@ public class ResourceFileSystem implements FileSystem {
 
   @Override
   public InputStream open(String path) throws IOException {
-    return this.getClass().getResourceAsStream(path);
+    return this.getClass().getResourceAsStream(parse(path));
   }
 
   private String parse(String path) {

@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
 
-public class FileSystems {
+public final class FileSystems {
 
   private FileSystems() {}
 

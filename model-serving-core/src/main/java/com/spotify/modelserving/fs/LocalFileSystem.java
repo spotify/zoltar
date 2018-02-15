@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-class LocalFileSystem implements FileSystem {
+final class LocalFileSystem implements FileSystem {
 
   private static final LocalFileSystem instance = new LocalFileSystem();
 

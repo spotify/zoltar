@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-class GcsFileSystem implements FileSystem {
+final class GcsFileSystem implements FileSystem {
 
   private static final GcsFileSystem instance = new GcsFileSystem();
 
@@ -44,7 +44,7 @@ class GcsFileSystem implements FileSystem {
     return new ObjectId(uri.getHost(), uri.getPath().substring(1));
   }
 
-  private class ObjectId {
+  private static class ObjectId {
     final String bucket;
     final String path;
 

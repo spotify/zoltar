@@ -16,16 +16,15 @@
 # under the License.
 #
 
-from spotify_tensorflow import Datasets, Trainer
-
-from tensorflow.python import debug as tf_debug
-
-import tensorflow as tf
 from os.path import join as pjoin
+
+from spotify_tensorflow import Datasets, Trainer
+import tensorflow as tf
 
 FLAGS = tf.flags.FLAGS
 
 tf.logging.set_verbosity(tf.logging.INFO)
+
 
 def main(_):
     config = Trainer.get_default_run_config()
@@ -37,13 +36,12 @@ def main(_):
     features = [tf.feature_column.numeric_column(x) for x in feature_names]
 
     def split_features_label_fn(spec):
-
+        # Canned TF's LinearClassifier requires label to be a single integer, Featran gives us
+        # one hot encoding for class, thus we need to convert one hot encoding to single integer
         labels = tf.concat([[spec.pop(l)] for l in label_names], axis=0)
-
         label = tf.argmax(labels, axis=0)
-
+        # Get the rest of the features out of the spec
         split_features = {k: spec[k] for k in spec.viewkeys() - set(label_names)}
-
         return split_features, label
 
     classifier = tf.estimator.LinearClassifier(feature_columns=features,

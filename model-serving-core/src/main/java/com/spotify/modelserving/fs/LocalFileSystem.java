@@ -1,4 +1,4 @@
-package com.spotify.modelserving;
+package com.spotify.modelserving.fs;
 
 import java.io.File;
 import java.io.FileInputStream;

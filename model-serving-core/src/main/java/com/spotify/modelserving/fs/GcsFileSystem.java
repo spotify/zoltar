@@ -1,4 +1,4 @@
-package com.spotify.modelserving;
+package com.spotify.modelserving.fs;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;

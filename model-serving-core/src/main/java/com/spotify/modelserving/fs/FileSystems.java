@@ -1,4 +1,4 @@
-package com.spotify.modelserving;
+package com.spotify.modelserving.fs;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;

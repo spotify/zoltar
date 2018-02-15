@@ -56,6 +56,7 @@ object IrisFeaturesJob {
       .featureValues[tf.Example]
       .randomSplit(.9)
 
+    extractedFeatures.featureSettings.saveAsTextFile(args("output") + "/settings")
     train.saveAsTfExampleFile(args("output") + "/train", extractedFeatures)
     test.saveAsTfExampleFile(args("output") + "/eval", extractedFeatures)
 

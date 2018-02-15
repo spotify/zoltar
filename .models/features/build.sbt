@@ -40,9 +40,6 @@ resolvers ++= Seq(
 
 // In case avro/proto is used:
 compileOrder := CompileOrder.JavaThenScala
-publish := {}
-publishLocal := {}
-publishArtifact := false
 
 description := "Feature spec for iris dataset"
 

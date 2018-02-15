@@ -38,8 +38,7 @@ class IrisTest extends PipelineSpec {
 
   // scalastyle:off line.size.limit
   private val expectedFeatureSpec =
-    """{"version":1,"features":[{"name":"petal_length_0","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"petal_width_0","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"sepal_length_0","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"sepal_width_0","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"class_name_iris-setosa","kind":"FloatList","tags":{"multispec-id":"1"}},{"name":"class_name_iris-versicolor","kind":"FloatList","tags":{"multispec-id":"1"}},{"name":"class_name_iris-virginica","kind":"FloatList","tags":{"multispec-id":"1"}}],"compression":"UNCOMPRESSED"}"""
-
+    """{"version":1,"features":[{"name":"petal_length","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"petal_width","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"sepal_length","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"sepal_width","kind":"FloatList","tags":{"multispec-id":"0"}},{"name":"class_name_iris-setosa","kind":"FloatList","tags":{"multispec-id":"1"}},{"name":"class_name_iris-versicolor","kind":"FloatList","tags":{"multispec-id":"1"}},{"name":"class_name_iris-virginica","kind":"FloatList","tags":{"multispec-id":"1"}}],"compression":"UNCOMPRESSED"}"""
   "IrisJob" should "work" in {
     JobTest[IrisFeaturesJob.type]
       .args("--output=out")
@@ -48,6 +47,7 @@ class IrisTest extends PipelineSpec {
       .output(TextIO("out/eval/_tf_record_spec.json"))(_ should containSingleValue(expectedFeatureSpec))
       .output(TFExampleIO("out/train"))(_ should satisfy[Example](_.size === 9000+-500))
       .output(TFExampleIO("out/eval"))(_ should satisfy[Example](_.size === 1000+-500))
+      .output(TextIO("out/settings"))(_ should haveSize(1))
       .run()
   // scalastyle:on line.size.limit
   }

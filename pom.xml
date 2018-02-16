@@ -9,6 +9,7 @@
     <module>model-serving-tensorflow</module>
     <module>model-serving-xgboost</module>
     <module>model-serving-featran</module>
+    <module>model-serving-tests</module>
   </modules>
   <artifactId>model-serving-parent</artifactId>
   <packaging>pom</packaging>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>model-serving-parent</artifactId>
+    <groupId>com.spotify</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>model-serving-tests</artifactId>
+
+  <repositories>
+    <repository>
+      <id>oss.sonatype.org</id>
+      <name>sonatype sapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.11.11</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>featran-core_2.11</artifactId>
+      <version>0.1.17</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>featran-tensorflow_2.11</artifactId>
+      <version>0.1.17</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>featran-scio_2.11</artifactId>
+      <version>0.1.17</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>scio-core_2.11</artifactId>
+    <version>0.5.0-beta1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>scio-bigquery_2.11</artifactId>
+      <version>0.5.0-beta1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>scio-tensorflow_2.11</artifactId>
+      <version>0.5.0-beta1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <compilerPlugins>
+            <compilerPlugin>
+              <groupId>org.scalamacros</groupId>
+              <artifactId>paradise_2.11.11</artifactId>
+              <version>2.1.0</version>
+            </compilerPlugin>
+          </compilerPlugins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

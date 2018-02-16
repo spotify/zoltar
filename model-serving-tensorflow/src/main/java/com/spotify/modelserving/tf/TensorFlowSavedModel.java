@@ -36,6 +36,10 @@ import java.io.IOException;
 import java.nio.LongBuffer;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TensorFlowSavedModel implements Model, AutoCloseable {
 
@@ -58,7 +62,7 @@ public class TensorFlowSavedModel implements Model, AutoCloseable {
         .featureValuesExample().get(0);
   }
 
-  public long predict(Example example) throws IOException {
+  public long predict(Example example, long timeoutSeconds) throws IOException, InterruptedException, ExecutionException, TimeoutException {
     // rank 1 cause we need to account for batch
     byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
@@ -68,9 +72,17 @@ public class TensorFlowSavedModel implements Model, AutoCloseable {
       Session.Runner runner = model.session().runner()
           .feed("input_example_tensor", t)
           .fetch("linear/head/predictions/class_ids");
-      List<Tensor<?>> output = runner.run();
+
+      List<Tensor<?>> output = CompletableFuture
+              .supplyAsync(runner::run).get(timeoutSeconds, TimeUnit.SECONDS);
+
+
       LongBuffer incomingClassId = LongBuffer.allocate(1);
-      output.get(0).writeTo(incomingClassId);
+      try {
+        output.get(0).writeTo(incomingClassId);
+      } finally {
+        output.forEach(Tensor::close);
+      }
       return incomingClassId.get(0);
     }
   }

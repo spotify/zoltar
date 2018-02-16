@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 public class TensorFlowSavedModelTest {
@@ -64,11 +66,17 @@ public class TensorFlowSavedModelTest {
         .mapToInt(i -> {
           long c = -1;
           try {
-            c = model.predict(i.snd);
+            c = model.predict(i.snd, 1L);
           } catch (IOException e) {
             e.printStackTrace();
+          } catch (InterruptedException e) {
+              e.printStackTrace();
+          } catch (ExecutionException e) {
+              e.printStackTrace();
+          } catch (TimeoutException e) {
+              e.printStackTrace();
           }
-          return classToId.get(i.fst) == c ? 1 : 0;
+            return classToId.get(i.fst) == c ? 1 : 0;
         }).sum();
 
     Assert.assertTrue("Should be more the 0.8", positivies/150f > .8);

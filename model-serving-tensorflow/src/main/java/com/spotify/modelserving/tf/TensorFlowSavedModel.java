@@ -53,24 +53,9 @@ public class TensorFlowSavedModel implements Model, AutoCloseable {
 
   public Example extractFeatures(IrisFeaturesSpec.Iris input, String settings) {
     FeatureSpec<IrisFeaturesSpec.Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    List<float[]> doubles = JFeatureSpec.wrap(irisFeatureSpec)
+    return JFeatureSpec.wrap(irisFeatureSpec)
         .extractWithSettings(Collections.singletonList(input), settings)
-        .featureValuesFloat();
-
-    float[] dd = doubles.get(0);
-    // the order of dd is the same as in features names, and the same as in feature spec.
-    return Example.newBuilder()
-        .setFeatures(
-            Features.newBuilder()
-                .putFeature("petal_length",
-                    Feature.newBuilder().setFloatList(FloatList.newBuilder().addValue(dd[0]).build()).build())
-                .putFeature("petal_width",
-                    Feature.newBuilder().setFloatList(FloatList.newBuilder().addValue(dd[1]).build()).build())
-                .putFeature("sepal_length",
-                    Feature.newBuilder().setFloatList(FloatList.newBuilder().addValue(dd[2]).build()).build())
-                .putFeature("sepal_width",
-                    Feature.newBuilder().setFloatList(FloatList.newBuilder().addValue(dd[3]).build()).build())
-                .build()).build();
+        .featureValuesExample().get(0);
   }
 
   public long predict(Example example) throws IOException {

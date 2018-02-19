@@ -41,6 +41,8 @@ public class TensorFlowSavedModelTest {
 
     InputStream r = this.getClass().getResourceAsStream("/iris.csv");
 
+    // Iris$ will be red because it's macro generated, and intellij seems to have
+    // hard time figuring out java/scala order with macros.
     Stream<IrisFeaturesSpec.Iris> irisStream = new BufferedReader(new InputStreamReader(r))
         .lines()
         .map(l -> l.split(","))
@@ -60,6 +62,7 @@ public class TensorFlowSavedModelTest {
     classToId.put("Iris-virginica", 2L);
 
 
+    // class_name() will be red because that code is macro generated
     int positivies = irisStream
         .map(i -> new HashMap.SimpleEntry<String, Example>(i.class_name().get(), model.extractFeatures(i, settings)))
         .mapToInt(i -> {

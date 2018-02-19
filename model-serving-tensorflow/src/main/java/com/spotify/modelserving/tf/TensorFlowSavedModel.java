@@ -51,6 +51,7 @@ public class TensorFlowSavedModel implements Model, AutoCloseable {
   }
 
   public Example extractFeatures(IrisFeaturesSpec.Iris input, String settings) {
+    // The line below will be red because Iris class is altered by macro
     FeatureSpec<IrisFeaturesSpec.Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     return JFeatureSpec.wrap(irisFeatureSpec)
         .extractWithSettings(Collections.singletonList(input), settings)

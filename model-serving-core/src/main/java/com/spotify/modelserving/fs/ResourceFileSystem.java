@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 
 public final class ResourceFileSystem implements FileSystem {
 
@@ -22,6 +23,11 @@ public final class ResourceFileSystem implements FileSystem {
     }
 
     return is;
+  }
+
+  @Override
+  public List<Resource> list(String path) throws IOException {
+    throw new UnsupportedOperationException("Cannot list resources");
   }
 
   private String parse(String path) {

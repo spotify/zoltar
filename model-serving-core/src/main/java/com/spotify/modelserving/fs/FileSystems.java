@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -37,5 +38,9 @@ public final class FileSystems {
   public static String readString(String path) throws IOException {
     Scanner scanner = new Scanner(open(path), Charsets.UTF_8.name()).useDelimiter("\\A");
     return scanner.hasNext() ? scanner.next() : "";
+  }
+
+  public static List<Resource> list(String path) throws IOException {
+    return get(path).list(path);
   }
 }

@@ -9,6 +9,8 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 final class GcsFileSystem implements FileSystem {
 
@@ -35,6 +37,16 @@ final class GcsFileSystem implements FileSystem {
   public InputStream open(String path) throws IOException {
     ObjectId id = parse(path);
     return storage.objects().get(id.bucket, id.path).executeMedia().getContent();
+  }
+
+  @Override
+  public List<Resource> list(String path) throws IOException {
+    ObjectId id = parse(path);
+    return storage.objects().list(id.bucket).setPrefix(id.path).execute().getItems().stream()
+            .map(o -> Resource.create(
+                    String.format("gs://%s/%s", o.getBucket(), o.getName()),
+                    o.getUpdated().getValue()))
+            .collect(Collectors.toList());
   }
 
   private ObjectId parse(String path) {

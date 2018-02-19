@@ -16,6 +16,10 @@
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-storage</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.auto.value</groupId>
+      <artifactId>auto-value</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

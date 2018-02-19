@@ -44,6 +44,11 @@
         <artifactId>guava</artifactId>
         <version>23.5-jre</version>
       </dependency>
+      <dependency>
+        <groupId>com.google.auto.value</groupId>
+        <artifactId>auto-value</artifactId>
+        <version>1.5.3</version>
+      </dependency>
 
       <dependency>
         <groupId>junit</groupId>

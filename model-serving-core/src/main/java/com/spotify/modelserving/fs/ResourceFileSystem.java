@@ -16,13 +16,21 @@ public final class ResourceFileSystem implements FileSystem {
 
   @Override
   public InputStream open(String path) throws IOException {
-    return this.getClass().getResourceAsStream(parse(path));
+    final InputStream is = this.getClass().getResourceAsStream(parse(path));
+    if (is == null) {
+      throw new IOException("Resource not found");
+    }
+
+    return is;
   }
 
   private String parse(String path) {
     URI uri = URI.create(path);
     Preconditions.checkArgument("resource".equals(uri.getScheme()),
-            "Not a resource path: %s", path);
+        "Not a resource path: %s", path);
+    Preconditions.checkArgument(!uri.getPath().isEmpty(),
+        "invalid resource: %s", path);
+
     return uri.getPath();
   }
 }

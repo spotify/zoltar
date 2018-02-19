@@ -22,8 +22,11 @@ import java.util.concurrent.ThreadLocalRandom
 import com.spotify.modelserving.IrisFeaturesSpec.Iris
 import com.spotify.scio.tensorflow.TFExampleIO
 import com.spotify.scio.testing._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 import org.tensorflow.example.Example
 
+@RunWith(classOf[JUnitRunner])
 class IrisTest extends PipelineSpec {
 
   private val classes = Seq("iris-setosa", "iris-virginica", "iris-versicolor")

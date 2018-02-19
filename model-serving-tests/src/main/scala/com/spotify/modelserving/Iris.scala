@@ -24,7 +24,7 @@ import com.spotify.featran.transformers._
 import com.spotify.scio._
 import com.spotify.scio.bigquery._
 import com.spotify.scio.tensorflow._
-import org.tensorflow.{example => tf}
+import org.tensorflow.example.{Example => TFExample}
 
 object IrisFeaturesSpec {
 
@@ -53,7 +53,7 @@ object IrisFeaturesJob {
     val extractedFeatures = irisSpec.extract(data)
 
     val (train, test) = extractedFeatures
-      .featureValues[tf.Example]
+      .featureValues[TFExample]
       .randomSplit(.9)
 
     extractedFeatures.featureSettings.saveAsTextFile(args("output") + "/settings")

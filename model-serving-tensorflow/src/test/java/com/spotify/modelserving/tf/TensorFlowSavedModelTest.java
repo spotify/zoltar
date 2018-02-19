@@ -17,11 +17,10 @@
 
 package com.spotify.modelserving.tf;
 
-
 import com.spotify.modelserving.IrisFeaturesSpec;
-import com.sun.tools.javac.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
+import org.tensorflow.example.Example;
 import scala.Option;
 
 import java.io.BufferedReader;
@@ -62,11 +61,11 @@ public class TensorFlowSavedModelTest {
 
 
     int positivies = irisStream
-        .map(i -> Pair.of(i.class_name().get(), model.extractFeatures(i, settings)))
+        .map(i -> new HashMap.SimpleEntry<String, Example>(i.class_name().get(), model.extractFeatures(i, settings)))
         .mapToInt(i -> {
           long c = -1;
           try {
-            c = model.predict(i.snd, 1L);
+            c = model.predict(i.getValue(), 1L);
           } catch (IOException e) {
             e.printStackTrace();
           } catch (InterruptedException e) {
@@ -76,7 +75,7 @@ public class TensorFlowSavedModelTest {
           } catch (TimeoutException e) {
               e.printStackTrace();
           }
-            return classToId.get(i.fst) == c ? 1 : 0;
+            return classToId.get(i.getKey()) == c ? 1 : 0;
         }).sum();
 
     Assert.assertTrue("Should be more the 0.8", positivies/150f > .8);

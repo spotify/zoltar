@@ -21,16 +21,11 @@ import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.Model;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
 import org.tensorflow.example.Example;
-import org.tensorflow.example.Feature;
-import org.tensorflow.example.Features;
-import org.tensorflow.example.FloatList;
 
 import java.io.IOException;
 import java.nio.LongBuffer;

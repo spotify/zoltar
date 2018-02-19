@@ -25,3 +25,6 @@ created_job_ids
 
 ## Project Files
 *-user.conf
+
+## Python virtualenv
+.venv

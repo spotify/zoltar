@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+from __future__ import absolute_import
 from os.path import join as pjoin
 
 from spotify_tensorflow import Datasets, Trainer
@@ -27,7 +27,7 @@ FLAGS = tf.flags.FLAGS
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
-def main(_):
+def train(_):
     config = Trainer.get_default_run_config()
 
     training_data_dir = pjoin(FLAGS.training_set, FLAGS.train_subdir)
@@ -53,5 +53,9 @@ def main(_):
                 run_config=config)
 
 
+def main():
+    tf.app.run(main=train)
+
+
 if __name__ == "__main__":
-    tf.app.run(main=main)
+    main()

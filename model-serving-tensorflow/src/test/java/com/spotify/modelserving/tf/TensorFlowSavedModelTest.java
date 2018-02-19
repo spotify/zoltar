@@ -18,26 +18,56 @@
 package com.spotify.modelserving.tf;
 
 import com.spotify.modelserving.IrisFeaturesSpec;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.tensorflow.example.Example;
 import scala.Option;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 public class TensorFlowSavedModelTest {
+  private String trainedModelTempDir = null;
+
+  @Before
+  public void copySavedModelFromResourceToTemp() throws IOException {
+    // If this gets reused refactor to handle generic data from resources
+    Path trainedModelTempDir = Files.createTempDirectory("trained_model");
+
+    URL savedModelURL = this.getClass().getResource("/trained_model/saved_model.pb");
+    File savedModelFile = trainedModelTempDir.resolve("saved_model.pb").toFile();
+    FileUtils.copyURLToFile(savedModelURL, savedModelFile);
+
+    URL variablesDataUrl =
+        this.getClass().getResource("/trained_model/variables/variables.data-00000-of-00001");
+    File variableDataFile = trainedModelTempDir
+        .resolve("variables")
+        .resolve("variables.data-00000-of-00001").toFile();
+    FileUtils.copyURLToFile(variablesDataUrl, variableDataFile);
+
+    URL variablesIndexUrl =
+        this.getClass().getResource("/trained_model/variables/variables.index");
+    File variablesIndexFile = trainedModelTempDir
+        .resolve("variables")
+        .resolve("variables.index").toFile();
+    FileUtils.copyURLToFile(variablesIndexUrl, variablesIndexFile);
+    this.trainedModelTempDir = trainedModelTempDir.toFile().getAbsolutePath();
+  }
 
   @Test
   public void testLoad() {
     // model downloaded locally:
-    TensorFlowSavedModel model = TensorFlowSavedModel.from("/tmp/m_export/export/1518726944");
+    TensorFlowSavedModel model = TensorFlowSavedModel.from(this.trainedModelTempDir);
 
     InputStream r = this.getClass().getResourceAsStream("/iris.csv");
 
@@ -69,14 +99,8 @@ public class TensorFlowSavedModelTest {
           long c = -1;
           try {
             c = model.predict(i.getValue(), 1L);
-          } catch (IOException e) {
+          } catch (Exception e) {
             e.printStackTrace();
-          } catch (InterruptedException e) {
-              e.printStackTrace();
-          } catch (ExecutionException e) {
-              e.printStackTrace();
-          } catch (TimeoutException e) {
-              e.printStackTrace();
           }
             return classToId.get(i.getKey()) == c ? 1 : 0;
         }).sum();

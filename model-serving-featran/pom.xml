@@ -11,6 +11,25 @@
 
   <artifactId>model-serving-featran</artifactId>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>model-serving-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>featran-java_2.11</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
     <finalName>${project.artifactId}</finalName>
 

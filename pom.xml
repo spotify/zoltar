@@ -49,6 +49,11 @@
         <artifactId>auto-value</artifactId>
         <version>1.5.3</version>
       </dependency>
+      <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>featran-java_2.11</artifactId>
+        <version>0.1.16</version>
+      </dependency>
 
       <dependency>
         <groupId>junit</groupId>

@@ -3,8 +3,6 @@
 import com.spotify.pipeline.Pipeline
 
 new Pipeline(this) {{ build {
-  notify.byMail(recipients: 'flatmap-squad@spotify.com')
-
   group(name: 'maven-verify') {
     maven.run(goal: 'clean verify checkstyle:checkstyle findbugs:findbugs')
     jenkinsPipeline.inJob {

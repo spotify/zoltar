@@ -21,13 +21,6 @@ import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.Model;
-import org.tensorflow.SavedModelBundle;
-import org.tensorflow.Session;
-import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
-import org.tensorflow.example.Example;
-
-import java.io.IOException;
 import java.nio.LongBuffer;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +28,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.tensorflow.SavedModelBundle;
+import org.tensorflow.Session;
+import org.tensorflow.Tensor;
+import org.tensorflow.Tensors;
+import org.tensorflow.example.Example;
 
 public class TensorFlowSavedModel implements Model, AutoCloseable {
 
@@ -50,6 +48,9 @@ public class TensorFlowSavedModel implements Model, AutoCloseable {
     model = SavedModelBundle.load(exportDir, "serve");
   }
 
+  /**
+   * TODO.
+   */
   public Example extractFeatures(IrisFeaturesSpec.Iris input, String settings) {
     // The line below will be red because Iris class is altered by macro
     FeatureSpec<IrisFeaturesSpec.Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
@@ -58,7 +59,11 @@ public class TensorFlowSavedModel implements Model, AutoCloseable {
         .featureValuesExample().get(0);
   }
 
-  public long predict(Example example, long timeoutSeconds) throws IOException, InterruptedException, ExecutionException, TimeoutException {
+  /**
+   * TODO.
+   */
+  public long predict(Example example, long timeoutSeconds)
+      throws InterruptedException, ExecutionException, TimeoutException {
     // rank 1 cause we need to account for batch
     byte[][] b = new byte[1][];
     b[0] = example.toByteArray();

@@ -18,14 +18,6 @@
 package com.spotify.modelserving.tf;
 
 import com.spotify.modelserving.IrisFeaturesSpec;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.tensorflow.example.Example;
-import scala.Option;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +29,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.tensorflow.example.Example;
+import scala.Option;
 
 public class TensorFlowSavedModelTest {
   private String trainedModelTempDir = null;

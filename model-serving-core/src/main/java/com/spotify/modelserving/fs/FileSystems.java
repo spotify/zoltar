@@ -22,7 +22,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

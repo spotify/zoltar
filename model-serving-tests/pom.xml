@@ -274,6 +274,7 @@
           <scalaVersion>${scala.version}</scalaVersion>
           <jvmArgs>
             <jvmArg>-Dbigquery.project=ml-sketchbook</jvmArg>
+            <jvmArg>-Dbigquery.secret=/etc/gcloud/jenkins-flatmap.json</jvmArg>
           </jvmArgs>
           <compilerPlugins>
             <compilerPlugin>
@@ -284,8 +285,6 @@
           </compilerPlugins>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
-
 </project>

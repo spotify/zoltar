@@ -272,6 +272,9 @@
         </executions>
         <configuration>
           <scalaVersion>${scala.version}</scalaVersion>
+          <jvmArgs>
+            <jvmArg>-Dbigquery.project=ml-sketchbook</jvmArg>
+          </jvmArgs>
           <compilerPlugins>
             <compilerPlugin>
               <groupId>org.scalamacros</groupId>

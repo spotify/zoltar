@@ -226,6 +226,22 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <!-- when on jenkins, set project and secret for BigQuery, but not on a dev machine -->
+      <id>jenkins</id>
+      <activation>
+        <file>
+          <exists>/etc/gcloud/jenkins-flatmap.json</exists>
+        </file>
+      </activation>
+      <properties>
+        <bigquery.project.arg>-Dbigquery.project=ml-sketchbook</bigquery.project.arg>
+        <bigquery.secret.arg>-Dbigquery.secret=/etc/gcloud/jenkins-flatmap.json</bigquery.secret.arg>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <finalName>${project.artifactId}</finalName>
     <plugins>
@@ -279,8 +295,8 @@
         <configuration>
           <scalaVersion>${scala.version}</scalaVersion>
           <jvmArgs>
-            <jvmArg>-Dbigquery.project=ml-sketchbook</jvmArg>
-            <jvmArg>-Dbigquery.secret=/etc/gcloud/jenkins-flatmap.json</jvmArg>
+            <jvmArg>${bigquery.project.arg}</jvmArg>
+            <jvmArg>${bigquery.secret.arg}</jvmArg>
           </jvmArgs>
           <compilerPlugins>
             <compilerPlugin>

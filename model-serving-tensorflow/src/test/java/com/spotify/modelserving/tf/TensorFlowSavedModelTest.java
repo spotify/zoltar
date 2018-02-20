@@ -19,6 +19,7 @@ package com.spotify.modelserving.tf;
 
 import com.spotify.modelserving.IrisFeaturesSpec;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -65,7 +67,7 @@ public class TensorFlowSavedModelTest {
   }
 
   @Test
-  public void testLoad() {
+  public void testLoad() throws IOException {
     // model downloaded locally:
     TensorFlowSavedModel model = TensorFlowSavedModel.from(this.trainedModelTempDir);
 
@@ -83,8 +85,7 @@ public class TensorFlowSavedModelTest {
             Option.apply(Double.parseDouble(strs[3])),
             Option.apply(strs[4])));
 
-    // hard coded settings (normally in gcs)
-    String settings = "[{\"cls\":\"com.spotify.featran.transformers.StandardScaler\",\"name\":\"petal_length\",\"params\":{\"withStd\":\"true\",\"withMean\":\"true\"},\"featureNames\":[\"petal_length\"],\"aggregators\":\"3.7586666666666675,1.7585291834055217\"},{\"cls\":\"com.spotify.featran.transformers.StandardScaler\",\"name\":\"petal_width\",\"params\":{\"withStd\":\"true\",\"withMean\":\"true\"},\"featureNames\":[\"petal_width\"],\"aggregators\":\"1.1986666666666665,0.7606126185881715\"},{\"cls\":\"com.spotify.featran.transformers.StandardScaler\",\"name\":\"sepal_length\",\"params\":{\"withStd\":\"true\",\"withMean\":\"true\"},\"featureNames\":[\"sepal_length\"],\"aggregators\":\"5.843333333333332,0.8253012917851413\"},{\"cls\":\"com.spotify.featran.transformers.StandardScaler\",\"name\":\"sepal_width\",\"params\":{\"withStd\":\"true\",\"withMean\":\"true\"},\"featureNames\":[\"sepal_width\"],\"aggregators\":\"3.0540000000000007,0.43214658007054363\"},{\"cls\":\"com.spotify.featran.transformers.OneHotEncoder\",\"name\":\"class_name\",\"params\":{},\"featureNames\":[\"class_name_Iris-setosa\",\"class_name_Iris-versicolor\",\"class_name_Iris-virginica\"],\"aggregators\":\"label:Iris-setosa,label:Iris-versicolor,label:Iris-virginica\"}]";
+    String settings = IOUtils.toString(this.getClass().getResourceAsStream("/settings.json"), Charset.defaultCharset());
 
     HashMap<String, Long> classToId = new HashMap<>(3);
     classToId.put("Iris-setosa", 0L);

@@ -34,62 +34,56 @@ logger.setLevel(logging.INFO)
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
-flags.DEFINE_integer('rounds', 5, 'Number of Rounds')
+flags.DEFINE_integer('rounds', 50, 'Number of Rounds')
 flags.DEFINE_string('local_dir', "/tmp/features", 'GCS Train Path')
 
 
 def transform_dataset(ctx, dataset):
-    (feature_names, label_names) = ctx.multispec_feature_groups
-    data = defaultdict(list)
+  (feature_names, label_names) = ctx.multispec_feature_groups
+  data = defaultdict(list)
 
-    for key, values in dataset.iteritems():
-        if key in feature_names:
-            data["features"].append(values)
-        else:
-            data["labels"].append(values)
+  for key, values in dataset.iteritems():
+    if key in feature_names:
+      data["features"].append(values)
+    else:
+      data["labels"].append(values)
 
-    return zip(*data["features"]), zip(*data["labels"])
+  return zip(*data["features"]), np.argmax(zip(*data["labels"]), axis=1)
 
 
 def train(_):
-    training_dir = pjoin(FLAGS.training_set, FLAGS.train_subdir)
-    eval_dir = pjoin(FLAGS.training_set, FLAGS.eval_subdir)
-    feature_context = Datasets.get_context(training_dir)
+  training_dir = pjoin(FLAGS.training_set, FLAGS.train_subdir)
+  feature_context = Datasets.get_context(training_dir)
+  
+  (feature_names, label_names) = feature_context.multispec_feature_groups
 
-    (feature_names, label_names) = feature_context.multispec_feature_groups
+  training_dataset = Datasets.dict.read_dataset(training_dir)
+  (feature_train_data, labels_train_data) = transform_dataset(feature_context,
+                                                              training_dataset)
 
-    training_dataset = Datasets.dict.read_dataset(training_dir)
-    eval_dataset = Datasets.dict.read_dataset(eval_dir)
-    (feature_train_data, labels_train_data) = transform_dataset(feature_context, training_dataset)
-    (feature_eval_data, labels_eval_data) = transform_dataset(feature_context, eval_dataset)
+  params = {
+    'objective': 'multi:softprob',
+    'verbose': False,
+    'num_class': len(label_names),
+    'max_depth': 6,
+    'nthread': 4,
+    'silent': 1
+  }
 
-    params = {
-        'objective': 'multi:softprob',
-        'verbose': False,
-        'num_class': len(label_names),
-        'max_depth': 6,
-        'nthread': 4,
-        'silent': 1
-    }
+  xg_train = xgb.DMatrix(feature_train_data,
+                         label=labels_train_data)
+  xg_model = xgb.train(params, xg_train, FLAGS.rounds)
 
-    xg_train = xgb.DMatrix(feature_train_data, label=np.argmax(labels_train_data, axis=1))
-    xg_eval = xgb.DMatrix(feature_eval_data, label=np.argmax(labels_eval_data, axis=1))
-    evallist = [
-        (xg_train, 'train'),
-        (xg_eval, 'eval')
-    ]
-    xg_model = xgb.train(params, xg_train, FLAGS.rounds, evallist, verbose_eval=True)
+  model_path = pjoin(FLAGS.local_dir, "iterator.model")
+  xg_model.save_model(model_path)
 
-    model_path = pjoin(FLAGS.local_dir, "iterator.model")
-    xg_model.save_model(model_path)
-
-    output_path = pjoin(FLAGS.training_set, "xgboost/iterator.model")
-    file_io.copy(model_path, output_path, overwrite=True)
+  output_path = pjoin(FLAGS.training_set, "xgboost/iterator.model")
+  file_io.copy(model_path, output_path, overwrite=True)
 
 
 def main():
-    tf.app.run(main=train)
+  tf.app.run(main=train)
 
 
 if __name__ == "__main__":
-    main()
+  main()

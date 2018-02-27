@@ -31,7 +31,7 @@ final class LocalFileSystem implements FileSystem {
 
   private static final LocalFileSystem instance = new LocalFileSystem();
 
-  public static LocalFileSystem getInstance() {
+  public static LocalFileSystem instance() {
     return instance;
   }
 

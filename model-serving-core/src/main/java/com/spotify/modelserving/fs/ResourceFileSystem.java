@@ -23,11 +23,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-public final class ResourceFileSystem implements FileSystem {
+final class ResourceFileSystem implements FileSystem {
 
   private static final ResourceFileSystem instance = new ResourceFileSystem();
 
-  public static ResourceFileSystem getInstance() {
+  public static ResourceFileSystem instance() {
     return instance;
   }
 

@@ -46,7 +46,7 @@ final class GcsFileSystem implements FileSystem {
     }
   }
 
-  public static GcsFileSystem getInstance() {
+  public static GcsFileSystem instance() {
     return instance;
   }
 

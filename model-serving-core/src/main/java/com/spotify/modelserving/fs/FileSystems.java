@@ -20,6 +20,7 @@ package com.spotify.modelserving.fs;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,16 +33,18 @@ public final class FileSystems {
   private FileSystems() {
   }
 
-  private static Map<String, FileSystem> mapping = ImmutableMap.of(
-      "", LocalFileSystem.getInstance(),
-      "file", LocalFileSystem.getInstance(),
-      "gs", GcsFileSystem.getInstance(),
-      "resource", ResourceFileSystem.getInstance());
+  private static final Map<String, Supplier<FileSystem>> mapping =
+      ImmutableMap.of(
+          "", LocalFileSystem::instance,
+          "file", LocalFileSystem::instance,
+          "gs", GcsFileSystem::instance,
+          "resource", ResourceFileSystem::instance);
 
   @VisibleForTesting
   static FileSystem get(URI path) {
-    String scheme = path.getScheme();
-    FileSystem fs = mapping.get(Objects.firstNonNull(scheme, ""));
+    final String scheme = path.getScheme();
+    final FileSystem fs = mapping.get(Objects.firstNonNull(scheme, "")).get();
+
     Preconditions.checkNotNull(fs, "Unsupported path: %s", path);
     return fs;
   }

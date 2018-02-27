@@ -25,7 +25,7 @@ public class Featran {
     return JFeatureSpec.wrap(spec).extractWithSettingsDouble(settings);
   }
 
-  public static <T> JRecordExtractor<T, FloatSparseArray> loadFloaSparseArrayExtractor(
+  public static <T> JRecordExtractor<T, FloatSparseArray> loadFloatSparseArrayExtractor(
       FeatureSpec<T> spec, URI path) throws IOException {
     String settings = Resource.from(path).read(asString());
     return JFeatureSpec.wrap(spec).extractWithSettingsFloatSparseArray(settings);

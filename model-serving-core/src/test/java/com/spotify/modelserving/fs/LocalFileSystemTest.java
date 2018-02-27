@@ -1,7 +1,11 @@
 package com.spotify.modelserving.fs;
 
+import static org.junit.Assert.assertEquals;
+
+import com.spotify.modelserving.fs.Resource.ReadFns;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,9 +14,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class LocalFileSystemTest {
+
   private static Path relativePath;
   private static Path absolutePath;
 
@@ -37,7 +40,8 @@ public class LocalFileSystemTest {
 
   @Test
   public void testReadString() throws IOException {
-    assertEquals("test", FileSystems.readString(relativePath.toString()));
-    assertEquals("test", FileSystems.readString("file://" + absolutePath.toString()));
+    assertEquals("test", Resource.from(relativePath.toUri()).read(ReadFns.asString()));
+    assertEquals("test",
+        Resource.from(URI.create("file://" + absolutePath.toString())).read(ReadFns.asString()));
   }
 }

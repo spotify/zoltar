@@ -20,6 +20,14 @@
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>featran-java_2.11</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

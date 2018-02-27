@@ -32,7 +32,7 @@ public final class ResourceFileSystem implements FileSystem {
   }
 
   @Override
-  public InputStream open(String path) throws IOException {
+  public InputStream open(URI path) throws IOException {
     final InputStream is = this.getClass().getResourceAsStream(parse(path));
     if (is == null) {
       throw new IOException("Resource not found");
@@ -42,17 +42,16 @@ public final class ResourceFileSystem implements FileSystem {
   }
 
   @Override
-  public List<Resource> list(String path) throws IOException {
+  public List<Resource> list(URI path) throws IOException {
     throw new UnsupportedOperationException("Cannot list resources");
   }
 
-  private String parse(String path) {
-    URI uri = URI.create(path);
-    Preconditions.checkArgument("resource".equals(uri.getScheme()),
-        "Not a resource path: %s", path);
-    Preconditions.checkArgument(!uri.getPath().isEmpty(),
-        "invalid resource: %s", path);
+  private String parse(URI path) {
+    Preconditions.checkArgument("resource".equals(path.getScheme()),
+                                "Not a resource path: %s", path);
+    Preconditions.checkArgument(!path.getPath().isEmpty(),
+                                "invalid resource: %s", path);
 
-    return uri.getPath();
+    return path.getPath();
   }
 }

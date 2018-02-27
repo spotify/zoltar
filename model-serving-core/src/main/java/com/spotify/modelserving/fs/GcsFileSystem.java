@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,29 +51,30 @@ final class GcsFileSystem implements FileSystem {
   }
 
   @Override
-  public InputStream open(String path) throws IOException {
+  public InputStream open(URI path) throws IOException {
     ObjectId id = parse(path);
     return storage.objects().get(id.bucket, id.path).executeMedia().getContent();
   }
 
   @Override
-  public List<Resource> list(String path) throws IOException {
+  public List<Resource> list(URI path) throws IOException {
     ObjectId id = parse(path);
     return storage.objects().list(id.bucket).setPrefix(id.path).execute().getItems().stream()
-            .map(o -> Resource.create(
-                    String.format("gs://%s/%s", o.getBucket(), o.getName()),
-                    o.getUpdated().getValue()))
-            .collect(Collectors.toList());
+        .map(o -> Resource.create(
+            URI.create(String.format("gs://%s/%s", o.getBucket(), o.getName())),
+            Instant.ofEpochMilli(o.getUpdated().getValue()),
+            this))
+        .collect(Collectors.toList());
   }
 
-  private ObjectId parse(String path) {
-    URI uri = URI.create(path);
-    Preconditions.checkArgument("gs".equals(uri.getScheme()),
-            "Not a GCS path: %s", path);
-    return new ObjectId(uri.getHost(), uri.getPath().substring(1));
+  private ObjectId parse(URI path) {
+    Preconditions.checkArgument("gs".equals(path.getScheme()),
+                                "Not a GCS path: %s", path);
+    return new ObjectId(path.getHost(), path.getPath().substring(1));
   }
 
   private static class ObjectId {
+
     final String bucket;
     final String path;
 

@@ -15,9 +15,6 @@
  * under the License.
  */
 
-import sbt._
-import Keys._
-
 val scioVersion = "0.5.0-alpha2"
 val beamVersion = "2.2.0"
 val slf4jVersion = "1.7.13"

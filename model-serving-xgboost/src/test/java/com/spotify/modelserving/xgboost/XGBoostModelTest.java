@@ -4,20 +4,24 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.featran.FeatureSpec;
-import com.spotify.featran.java.JFeatureSpec;
+import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
-import com.spotify.modelserving.fs.FileSystems;
+import com.spotify.modelserving.Model.FeatureExtractFn;
+import com.spotify.modelserving.Model.Prediction;
+import com.spotify.modelserving.Model.Predictor;
+import com.spotify.modelserving.fs.Resource;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import ml.dmlc.xgboost4j.LabeledPoint;
+import ml.dmlc.xgboost4j.java.DMatrix;
 import org.junit.Test;
 import scala.Option;
 
@@ -25,68 +29,69 @@ public class XGBoostModelTest {
 
   @Test
   public void testLoadingModel() throws Exception {
-    final InputStream model =
-        FileSystems.open("resource:///iris.model");
+    final URI trainData = URI.create("resource:///iris.model");
+    final URI settings = URI.create("resource:///settings.json");
+    final FeatureSpec<Iris> featuresSpec = IrisFeaturesSpec.irisFeaturesSpec();
 
-    XGBoostModel.load(model);
-  }
-
-  public Stream<LabeledPoint> extractVectors(IrisFeaturesSpec.Iris input, String settings) {
-    // The line below will be red because Iris class is altered by macro
-    FeatureSpec<Iris> featuresSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    return JFeatureSpec.wrap(featuresSpec)
-        .extractWithSettings(Collections.singletonList(input), settings)
-        .featureValuesFloat()
-        .stream()
-        .map(vec -> new LabeledPoint(0, null, vec));
+    XGBoostModel.create(trainData, settings, featuresSpec);
   }
 
   @Test
   public void testModelPrediction() throws Exception {
-    final InputStream modelInput =
-        FileSystems.open("resource:///iris.model");
-    final InputStream testInput =
-        FileSystems.open("resource:///iris.csv");
-    final String settings =
-        FileSystems.readString("resource:///settings.json");
+    final FeatureSpec<Iris> featuresSpec = IrisFeaturesSpec.irisFeaturesSpec();
+    final URI trainData = URI.create("resource:///iris.model");
+    final URI settings = URI.create("resource:///settings.json");
+    final List<Iris> irisStream = Resource.from(URI.create("resource:///iris.csv")).read(is -> {
+      // Iris$ will be red because it's macro generated, and intellij seems to have
+      // hard time figuring out java/scala order with macros.
+      return new BufferedReader(new InputStreamReader(is.open()))
+          .lines()
+          .map(l -> l.split(","))
+          .map(strs -> (Iris) IrisFeaturesSpec.Iris$.MODULE$.apply(
+              Option.apply(Double.parseDouble(strs[0])),
+              Option.apply(Double.parseDouble(strs[1])),
+              Option.apply(Double.parseDouble(strs[2])),
+              Option.apply(Double.parseDouble(strs[3])),
+              Option.apply(strs[4])))
+          .collect(Collectors.toList());
+    });
 
-    // Iris$ will be red because it's macro generated, and intellij seems to have
-    // hard time figuring out java/scala order with macros.
-    List<Iris> irisStream =
-        new BufferedReader(new InputStreamReader(testInput))
-            .lines()
-            .map(l -> l.split(","))
-            .map(strs -> IrisFeaturesSpec.Iris$.MODULE$.apply(
-                Option.apply(Double.parseDouble(strs[0])),
-                Option.apply(Double.parseDouble(strs[1])),
-                Option.apply(Double.parseDouble(strs[2])),
-                Option.apply(Double.parseDouble(strs[3])),
-                Option.apply(strs[4])))
-            .collect(Collectors.toList());
+    Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
+                                                     1, "Iris-versicolor",
+                                                     2, "Iris-virginica");
 
-    XGBoostModel model = XGBoostModel.load(modelInput);
+    XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
+      return vectors.stream().map(vector -> {
+        LabeledPoint labeledPoints = new LabeledPoint(0, null, vector.value());
+        try {
+          final Iterator<LabeledPoint> iterator =
+              Collections.singletonList(labeledPoints).iterator();
+          final DMatrix dMatrix = new DMatrix(iterator, null);
 
-    Map<Integer, String> classToId = ImmutableMap.of(
-        0, "Iris-setosa",
-        1, "Iris-versicolor",
-        2, "Iris-virginica");
+          return Prediction.create(vector.input(), model.instance().predict(dMatrix)[0]);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }).collect(Collectors.toList());
+    };
 
-    int sum = irisStream.stream().mapToInt(input -> {
-      String className = input.class_name().get();
-      LabeledPoint[] labeledPoints =
-          extractVectors(input, settings).toArray(LabeledPoint[]::new);
+    XGBoostModel<Iris> model = XGBoostModel.create(trainData, settings, featuresSpec);
+    FeatureExtractFn<Iris, float[]> featureExtractFn = JFeatureExtractor::featureValuesFloat;
 
-      try {
-        float[] score = model.predict(labeledPoints)[0];
-        int idx = IntStream.range(0, score.length)
-            .reduce((i, j) -> score[i] >= score[j] ? i : j)
-            .getAsInt();
-        return classToId.get(idx).equals(className) ? 1 : 0;
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }).sum();
+    IntStream predictions = Predictor
+        .create(model, featureExtractFn, predictFn)
+        .predict(irisStream)
+        .stream()
+        .mapToInt(prediction -> {
+          String className = prediction.input().class_name().get();
+          float[] score = prediction.value();
+          int idx = IntStream.range(0, score.length)
+              .reduce((i, j) -> score[i] >= score[j] ? i : j)
+              .getAsInt();
 
-    assertTrue("Should be more the 0.8", sum / (float) irisStream.size() > .8);
+          return classToId.get(idx).equals(className) ? 1 : 0;
+        });
+
+    assertTrue("Should be more the 0.8", predictions.sum() / (float) irisStream.size() > .8);
   }
 }

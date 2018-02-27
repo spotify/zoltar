@@ -10,6 +10,7 @@ import com.spotify.featran.java.JRecordExtractor;
 import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
 import java.net.URI;
+import org.tensorflow.example.Example;
 
 public class Featran {
 
@@ -35,5 +36,11 @@ public class Featran {
       FeatureSpec<T> spec, URI path) throws IOException {
     String settings = Resource.from(path).read(asString());
     return JFeatureSpec.wrap(spec).extractWithSettingsDoubleSparseArray(settings);
+  }
+
+  public static <T> JRecordExtractor<T, Example> loadExampleExtractor(
+      FeatureSpec<T> spec, URI path) throws IOException {
+    String settings = Resource.from(path).read(asString());
+    return JFeatureSpec.wrap(spec).extractWithSettingsExample(settings);
   }
 }

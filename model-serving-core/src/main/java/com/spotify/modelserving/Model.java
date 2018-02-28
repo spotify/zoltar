@@ -28,19 +28,19 @@ import java.util.stream.Collectors;
 public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
 
   @FunctionalInterface
-  interface PredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, PredictT> {
+  interface PredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> {
 
-    List<Prediction<SpecT, PredictT>> apply(ModelT model, List<Vector<SpecT, VectorT>> vectors)
+    List<Prediction<SpecT, ValueT>> apply(ModelT model, List<Vector<SpecT, VectorT>> vectors)
         throws Exception;
   }
 
   @FunctionalInterface
-  interface Predictor<SpecT, PredictT> {
+  interface Predictor<SpecT, ValueT> {
 
-    static <ModelT extends Model<?, SpecT>, SpecT, VectorT, PredictT> Predictor<SpecT, PredictT> create(
+    static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> Predictor<SpecT, ValueT> create(
         ModelT model,
         FeatureExtractFn<SpecT, VectorT> featureExtractFn,
-        PredictFn<ModelT, SpecT, VectorT, PredictT> predictFn) {
+        PredictFn<ModelT, SpecT, VectorT, ValueT> predictFn) {
       return input -> {
         final List<Vector<SpecT, VectorT>> vectors = FeatureExtractor
             .create(model, featureExtractFn)
@@ -50,7 +50,7 @@ public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
       };
     }
 
-    List<Prediction<SpecT, PredictT>> predict(List<SpecT> input) throws Exception;
+    List<Prediction<SpecT, ValueT>> predict(List<SpecT> input) throws Exception;
   }
 
   @FunctionalInterface
@@ -62,8 +62,9 @@ public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
   @FunctionalInterface
   interface FeatureExtractor<SpecT, ValueT> {
 
-    static <SpecT, ValueT> FeatureExtractor<SpecT, ValueT> create(Model<?, SpecT> model,
-                                                                  FeatureExtractFn<SpecT, ValueT> fn) {
+    static <SpecT, ValueT> FeatureExtractor<SpecT, ValueT> create(
+        Model<?, SpecT> model,
+        FeatureExtractFn<SpecT, ValueT> fn) {
       return inputs -> {
         final JFeatureExtractor<SpecT> extractor = JFeatureSpec.wrap(model.featureSpec())
             .extractWithSettings(inputs, model.settings());

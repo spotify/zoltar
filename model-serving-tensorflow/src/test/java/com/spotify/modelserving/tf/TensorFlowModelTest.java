@@ -30,7 +30,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URL;
 import java.nio.LongBuffer;
 import java.nio.file.Files;
@@ -85,9 +84,7 @@ public class TensorFlowModelTest {
   @Test
   public void testLoad() throws Exception {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    final URI trainData = URI.create(this.trainedModelTempDir);
-    final URI settings = URI.create("resource:///settings.json");
-    final List<Iris> irisStream = Resource.from(URI.create("resource:///iris.csv")).read(is -> {
+    final List<Iris> irisStream = Resource.from("resource:///iris.csv").read(is -> {
       // Iris$ will be red because it's macro generated, and intellij seems to have
       // hard time figuring out java/scala order with macros.
       return new BufferedReader(new InputStreamReader(is.open()))
@@ -120,7 +117,7 @@ public class TensorFlowModelTest {
     };
 
     TensorFlowModel<Iris> model = TensorFlowModel
-        .create(trainData, settings, irisFeatureSpec);
+        .create(trainedModelTempDir, "resource:///settings.json", irisFeatureSpec);
     FeatureExtractFn<Iris, Example> featureExtractFn = JFeatureExtractor::featureValuesExample;
 
     IntStream predictions = Predictor

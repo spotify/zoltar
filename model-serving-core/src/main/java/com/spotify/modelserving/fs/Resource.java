@@ -21,12 +21,13 @@ public abstract class Resource {
     return new AutoValue_Resource(path, timestamp, fs);
   }
 
-  public static Resource create(URI path, FileSystem fs) {
-    return new AutoValue_Resource(path, Instant.EPOCH, fs);
+  public static Resource from(String path) {
+    URI uri = URI.create(path);
+    return create(uri, Instant.EPOCH, FileSystems.get(uri));
   }
 
   public static Resource from(URI path) {
-    return new AutoValue_Resource(path, Instant.EPOCH, FileSystems.get(path));
+    return create(path, Instant.EPOCH, FileSystems.get(path));
   }
 
   @FunctionalInterface

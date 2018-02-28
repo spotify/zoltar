@@ -27,6 +27,12 @@ public class XGBoostModel<T> implements Model<Booster, T> {
     this.featureSpec = featureSpec;
   }
 
+  public static <T> XGBoostModel<T> create(String modelUri,
+                                           String settingsUri,
+                                           FeatureSpec<T> featureSpec) throws IOException {
+    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+  }
+
   public static <T> XGBoostModel<T> create(URI modelUri,
                                            URI settingsUri,
                                            FeatureSpec<T> featureSpec) throws IOException {

@@ -32,6 +32,12 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
   private final String settings;
   private final FeatureSpec<T> featureSpec;
 
+  public static <T> TensorFlowModel<T> create(String modelUri,
+                                              String settingsUri,
+                                              FeatureSpec<T> featureSpec) throws IOException {
+    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+  }
+
   public static <T> TensorFlowModel<T> create(URI modelResource,
                                               URI settingsResource,
                                               FeatureSpec<T> featureSpec) throws IOException {

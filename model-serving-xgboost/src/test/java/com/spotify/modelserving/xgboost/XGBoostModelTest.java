@@ -38,10 +38,7 @@ public class XGBoostModelTest {
 
   @Test
   public void testModelPrediction() throws Exception {
-    final FeatureSpec<Iris> featuresSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    final URI trainData = URI.create("resource:///iris.model");
-    final URI settings = URI.create("resource:///settings.json");
-    final List<Iris> irisStream = Resource.from(URI.create("resource:///iris.csv")).read(is -> {
+    final List<Iris> irisStream = Resource.from("resource:///iris.csv").read(is -> {
       // Iris$ will be red because it's macro generated, and intellij seems to have
       // hard time figuring out java/scala order with macros.
       return new BufferedReader(new InputStreamReader(is.open()))
@@ -75,7 +72,9 @@ public class XGBoostModelTest {
       }).collect(Collectors.toList());
     };
 
-    XGBoostModel<Iris> model = XGBoostModel.create(trainData, settings, featuresSpec);
+    XGBoostModel<Iris> model = XGBoostModel.create("resource:///iris.model",
+                                                   "resource:///settings.json",
+                                                   IrisFeaturesSpec.irisFeaturesSpec());
     FeatureExtractFn<Iris, float[]> featureExtractFn = JFeatureExtractor::featureValuesFloat;
 
     IntStream predictions = Predictor

@@ -25,24 +25,24 @@ import com.spotify.featran.java.JFeatureSpec;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface Model<M, T> extends AutoCloseable {
+public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
 
   @FunctionalInterface
-  interface PredictFn<M extends Model<?, T>, T, V, U> {
+  interface PredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, PredictT> {
 
-    List<Prediction<T, U>> apply(M model, List<Vector<T, V>> vectors)
+    List<Prediction<SpecT, PredictT>> apply(ModelT model, List<Vector<SpecT, VectorT>> vectors)
         throws Exception;
   }
 
   @FunctionalInterface
-  interface Predictor<I, U> {
+  interface Predictor<SpecT, PredictT> {
 
-    static <X extends Model<?, T>, T, U, V> Predictor<T, U> create(
-        X model,
-        FeatureExtractFn<T, V> featureExtractFn,
-        PredictFn<X, T, V, U> predictFn) {
+    static <ModelT extends Model<?, SpecT>, SpecT, VectorT, PredictT> Predictor<SpecT, PredictT> create(
+        ModelT model,
+        FeatureExtractFn<SpecT, VectorT> featureExtractFn,
+        PredictFn<ModelT, SpecT, VectorT, PredictT> predictFn) {
       return input -> {
-        final List<Vector<T, V>> vectors = FeatureExtractor
+        final List<Vector<SpecT, VectorT>> vectors = FeatureExtractor
             .create(model, featureExtractFn)
             .extract(input);
 
@@ -50,21 +50,22 @@ public interface Model<M, T> extends AutoCloseable {
       };
     }
 
-    List<Prediction<I, U>> predict(List<I> input) throws Exception;
+    List<Prediction<SpecT, PredictT>> predict(List<SpecT> input) throws Exception;
   }
 
   @FunctionalInterface
-  interface FeatureExtractFn<T, V> {
+  interface FeatureExtractFn<SpecT, ValueT> {
 
-    List<V> apply(JFeatureExtractor<T> fn) throws Exception;
+    List<ValueT> apply(JFeatureExtractor<SpecT> fn) throws Exception;
   }
 
   @FunctionalInterface
-  interface FeatureExtractor<T, U> {
+  interface FeatureExtractor<SpecT, ValueT> {
 
-    static <T, U> FeatureExtractor<T, U> create(Model<?, T> model, FeatureExtractFn<T, U> fn) {
+    static <SpecT, ValueT> FeatureExtractor<SpecT, ValueT> create(Model<?, SpecT> model,
+                                                                  FeatureExtractFn<SpecT, ValueT> fn) {
       return inputs -> {
-        final JFeatureExtractor<T> extractor = JFeatureSpec.wrap(model.featureSpec())
+        final JFeatureExtractor<SpecT> extractor = JFeatureSpec.wrap(model.featureSpec())
             .extractWithSettings(inputs, model.settings());
 
         return Streams.zip(inputs.stream(), fn.apply(extractor).stream(), Vector::create)
@@ -72,37 +73,37 @@ public interface Model<M, T> extends AutoCloseable {
       };
     }
 
-    List<Vector<T, U>> extract(List<T> input) throws Exception;
+    List<Vector<SpecT, ValueT>> extract(List<SpecT> input) throws Exception;
   }
 
   @AutoValue
-  abstract class Vector<T, V> {
+  abstract class Vector<SpecT, ValueT> {
 
-    public abstract T input();
+    public abstract SpecT input();
 
-    public abstract V value();
+    public abstract ValueT value();
 
-    public static <T, V> Vector<T, V> create(T input, V value) {
+    public static <SpecT, ValueT> Vector<SpecT, ValueT> create(SpecT input, ValueT value) {
       return new AutoValue_Model_Vector<>(input, value);
     }
   }
 
   @AutoValue
-  abstract class Prediction<T, V> {
+  abstract class Prediction<SpecT, ValueT> {
 
-    public abstract T input();
+    public abstract SpecT input();
 
-    public abstract V value();
+    public abstract ValueT value();
 
-    public static <T, V> Prediction<T, V> create(T input, V value) {
+    public static <SpecT, ValueT> Prediction<SpecT, ValueT> create(SpecT input, ValueT value) {
       return new AutoValue_Model_Prediction<>(input, value);
     }
   }
 
-  M instance();
+  UnderlyingT instance();
 
   String settings();
 
-  FeatureSpec<T> featureSpec();
+  FeatureSpec<SpecT> featureSpec();
 
 }

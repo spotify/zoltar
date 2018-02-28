@@ -42,7 +42,7 @@ public interface Model<M, T> extends AutoCloseable {
         FeatureExtractFn<T, V> featureExtractFn,
         PredictFn<X, T, V, U> predictFn) {
       return input -> {
-        List<Vector<T, V>> vectors = FeatureExtractor
+        final List<Vector<T, V>> vectors = FeatureExtractor
             .create(model, featureExtractFn)
             .extract(input);
 

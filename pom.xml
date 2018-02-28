@@ -10,6 +10,7 @@
     <module>model-serving-xgboost</module>
     <module>model-serving-featran</module>
     <module>model-serving-tests</module>
+    <module>model-serving-models</module>
   </modules>
   <artifactId>model-serving-parent</artifactId>
   <packaging>pom</packaging>

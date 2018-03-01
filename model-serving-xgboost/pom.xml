@@ -48,7 +48,6 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-java_2.11</artifactId>
-      <version>0.1.17</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>

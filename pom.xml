@@ -67,7 +67,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>featran-java_2.11</artifactId>
-        <version>0.1.17</version>
+        <version>0.1.18</version>
       </dependency>
 
       <dependency>

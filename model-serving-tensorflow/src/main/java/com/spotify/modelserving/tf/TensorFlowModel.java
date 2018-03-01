@@ -21,6 +21,7 @@ import static com.spotify.modelserving.fs.Resource.ReadFns.asString;
 
 import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
+import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
 import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
@@ -37,31 +38,61 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
 
   private final SavedModelBundle model;
   private final String settings;
-  private final FeatureSpec<T> featureSpec;
+  private final JFeatureSpec<T> featureSpec;
   private final Options options;
 
   public static <T> TensorFlowModel<T> create(String modelUri,
                                               String settingsUri,
                                               FeatureSpec<T> featureSpec) throws IOException {
-    return create(modelUri, settingsUri, featureSpec, DEFAULT_OPTIONS);
+    return create(modelUri, settingsUri, JFeatureSpec.wrap(featureSpec), DEFAULT_OPTIONS);
   }
 
   public static <T> TensorFlowModel<T> create(String modelUri,
                                               String settingsUri,
                                               FeatureSpec<T> featureSpec,
                                               Options options) throws IOException {
-    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
+    return create(URI.create(modelUri),
+                  URI.create(settingsUri),
+                  JFeatureSpec.wrap(featureSpec),
+                  options);
   }
 
   public static <T> TensorFlowModel<T> create(URI modelResource,
                                               URI settingsResource,
                                               FeatureSpec<T> featureSpec) throws IOException {
-    return create(modelResource, settingsResource, featureSpec, DEFAULT_OPTIONS);
+    return create(modelResource, settingsResource, JFeatureSpec.wrap(featureSpec), DEFAULT_OPTIONS);
   }
 
   public static <T> TensorFlowModel<T> create(URI modelResource,
                                               URI settingsResource,
                                               FeatureSpec<T> featureSpec,
+                                              Options options) throws IOException {
+
+    return create(modelResource, settingsResource, JFeatureSpec.wrap(featureSpec), options);
+  }
+
+  public static <T> TensorFlowModel<T> create(String modelUri,
+                                              String settingsUri,
+                                              JFeatureSpec<T> featureSpec) throws IOException {
+    return create(modelUri, settingsUri, featureSpec, DEFAULT_OPTIONS);
+  }
+
+  public static <T> TensorFlowModel<T> create(String modelUri,
+                                              String settingsUri,
+                                              JFeatureSpec<T> featureSpec,
+                                              Options options) throws IOException {
+    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
+  }
+
+  public static <T> TensorFlowModel<T> create(URI modelResource,
+                                              URI settingsResource,
+                                              JFeatureSpec<T> featureSpec) throws IOException {
+    return create(modelResource, settingsResource, featureSpec, DEFAULT_OPTIONS);
+  }
+
+  public static <T> TensorFlowModel<T> create(URI modelResource,
+                                              URI settingsResource,
+                                              JFeatureSpec<T> featureSpec,
                                               Options options) throws IOException {
     final String settings = Resource.from(settingsResource).read(asString());
     return new TensorFlowModel<>(modelResource.toString(), settings, featureSpec, options);
@@ -69,7 +100,7 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
 
   private TensorFlowModel(String exportDir,
                           String settings,
-                          FeatureSpec<T> featureSpec,
+                          JFeatureSpec<T> featureSpec,
                           Options options) {
     // TODO: copy saved model from remote FS, object stores etc to local filesystem
     this.model = SavedModelBundle.load(exportDir, options.tags().toArray(new String[0]));
@@ -96,7 +127,7 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
   }
 
   @Override
-  public FeatureSpec<T> featureSpec() {
+  public JFeatureSpec<T> featureSpec() {
     return featureSpec;
   }
 

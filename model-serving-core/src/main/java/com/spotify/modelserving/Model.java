@@ -19,7 +19,6 @@ package com.spotify.modelserving;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Streams;
-import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
 import java.util.List;
@@ -66,7 +65,7 @@ public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
         Model<?, SpecT> model,
         FeatureExtractFn<SpecT, ValueT> fn) {
       return inputs -> {
-        final JFeatureExtractor<SpecT> extractor = JFeatureSpec.wrap(model.featureSpec())
+        final JFeatureExtractor<SpecT> extractor = model.featureSpec()
             .extractWithSettings(inputs, model.settings());
 
         return Streams.zip(inputs.stream(), fn.apply(extractor).stream(), Vector::create)
@@ -105,6 +104,6 @@ public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
 
   String settings();
 
-  FeatureSpec<SpecT> featureSpec();
+  JFeatureSpec<SpecT> featureSpec();
 
 }

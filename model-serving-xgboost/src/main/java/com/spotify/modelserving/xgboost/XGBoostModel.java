@@ -3,6 +3,7 @@ package com.spotify.modelserving.xgboost;
 import static com.spotify.modelserving.fs.Resource.ReadFns.asString;
 
 import com.spotify.featran.FeatureSpec;
+import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
 import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
@@ -17,11 +18,11 @@ public class XGBoostModel<T> implements Model<Booster, T> {
 
   private final Booster booster;
   private final String settings;
-  private final FeatureSpec<T> featureSpec;
+  private final JFeatureSpec<T> featureSpec;
 
   private XGBoostModel(Booster booster,
                        String settings,
-                       FeatureSpec<T> featureSpec) {
+                       JFeatureSpec<T> featureSpec) {
     this.booster = booster;
     this.settings = settings;
     this.featureSpec = featureSpec;
@@ -30,12 +31,24 @@ public class XGBoostModel<T> implements Model<Booster, T> {
   public static <T> XGBoostModel<T> create(String modelUri,
                                            String settingsUri,
                                            FeatureSpec<T> featureSpec) throws IOException {
-    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+    return create(URI.create(modelUri), URI.create(settingsUri), JFeatureSpec.wrap(featureSpec));
   }
 
   public static <T> XGBoostModel<T> create(URI modelUri,
                                            URI settingsUri,
                                            FeatureSpec<T> featureSpec) throws IOException {
+    return create(modelUri, settingsUri, JFeatureSpec.wrap(featureSpec));
+  }
+
+  public static <T> XGBoostModel<T> create(String modelUri,
+                                           String settingsUri,
+                                           JFeatureSpec<T> featureSpec) throws IOException {
+    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+  }
+
+  public static <T> XGBoostModel<T> create(URI modelUri,
+                                           URI settingsUri,
+                                           JFeatureSpec<T> featureSpec) throws IOException {
     try {
       final InputStream is = Resource.from(modelUri).open();
       final String settings = Resource.from(settingsUri).read(asString());
@@ -56,7 +69,7 @@ public class XGBoostModel<T> implements Model<Booster, T> {
   }
 
   @Override
-  public FeatureSpec<T> featureSpec() {
+  public JFeatureSpec<T> featureSpec() {
     return featureSpec;
   }
 

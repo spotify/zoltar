@@ -31,16 +31,33 @@ import org.tensorflow.example.{Example => TFExample}
 object IrisFeaturesSpec {
 
   @BigQueryType.fromTable("ml-sketchbook:model_serving.iris")
-  class Iris
+  class Record
 
-  val irisFeaturesSpec: FeatureSpec[Iris] = FeatureSpec.of[Iris]
-    .optional(_.petal_length)(StandardScaler("petal_length", withMean=true))
-    .optional(_.petal_width)(StandardScaler("petal_width", withMean=true))
-    .optional(_.sepal_length)(StandardScaler("sepal_length", withMean=true))
-    .optional(_.sepal_width)(StandardScaler("sepal_width", withMean=true))
+  case class Iris(sepalLength: Option[Double],
+                  sepalWidth: Option[Double],
+                  petalLength: Option[Double],
+                  petalWidth: Option[Double],
+                  className: Option[String])
 
-  val irisLabelSpec: FeatureSpec[Iris] = FeatureSpec.of[Iris]
-    .optional(_.class_name)(OneHotEncoder("class_name"))
+  object Iris {
+    def apply(record: Record): Iris =
+      Iris(record.petal_length,
+           record.petal_width,
+           record.sepal_length,
+           record.sepal_width,
+           record.class_name)
+  }
+
+  val irisFeaturesSpec: FeatureSpec[Iris] = FeatureSpec
+    .of[Iris]
+    .optional(_.petalLength)(StandardScaler("petal_length", withMean = true))
+    .optional(_.petalWidth)(StandardScaler("petal_width", withMean = true))
+    .optional(_.sepalLength)(StandardScaler("sepal_length", withMean = true))
+    .optional(_.sepalWidth)(StandardScaler("sepal_width", withMean = true))
+
+  val irisLabelSpec: FeatureSpec[Iris] = FeatureSpec
+    .of[Iris]
+    .optional(_.className)(OneHotEncoder("class_name"))
 
   val irisSpec = MultiFeatureSpec(irisFeaturesSpec, irisLabelSpec)
 }
@@ -52,14 +69,15 @@ object IrisFeaturesJob {
 
     val (sc, args) = ContextAndArgs(cmdLineArgs)
 
-    val data = sc.typedBigQuery[Iris]()
+    val data = sc.typedBigQuery[Record]().map(Iris(_))
     val extractedFeatures = irisSpec.extract(data)
 
     val (train, test) = extractedFeatures
       .featureValues[TFExample]
       .randomSplit(.9)
 
-    extractedFeatures.featureSettings.saveAsTextFile(args("output") + "/settings")
+    extractedFeatures.featureSettings.saveAsTextFile(
+      args("output") + "/settings")
     train.saveAsTfExampleFile(args("output") + "/train", extractedFeatures)
     test.saveAsTfExampleFile(args("output") + "/eval", extractedFeatures)
 

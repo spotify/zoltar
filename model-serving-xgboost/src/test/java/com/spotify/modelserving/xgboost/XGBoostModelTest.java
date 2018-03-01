@@ -39,17 +39,14 @@ public class XGBoostModelTest {
   @Test
   public void testModelPrediction() throws Exception {
     final List<Iris> irisStream = Resource.from("resource:///iris.csv").read(is -> {
-      // Iris$ will be red because it's macro generated, and intellij seems to have
-      // hard time figuring out java/scala order with macros.
       return new BufferedReader(new InputStreamReader(is.open()))
           .lines()
           .map(l -> l.split(","))
-          .map(strs -> (Iris) IrisFeaturesSpec.Iris$.MODULE$.apply(
-              Option.apply(Double.parseDouble(strs[0])),
-              Option.apply(Double.parseDouble(strs[1])),
-              Option.apply(Double.parseDouble(strs[2])),
-              Option.apply(Double.parseDouble(strs[3])),
-              Option.apply(strs[4])))
+          .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
+                                Option.apply(Double.parseDouble(strs[1])),
+                                Option.apply(Double.parseDouble(strs[2])),
+                                Option.apply(Double.parseDouble(strs[3])),
+                                Option.apply(strs[4])))
           .collect(Collectors.toList());
     });
 
@@ -82,7 +79,7 @@ public class XGBoostModelTest {
         .predict(irisStream)
         .stream()
         .mapToInt(prediction -> {
-          String className = prediction.input().class_name().get();
+          String className = prediction.input().className().get();
           float[] score = prediction.value();
           int idx = IntStream.range(0, score.length)
               .reduce((i, j) -> score[i] >= score[j] ? i : j)

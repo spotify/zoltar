@@ -20,7 +20,7 @@ package com.spotify.modelserving
 import java.nio.charset.Charset
 import java.util.concurrent.ThreadLocalRandom
 
-import com.spotify.modelserving.IrisFeaturesSpec.Iris
+import com.spotify.modelserving.IrisFeaturesSpec.Record
 import com.spotify.scio.tensorflow.TFExampleIO
 import com.spotify.scio.testing._
 import org.apache.commons.io.IOUtils
@@ -37,7 +37,7 @@ class IrisTest extends PipelineSpec {
 
   private val input = (1 to 1000)
     .par
-    .map(_ => Iris(Some(rndD), Some(rndD), Some(rndD), Some(rndD),
+    .map(_ => Record(Some(rndD), Some(rndD), Some(rndD), Some(rndD),
       Some(classes(ThreadLocalRandom.current().nextInt(3)))))
     .seq
 
@@ -48,7 +48,7 @@ class IrisTest extends PipelineSpec {
   "IrisJob" should "work" in {
     JobTest[IrisFeaturesJob.type]
       .args("--output=out")
-      .input(BigQueryIO[Iris](Iris.table), input)
+      .input(BigQueryIO[Record](Record.table), input)
       .output(TextIO("out/train/_tf_record_spec.json"))(_ should containSingleValue(expectedFeatureSpec))
       .output(TextIO("out/eval/_tf_record_spec.json"))(_ should containSingleValue(expectedFeatureSpec))
       .output(TFExampleIO("out/train"))(_ should satisfy[Example](_.size === 900+-50))

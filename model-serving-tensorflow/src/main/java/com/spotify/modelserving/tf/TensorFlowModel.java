@@ -23,6 +23,7 @@ import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
+import com.spotify.modelserving.fs.FileSystems;
 import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
 import java.net.URI;
@@ -102,8 +103,8 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
                           String settings,
                           JFeatureSpec<T> featureSpec,
                           Options options) {
-    // TODO: copy saved model from remote FS, object stores etc to local filesystem
-    this.model = SavedModelBundle.load(exportDir, options.tags().toArray(new String[0]));
+    String localDir = FileSystems.downloadIfNonLocal(URI.create(exportDir));
+    this.model = SavedModelBundle.load(localDir, options.tags().toArray(new String[0]));
     this.settings = settings;
     this.featureSpec = featureSpec;
     this.options = options;

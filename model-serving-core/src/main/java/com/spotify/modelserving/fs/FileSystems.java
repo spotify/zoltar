@@ -22,9 +22,12 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -55,5 +58,19 @@ public final class FileSystems {
 
   public static List<Resource> list(URI path) throws IOException {
     return get(path).list(path);
+  }
+
+  public static String downloadIfNonLocal(URI path) throws IOException {
+    FileSystem fs = get(path);
+    if (fs instanceof LocalFileSystem) {
+      return path.getPath();
+    }
+    Path temp = Files.createTempDirectory("model-serving-");
+    for (Resource r : fs.list(path)) {
+      String[] split = r.path().getPath().split("/");
+      String filename = split[split.length - 1];
+      Files.copy(r.open(), temp.resolve(filename));
+    }
+    return temp.toString();
   }
 }

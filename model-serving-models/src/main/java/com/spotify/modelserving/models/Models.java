@@ -6,7 +6,7 @@ import com.spotify.modelserving.xgboost.XGBoostModel;
 import java.io.IOException;
 import java.net.URI;
 
-public interface Models {
+public final class Models {
 
   static <T> XGBoostModel<T> xgboost(final String modelUri,
                                      final String settingsUri,

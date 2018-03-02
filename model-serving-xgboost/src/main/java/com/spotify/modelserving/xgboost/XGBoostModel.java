@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import ml.dmlc.xgboost4j.java.Booster;
+import ml.dmlc.xgboost4j.java.GompLoader;
 import ml.dmlc.xgboost4j.java.XGBoost;
 import ml.dmlc.xgboost4j.java.XGBoostError;
 
@@ -50,6 +51,7 @@ public class XGBoostModel<T> implements Model<Booster, T> {
                                            URI settingsUri,
                                            JFeatureSpec<T> featureSpec) throws IOException {
     try {
+      GompLoader.start();
       final InputStream is = Resource.from(modelUri).open();
       final String settings = Resource.from(settingsUri).read(asString());
       return new XGBoostModel<>(XGBoost.loadModel(is), settings, featureSpec);

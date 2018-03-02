@@ -23,7 +23,7 @@ import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
-import com.spotify.modelserving.fs.FileSystems;
+import com.spotify.modelserving.fs.FileSystemUtils;
 import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
 import java.net.URI;
@@ -102,8 +102,8 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
   private TensorFlowModel(String exportDir,
                           String settings,
                           JFeatureSpec<T> featureSpec,
-                          Options options) {
-    String localDir = FileSystems.downloadIfNonLocal(URI.create(exportDir));
+                          Options options) throws IOException {
+    String localDir = FileSystemUtils.downloadIfNonLocal(URI.create(exportDir)).toString();
     this.model = SavedModelBundle.load(localDir, options.tags().toArray(new String[0]));
     this.settings = settings;
     this.featureSpec = featureSpec;

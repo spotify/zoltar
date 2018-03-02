@@ -20,7 +20,12 @@ package com.spotify.mlservingexample;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
 import com.spotify.modelserving.Model.Predictor;
 import com.spotify.modelserving.tf.TensorFlowModel;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +35,28 @@ public class IrisPredictionTest {
   @Before
   public void loadModelAndPredictor(){
 
-    final String path = "/Users/krishnasuray/Documents/work/final/model-serving/apollo-service-example/src/main/resources/trained_model";
     try {
+      Path trainedModelTempDir = Files.createTempDirectory("trained_model");
+
+      URL savedModelURL = this.getClass().getResource("/trained_model/saved_model.pb");
+      File savedModelFile = trainedModelTempDir.resolve("saved_model.pb").toFile();
+      FileUtils.copyURLToFile(savedModelURL, savedModelFile);
+
+      URL variablesDataUrl =
+          this.getClass().getResource("/trained_model/variables/variables.data-00000-of-00001");
+      File variableDataFile = trainedModelTempDir
+          .resolve("variables")
+          .resolve("variables.data-00000-of-00001").toFile();
+      FileUtils.copyURLToFile(variablesDataUrl, variableDataFile);
+
+      URL variablesIndexUrl =
+          this.getClass().getResource("/trained_model/variables/variables.index");
+      File variablesIndexFile = trainedModelTempDir
+          .resolve("variables")
+          .resolve("variables.index").toFile();
+      FileUtils.copyURLToFile(variablesIndexUrl, variablesIndexFile);
+      String path = trainedModelTempDir.toFile().getAbsolutePath();
+
       TensorFlowModel<Iris> model = IrisModel.loadModel(path);
       Predictor<Iris, Long> predictor = IrisPredictor.loadPredictor(model);
       IrisPrediction.setPredictor(predictor);

@@ -11,6 +11,7 @@
     <module>model-serving-featran</module>
     <module>model-serving-tests</module>
     <module>model-serving-models</module>
+    <module>apollo-service-example</module>
   </modules>
   <artifactId>model-serving-parent</artifactId>
   <packaging>pom</packaging>

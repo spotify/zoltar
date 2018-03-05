@@ -35,63 +35,65 @@ public final class Models {
   private Models() {
   }
 
-  static <T> XGBoostModel<T> xgboost(final String modelUri,
-                                     final String settingsUri,
-                                     final JFeatureSpec<T> featureSpec) throws IOException {
+  public static <T> XGBoostModel<T> xgboost(final String modelUri,
+                                            final String settingsUri,
+                                            final JFeatureSpec<T> featureSpec) throws IOException {
     return XGBoostModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
   }
 
-  static <T> XGBoostModel<T> xgboost(final String modelUri,
-                                     final String settingsUri,
-                                     final FeatureSpec<T> featureSpec) throws IOException {
+  public static <T> XGBoostModel<T> xgboost(final String modelUri,
+                                            final String settingsUri,
+                                            final FeatureSpec<T> featureSpec) throws IOException {
     return XGBoostModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
   }
 
-  static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                           final String settingsUri,
-                                           final FeatureSpec<T> featureSpec) throws IOException {
+  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
+                                                  final String settingsUri,
+                                                  final FeatureSpec<T> featureSpec)
+      throws IOException {
     return TensorFlowModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
   }
 
-  static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                           final String settingsUri,
-                                           final JFeatureSpec<T> featureSpec) throws IOException {
+  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
+                                                  final String settingsUri,
+                                                  final JFeatureSpec<T> featureSpec)
+      throws IOException {
     return TensorFlowModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
   }
 
-  static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                           final String settingsUri,
-                                           final FeatureSpec<T> featureSpec,
-                                           final TensorFlowModel.Options options)
+  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
+                                                  final String settingsUri,
+                                                  final FeatureSpec<T> featureSpec,
+                                                  final TensorFlowModel.Options options)
       throws IOException {
     return TensorFlowModel
         .create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
   }
 
-  static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                           final String settingsUri,
-                                           final JFeatureSpec<T> featureSpec,
-                                           final TensorFlowModel.Options options)
+  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
+                                                  final String settingsUri,
+                                                  final JFeatureSpec<T> featureSpec,
+                                                  final TensorFlowModel.Options options)
       throws IOException {
     return TensorFlowModel
         .create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
   }
 
-  static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
-                                                     @Nullable final ConfigProto config,
-                                                     @Nullable final String prefix,
-                                                     final String settingsUri,
-                                                     final JFeatureSpec<T> featureSpec)
+  public static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
+                                                            @Nullable final ConfigProto config,
+                                                            @Nullable final String prefix,
+                                                            final String settingsUri,
+                                                            final JFeatureSpec<T> featureSpec)
       throws IOException {
     return TensorFlowGraphModel
         .from(URI.create(modelUri), config, prefix, URI.create(settingsUri), featureSpec);
   }
 
-  static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
-                                                     @Nullable final ConfigProto config,
-                                                     @Nullable final String prefix,
-                                                     final String settingsUri,
-                                                     final FeatureSpec<T> featureSpec)
+  public static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
+                                                            @Nullable final ConfigProto config,
+                                                            @Nullable final String prefix,
+                                                            final String settingsUri,
+                                                            final FeatureSpec<T> featureSpec)
       throws IOException {
     return TensorFlowGraphModel.from(
         URI.create(modelUri),

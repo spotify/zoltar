@@ -1,18 +1,21 @@
-/*
- * Copyright 2018 Spotify AB.
- *
+/*-
+ * -\-\-
+ * apollo-service-example
+ * --
+ * Copyright (C) 2016 - 2018 Spotify AB
+ * --
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -/-/-
  */
 
 package com.spotify.mlservingexample;
@@ -30,12 +33,12 @@ import scala.Option;
 public class IrisPrediction {
 
   private static Predictor<Iris, Long> predictor;
-  private static Map<Integer, String> idToClass = ImmutableMap.of(0, "Iris-setosa",
+  private static Map<Integer, String> idToClass = ImmutableMap.of(
+      0, "Iris-setosa",
       1, "Iris-versicolor",
       2, "Iris-virginica");
 
   public static void setPredictor(Predictor<Iris, Long> loadedPredictor) {
-
     predictor = loadedPredictor;
   }
 
@@ -59,11 +62,12 @@ public class IrisPrediction {
     try {
       predictions = predictor
           .predict(irisStream)
-          .stream()
-          .mapToInt(prediction -> {
-            long value = prediction.value();
-            return (int)value;
-          }).toArray();
+          .thenApply(p -> p
+              .stream()
+              .mapToInt(prediction -> {
+                long value = prediction.value();
+                return (int)value;
+              }).toArray()).toCompletableFuture().get();
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -1,18 +1,21 @@
-/*
- * Copyright 2018 Spotify AB.
- *
+/*-
+ * -\-\-
+ * apollo-service-example
+ * --
+ * Copyright (C) 2016 - 2018 Spotify AB
+ * --
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -/-/-
  */
 
 package com.spotify.mlservingexample;
@@ -33,8 +36,7 @@ import org.junit.Test;
 public class IrisPredictionTest {
 
   @Before
-  public void loadModelAndPredictor(){
-
+  public void loadModelAndPredictor() {
     try {
       Path trainedModelTempDir = Files.createTempDirectory("trained_model");
 
@@ -55,9 +57,18 @@ public class IrisPredictionTest {
           .resolve("variables")
           .resolve("variables.index").toFile();
       FileUtils.copyURLToFile(variablesIndexUrl, variablesIndexFile);
-      String path = trainedModelTempDir.toFile().getAbsolutePath();
 
-      TensorFlowModel<Iris> model = IrisModel.loadModel(path);
+      URL settingsUrl =
+          this.getClass().getResource("/settings.json");
+      File settingsFile = trainedModelTempDir
+          .resolve("settings.json").toFile();
+      FileUtils.copyURLToFile(settingsUrl, settingsFile);
+
+      String path = trainedModelTempDir.toUri().toString();
+
+      TensorFlowModel<Iris> model = IrisModel.loadModel(
+          path,
+          trainedModelTempDir.resolve("settings.json").toUri().toString());
       Predictor<Iris, Long> predictor = IrisPredictor.loadPredictor(model);
       IrisPrediction.setPredictor(predictor);
     } catch (IOException e) {
@@ -66,11 +77,10 @@ public class IrisPredictionTest {
   }
 
   @Test
-  public void testPrediction(){
-
+  public void testPrediction() {
     final String testData = "5.3-2.7-2.0-1.9";
     final String expectedClass = "Iris-versicolor";
     final String predictedClass = IrisPrediction.predict(testData).payload().get();
-    Assert.assertEquals(expectedClass,predictedClass);
+    Assert.assertEquals(expectedClass, predictedClass);
   }
 }

@@ -23,13 +23,31 @@ package com.spotify.mlservingexample;
 import com.google.common.collect.ImmutableMap;
 import com.spotify.apollo.Response;
 import com.spotify.apollo.Status;
+import com.spotify.featran.FeatureSpec;
+import com.spotify.featran.java.JFeatureExtractor;
+import com.spotify.futures.CompletableFutures;
+import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
+import com.spotify.modelserving.Model;
 import com.spotify.modelserving.Model.Predictor;
+import com.spotify.modelserving.models.Models;
+import com.spotify.modelserving.tf.TensorFlowModel;
+import com.spotify.modelserving.tf.TensorFlowPredictFn;
+import java.io.IOException;
+import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import org.tensorflow.Tensor;
+import org.tensorflow.Tensors;
+import org.tensorflow.example.Example;
 import scala.Option;
 
+/**
+ * Iris prediction meat and potatoes.
+ */
 public class IrisPrediction {
 
   private static Predictor<Iris, Long> predictor;
@@ -38,21 +56,51 @@ public class IrisPrediction {
       1, "Iris-versicolor",
       2, "Iris-virginica");
 
-  public static void setPredictor(Predictor<Iris, Long> loadedPredictor) {
-    predictor = loadedPredictor;
+  /**
+   * Configure Iris prediction, should be called at the service startup/configuration stage.
+   * @param modelDirPath URI to the TensorFlow model directory
+   * @param settingsPath URI to the settings files for Featran
+   */
+  public static void configure(String modelDirPath, String settingsPath) throws IOException {
+    final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
+    final TensorFlowModel<Iris> loadedModel =
+        Models.tensorFlow(modelDirPath, settingsPath, irisFeatureSpec);
+
+    Model.FeatureExtractFn<Iris, Example> featureExtractFn =
+        JFeatureExtractor::featureValuesExample;
+    TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+      final List<CompletableFuture<Model.Prediction<Iris, Long>>> predictions =
+          vectors.stream()
+              .map(vector -> CompletableFuture
+                  .supplyAsync(() -> predictFn(model, vector.value()))
+                  .thenApply(v -> Model.Prediction.create(vector.input(), v)))
+              .collect(Collectors.toList());
+      return CompletableFutures.allAsList(predictions);
+    };
+
+    predictor = Predictor.create(loadedModel, featureExtractFn, predictFn);
   }
 
-  public static Response<String> predict(final String testData) {
+  /**
+   * Prediction endpoint. Takes a request in a from of a String containing iris features `-`
+   * separated, and returns a response in a form of a predicted iris class.
+   */
+  public static Response<String> predict(final String requestFeatures) {
 
-    if (testData == null) {
+    if (requestFeatures == null) {
       return Response.forStatus(Status.BAD_REQUEST);
     }
-    final String[] testFeatures = testData.split("-");
+    final String[] features = requestFeatures.split("-");
+
+    if (features.length != 4) {
+      return Response.forStatus(Status.BAD_REQUEST);
+    }
+
     Iris featureData = new Iris(
-        Option.apply(Double.parseDouble(testFeatures[0])),
-        Option.apply(Double.parseDouble(testFeatures[1])),
-        Option.apply(Double.parseDouble(testFeatures[2])),
-        Option.apply(Double.parseDouble(testFeatures[3])),
+        Option.apply(Double.parseDouble(features[0])),
+        Option.apply(Double.parseDouble(features[1])),
+        Option.apply(Double.parseDouble(features[2])),
+        Option.apply(Double.parseDouble(features[3])),
         Option.empty());
 
     List<Iris> irisStream = new ArrayList<Iris>();
@@ -70,8 +118,27 @@ public class IrisPrediction {
               }).toArray()).toCompletableFuture().get();
     } catch (Exception e) {
       e.printStackTrace();
+      //TODO: what to return in case of failure here?
     }
     String predictedClass = idToClass.get(predictions[0]);
     return Response.forPayload(predictedClass);
+  }
+
+  private static long predictFn(TensorFlowModel<Iris> model, Example example) {
+    byte[][] b = new byte[1][];
+    b[0] = example.toByteArray();
+    try (Tensor<String> t = Tensors.create(b)) {
+      List<Tensor<?>> output = model.instance().session().runner()
+          .feed("input_example_tensor", t)
+          .fetch("linear/head/predictions/class_ids")
+          .run();
+      LongBuffer incomingClassId = LongBuffer.allocate(1);
+      try {
+        output.get(0).writeTo(incomingClassId);
+      } finally {
+        output.forEach(Tensor::close);
+      }
+      return incomingClassId.get(0);
+    }
   }
 }

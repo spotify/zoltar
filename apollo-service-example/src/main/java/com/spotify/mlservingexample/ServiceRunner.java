@@ -25,9 +25,6 @@ import com.spotify.apollo.core.Service;
 import com.spotify.apollo.httpservice.HttpService;
 import com.spotify.apollo.httpservice.LoadingException;
 import com.spotify.apollo.logging.request.StructuredLoggingModule;
-import com.spotify.modelserving.IrisFeaturesSpec.Iris;
-import com.spotify.modelserving.Model.Predictor;
-import com.spotify.modelserving.tf.TensorFlowModel;
 import com.typesafe.config.Config;
 import java.io.IOException;
 
@@ -36,7 +33,7 @@ import java.io.IOException;
  */
 public class ServiceRunner {
 
-  static final String SERVICE_NAME = "ml-serving-example";
+  private static final String SERVICE_NAME = "ml-serving-example";
 
   private ServiceRunner() { }
 
@@ -59,14 +56,15 @@ public class ServiceRunner {
   static void configure(final Environment environment) {
 
     final Config config = environment.config();
+    String modelPath = config.getString("iris.model");
+    String settingsPath = config.getString("iris.settings");
     try {
-      TensorFlowModel<Iris> model = IrisModel.loadModel(
-          config.getString("iris.model"),
-          config.getString("iris.settings"));
-      Predictor<Iris, Long> predictor = IrisPredictor.loadPredictor(model);
-      IrisPrediction.setPredictor(predictor);
+      IrisPrediction.configure(modelPath, settingsPath);
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException(
+          String.format("Could not load model! Model path: `%s`, settings path `%s`.",
+              modelPath,
+              settingsPath));
     }
 
     final EndPoints endPoints = new EndPoints();

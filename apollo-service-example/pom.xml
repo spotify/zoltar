@@ -66,6 +66,11 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
+      <artifactId>model-serving-models</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
       <artifactId>model-serving-tensorflow</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -26,20 +26,17 @@ import com.spotify.apollo.route.Middlewares;
 import com.spotify.apollo.route.Route;
 import java.util.stream.Stream;
 import okio.ByteString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Route endpoints.
+ */
 class EndPoints {
-
-  private static final Logger LOG = LoggerFactory.getLogger(EndPoints.class);
-
   Stream<Route<AsyncHandler<Response<ByteString>>>> routes() {
     Stream<Route<AsyncHandler<Response<ByteString>>>> routes = Stream.of(
-        Route.sync("GET", "/<name>", context ->
-            IrisPrediction.predict(context.pathArgs().get("name")))
+        Route.sync("GET", "/<features>", context ->
+            IrisPrediction.predict(context.pathArgs().get("features")))
             .withMiddleware(EndPoints::serialize)
-            .withDocString("Prediction handler", "Predicts the type of the flower"));
-
+            .withDocString("Prediction handler", "Predicts the type of the iris"));
     return routes.map(r -> r.withMiddleware(Middlewares.apolloDefaults()));
   }
 

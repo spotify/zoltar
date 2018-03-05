@@ -20,9 +20,6 @@
 
 package com.spotify.mlservingexample;
 
-import com.spotify.modelserving.IrisFeaturesSpec.Iris;
-import com.spotify.modelserving.Model.Predictor;
-import com.spotify.modelserving.tf.TensorFlowModel;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -64,13 +61,9 @@ public class IrisPredictionTest {
           .resolve("settings.json").toFile();
       FileUtils.copyURLToFile(settingsUrl, settingsFile);
 
-      String path = trainedModelTempDir.toUri().toString();
-
-      TensorFlowModel<Iris> model = IrisModel.loadModel(
-          path,
-          trainedModelTempDir.resolve("settings.json").toUri().toString());
-      Predictor<Iris, Long> predictor = IrisPredictor.loadPredictor(model);
-      IrisPrediction.setPredictor(predictor);
+      String modelDirPath = trainedModelTempDir.toUri().toString();
+      String settingsPath = trainedModelTempDir.resolve("settings.json").toUri().toString();
+      IrisPrediction.configure(modelDirPath, settingsPath);
     } catch (IOException e) {
       e.printStackTrace();
     }

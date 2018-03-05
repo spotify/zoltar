@@ -16,6 +16,7 @@
     <!-- Downgrade tensorflow to 1.4.0 due to https://github.com/tensorflow/tensorflow/issues/16899 -->
     <tensorFlow.version>1.4.0</tensorFlow.version>
     <scio.version>0.5.0-beta1</scio.version>
+    <featran.version>0.1.18-SNAPSHOT</featran.version>
     <grpc.version>1.6.1</grpc.version>
     <netty.version>4.1.14.Final</netty.version>
     <jackson.version>2.9.2</jackson.version>
@@ -53,6 +54,12 @@
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Required to please enforcer plugin -->
@@ -156,12 +163,6 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${jackson.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <version>3.0.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

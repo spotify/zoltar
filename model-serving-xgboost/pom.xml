@@ -28,6 +28,10 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>completable-futures</artifactId>
+    </dependency>
+    <dependency>
       <groupId>me.lyh</groupId>
       <artifactId>xgboost4j</artifactId>
       <version>0.7-20171122-70a4c419</version>

@@ -20,10 +20,11 @@
 
 package com.spotify.modelserving.tf;
 
-import com.spotify.modelserving.Model.PredictFn;
+import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
 import org.tensorflow.example.Example;
 
 @FunctionalInterface
-public interface TensorFlowPredictFn<I, P> extends PredictFn<TensorFlowModel<I>, I, Example, P> {
+public interface TensorFlowPredictFn<I, P> extends
+    AsyncPredictFn<TensorFlowModel<I>, I, Example, P> {
 
 }

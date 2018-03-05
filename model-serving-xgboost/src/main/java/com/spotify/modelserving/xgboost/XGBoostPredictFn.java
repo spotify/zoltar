@@ -20,10 +20,10 @@
 
 package com.spotify.modelserving.xgboost;
 
-import com.spotify.modelserving.Model.PredictFn;
+import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @FunctionalInterface
-public interface XGBoostPredictFn<I, P> extends PredictFn<XGBoostModel<I>, I, float[], P> {
+public interface XGBoostPredictFn<I, P> extends AsyncPredictFn<XGBoostModel<I>, I, float[], P> {
 
 }

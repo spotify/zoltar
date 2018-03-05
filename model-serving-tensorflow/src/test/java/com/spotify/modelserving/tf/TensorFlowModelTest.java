@@ -40,6 +40,7 @@ package com.spotify.modelserving.tf;
 import com.google.common.collect.ImmutableMap;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
+import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
 import com.spotify.modelserving.Model.FeatureExtractFn;
@@ -50,14 +51,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.LongBuffer;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tensorflow.Session;
@@ -87,17 +85,15 @@ public class TensorFlowModelTest {
                                                         "Iris-versicolor", 1L,
                                                         "Iris-virginica", 2L);
 
-    final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
-      return vectors.stream()
+    TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+      final List<CompletableFuture<Prediction<Iris, Long>>> predictions = vectors.stream()
           .map(vector -> {
-            Example example = vector.value();
-            try {
-              long predict = predict(model, example, 1L);
-              return Prediction.create(vector.input(), predict);
-            } catch (Exception e) {
-              throw new RuntimeException(e);
-            }
+            return CompletableFuture
+                .supplyAsync(() -> predict(model, vector.value()))
+                .thenApply(value -> Prediction.create(vector.input(), value));
           }).collect(Collectors.toList());
+
+      return CompletableFutures.allAsList(predictions);
     };
 
     final URI trainedModel = getClass().getResource("/trained_model").toURI();
@@ -107,37 +103,33 @@ public class TensorFlowModelTest {
         .create(trainedModel, settings, irisFeatureSpec);
     final FeatureExtractFn<Iris, Example> featureExtractFn = JFeatureExtractor::featureValuesExample;
 
-    final IntStream predictions = Predictor
+    CompletableFuture<Integer> sum = Predictor
         .create(model, featureExtractFn, predictFn)
-        .predict(irisStream)
-        .stream()
-        .mapToInt(prediction -> {
-          String className = prediction.input().className().get();
-          long value = prediction.value();
+        .predict(irisStream, Duration.ofMillis(1000))
+        .thenApply(predictions -> {
+          return predictions.stream()
+              .mapToInt(prediction -> {
+                String className = prediction.input().className().get();
+                long value = prediction.value();
 
-          return classToId.get(className) == value ? 1 : 0;
-        });
+                return classToId.get(className) == value ? 1 : 0;
+              }).sum();
+        }).toCompletableFuture();
 
-    Assert.assertTrue("Should be more the 0.8", predictions.sum() / 150f > .8);
+    Assert.assertTrue("Should be more the 0.8", sum.get() / 150f > .8);
   }
 
-  private long predict(TensorFlowModel<Iris> model, Example example, long timeoutSeconds)
-      throws InterruptedException, ExecutionException, TimeoutException {
+  private long predict(TensorFlowModel<Iris> model, Example example) {
     // rank 1 cause we need to account for batch
     byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
-    try (
-        Tensor<String> t = Tensors.create(b);
-    ) {
+    try (Tensor<String> t = Tensors.create(b)) {
       Session.Runner runner = model.instance().session().runner()
           .feed("input_example_tensor", t)
           .fetch("linear/head/predictions/class_ids");
-
-      List<Tensor<?>> output = CompletableFuture
-          .supplyAsync(runner::run)
-          .get(timeoutSeconds, TimeUnit.SECONDS);
-
+      List<Tensor<?>> output = runner.run();
       LongBuffer incomingClassId = LongBuffer.allocate(1);
+
       try {
         output.get(0).writeTo(incomingClassId);
       } finally {

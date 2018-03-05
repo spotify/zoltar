@@ -44,12 +44,16 @@ import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.modelserving.Model;
+import com.spotify.modelserving.Model.PredictFns.PredictFn;
+import com.spotify.modelserving.Model.Prediction;
+import com.spotify.modelserving.Model.Predictor;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.tensorflow.Graph;
@@ -128,7 +132,7 @@ public class TensorFlowGraphModelTest {
         settings,
         featureSpec);
 
-    Model.PredictFn<TensorFlowGraphModel<Double>, Double, double[], Double> predictFn =
+    PredictFn<TensorFlowGraphModel<Double>, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()
             .map(vector -> {
               try (Tensor<Double> input = Tensors.create(vector.value()[0])) {
@@ -151,12 +155,15 @@ public class TensorFlowGraphModelTest {
 
     List<Double> input = Arrays.asList(0.0D, 1.0D, 7.0D);
     double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();
-    double[] result = Model.Predictor
+    CompletableFuture<double[]> result = Predictor
         .create(tfModel, JFeatureExtractor::featureValuesDouble, predictFn)
         .predict(input)
-        .stream()
-        .mapToDouble(Model.Prediction::value)
-        .toArray();
-    assertArrayEquals(result, expected, Double.MIN_VALUE);
+        .thenApply(predictions -> {
+          return predictions.stream()
+              .mapToDouble(Prediction::value)
+              .toArray();
+        }).toCompletableFuture();
+
+    assertArrayEquals(result.get(), expected, Double.MIN_VALUE);
   }
 }

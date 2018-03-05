@@ -41,35 +41,102 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.Streams;
 import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
+import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
+import com.spotify.modelserving.Model.PredictFns.PredictFn;
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
 
-  @FunctionalInterface
-  interface PredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> {
+  interface PredictFns {
 
-    List<Prediction<SpecT, ValueT>> apply(ModelT model, List<Vector<SpecT, VectorT>> vectors)
-        throws Exception;
+    @FunctionalInterface
+    interface AsyncPredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> {
+
+      @SuppressWarnings("checkstyle:LineLength")
+      static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> AsyncPredictFn<ModelT, SpecT, VectorT, ValueT> lift(
+          PredictFn<ModelT, SpecT, VectorT, ValueT> fn) {
+        return (model, vectors) -> CompletableFuture.supplyAsync(() -> {
+          try {
+            return fn.apply(model, vectors);
+          } catch (Exception e) {
+            throw new RuntimeException(e.getCause());
+          }
+        });
+      }
+
+      CompletionStage<List<Prediction<SpecT, ValueT>>> apply(ModelT model,
+                                                             List<Vector<SpecT, VectorT>> vectors);
+    }
+
+    @FunctionalInterface
+    interface PredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> {
+
+      List<Prediction<SpecT, ValueT>> apply(ModelT model, List<Vector<SpecT, VectorT>> vectors)
+          throws Exception;
+
+    }
   }
 
   @FunctionalInterface
   interface Predictor<SpecT, ValueT> {
 
+    ScheduledExecutorService SCHEDULER =
+        Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+
     static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> Predictor<SpecT, ValueT> create(
         ModelT model,
         FeatureExtractFn<SpecT, VectorT> featureExtractFn,
         PredictFn<ModelT, SpecT, VectorT, ValueT> predictFn) {
-      return input -> {
+      return create(model, featureExtractFn, AsyncPredictFn.lift(predictFn));
+    }
+
+    static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> Predictor<SpecT, ValueT> create(
+        ModelT model,
+        FeatureExtractFn<SpecT, VectorT> featureExtractFn,
+        AsyncPredictFn<ModelT, SpecT, VectorT, ValueT> predictFn) {
+      return (input, timeout, scheduler) -> {
         final List<Vector<SpecT, VectorT>> vectors = FeatureExtractor
             .create(model, featureExtractFn)
             .extract(input);
 
-        return predictFn.apply(model, vectors);
+        final CompletableFuture<List<Prediction<SpecT, ValueT>>> future =
+            predictFn.apply(model, vectors).toCompletableFuture();
+
+        ScheduledFuture<?> schedule = scheduler.schedule(() -> {
+          future.completeExceptionally(new TimeoutException());
+        }, timeout.toMillis(), TimeUnit.MILLISECONDS);
+
+        future.whenComplete((r, t) -> schedule.cancel(true));
+
+        return future;
       };
     }
 
-    List<Prediction<SpecT, ValueT>> predict(List<SpecT> input) throws Exception;
+    CompletionStage<List<Prediction<SpecT, ValueT>>> predict(List<SpecT> input,
+                                                             Duration timeout,
+                                                             ScheduledExecutorService scheduler)
+        throws Exception;
+
+    default CompletionStage<List<Prediction<SpecT, ValueT>>> predict(List<SpecT> input,
+                                                                     Duration timeout)
+        throws Exception {
+      return predict(input, timeout, SCHEDULER);
+    }
+
+    default CompletionStage<List<Prediction<SpecT, ValueT>>> predict(List<SpecT> input)
+        throws Exception {
+      return predict(input, Duration.ofDays(Integer.MAX_VALUE), SCHEDULER);
+    }
+
   }
 
   @FunctionalInterface

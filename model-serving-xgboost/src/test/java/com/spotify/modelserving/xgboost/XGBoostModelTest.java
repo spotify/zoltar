@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import com.google.common.collect.ImmutableMap;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
+import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
 import com.spotify.modelserving.Model.FeatureExtractFn;
@@ -33,10 +34,12 @@ import com.spotify.modelserving.Model.Predictor;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import ml.dmlc.xgboost4j.LabeledPoint;
@@ -75,19 +78,25 @@ public class XGBoostModelTest {
                                                            1, "Iris-versicolor",
                                                            2, "Iris-virginica");
 
-    final XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
-      return vectors.stream().map(vector -> {
-        LabeledPoint labeledPoints = new LabeledPoint(0, null, vector.value());
-        try {
-          final Iterator<LabeledPoint> iterator =
-              Collections.singletonList(labeledPoints).iterator();
-          final DMatrix dMatrix = new DMatrix(iterator, null);
+    XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
+      final List<CompletableFuture<Prediction<Iris, float[]>>> predictions =
+          vectors.stream().map(vector -> {
+            return CompletableFuture.supplyAsync(() -> {
+              try {
+                LabeledPoint labeledPoints = new LabeledPoint(0, null, vector.value());
+                final Iterator<LabeledPoint> iterator =
+                    Collections.singletonList(labeledPoints).iterator();
+                final DMatrix dMatrix = new DMatrix(iterator, null);
 
-          return Prediction.create(vector.input(), model.instance().predict(dMatrix)[0]);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      }).collect(Collectors.toList());
+                return Prediction.create(vector.input(),
+                                         model.instance().predict(dMatrix)[0]);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            });
+          }).collect(Collectors.toList());
+
+      return CompletableFutures.allAsList(predictions);
     };
 
     final XGBoostModel<Iris> model = XGBoostModel.create(trainedModel,
@@ -95,20 +104,22 @@ public class XGBoostModelTest {
                                                          IrisFeaturesSpec.irisFeaturesSpec());
     final FeatureExtractFn<Iris, float[]> featureExtractFn = JFeatureExtractor::featureValuesFloat;
 
-    final IntStream predictions = Predictor
+    CompletableFuture<Integer> sum = Predictor
         .create(model, featureExtractFn, predictFn)
-        .predict(irisStream)
-        .stream()
-        .mapToInt(prediction -> {
-          String className = prediction.input().className().get();
-          float[] score = prediction.value();
-          int idx = IntStream.range(0, score.length)
-              .reduce((i, j) -> score[i] >= score[j] ? i : j)
-              .getAsInt();
+        .predict(irisStream, Duration.ofMillis(1000))
+        .thenApply(predictions -> {
+          return predictions.stream()
+              .mapToInt(prediction -> {
+                String className = prediction.input().className().get();
+                float[] score = prediction.value();
+                int idx = IntStream.range(0, score.length)
+                    .reduce((i, j) -> score[i] >= score[j] ? i : j)
+                    .getAsInt();
 
-          return classToId.get(idx).equals(className) ? 1 : 0;
-        });
+                return classToId.get(idx).equals(className) ? 1 : 0;
+              }).sum();
+        }).toCompletableFuture();
 
-    assertTrue("Should be more the 0.8", predictions.sum() / (float) irisStream.size() > .8);
+    assertTrue("Should be more the 0.8", sum.get() / (float) irisStream.size() > .8);
   }
 }

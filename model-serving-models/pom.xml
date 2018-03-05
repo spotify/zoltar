@@ -31,15 +31,18 @@
       <groupId>com.spotify</groupId>
       <artifactId>model-serving-tensorflow</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>model-serving-xgboost</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-java_2.11</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>

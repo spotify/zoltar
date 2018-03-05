@@ -29,7 +29,8 @@ import org.tensorflow.framework.ConfigProto;
 
 public final class Models {
 
-  private Models() {}
+  private Models() {
+  }
 
   static <T> XGBoostModel<T> xgboost(final String modelUri,
                                      final String settingsUri,
@@ -79,7 +80,8 @@ public final class Models {
                                                      final String settingsUri,
                                                      final JFeatureSpec<T> featureSpec)
       throws IOException {
-    return TensorFlowGraphModel.from(modelUri, config, prefix, settingsUri, featureSpec);
+    return TensorFlowGraphModel
+        .from(URI.create(modelUri), config, prefix, URI.create(settingsUri), featureSpec);
   }
 
   static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
@@ -89,10 +91,10 @@ public final class Models {
                                                      final FeatureSpec<T> featureSpec)
       throws IOException {
     return TensorFlowGraphModel.from(
-        modelUri,
+        URI.create(modelUri),
         config,
         prefix,
-        settingsUri,
+        URI.create(settingsUri),
         JFeatureSpec.wrap(featureSpec));
   }
 }

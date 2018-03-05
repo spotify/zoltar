@@ -17,16 +17,16 @@
 
 package com.spotify.modelserving.tf;
 
-import static com.spotify.modelserving.fs.Resource.ReadFns.asString;
-
 import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
 import com.spotify.modelserving.fs.FileSystemUtils;
-import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import org.tensorflow.SavedModelBundle;
@@ -95,7 +95,8 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
                                               URI settingsResource,
                                               JFeatureSpec<T> featureSpec,
                                               Options options) throws IOException {
-    final String settings = Resource.from(settingsResource).read(asString());
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsResource)),
+                                       StandardCharsets.UTF_8);
     return new TensorFlowModel<>(modelResource.toString(), settings, featureSpec, options);
   }
 

@@ -38,11 +38,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-storage</artifactId>
-        <version>v1-rev71-1.22.0</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>24.0-jre</version>
@@ -59,15 +54,29 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.xerial.snappy</groupId>
-        <artifactId>snappy-java</artifactId>
-        <version>1.1.4</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>featran-java_2.11</artifactId>
         <version>0.1.18</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-nio</artifactId>
+        <version>0.37.0-alpha</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>2.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>3.5.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java-util</artifactId>
+        <version>3.5.1</version>
       </dependency>
 
       <dependency>

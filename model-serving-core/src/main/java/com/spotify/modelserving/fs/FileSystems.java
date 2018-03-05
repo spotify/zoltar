@@ -18,7 +18,7 @@
 package com.spotify.modelserving.fs;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
@@ -43,7 +43,7 @@ public final class FileSystems {
   @VisibleForTesting
   static FileSystem get(URI path) {
     final String scheme = path.getScheme();
-    final FileSystem fs = mapping.get(Objects.firstNonNull(scheme, "")).get();
+    final FileSystem fs = mapping.get(MoreObjects.firstNonNull(scheme, "")).get();
 
     Preconditions.checkNotNull(fs, "Unsupported path: %s", path);
     return fs;

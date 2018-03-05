@@ -27,13 +27,9 @@ import com.spotify.modelserving.Model.Prediction;
 import com.spotify.modelserving.Model.Predictor;
 import com.spotify.modelserving.fs.Resource;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.nio.LongBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -42,9 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
@@ -53,33 +47,6 @@ import org.tensorflow.example.Example;
 import scala.Option;
 
 public class TensorFlowModelTest {
-
-  private String trainedModelTempDir = null;
-
-  @Before
-  public void copySavedModelFromResourceToTemp() throws IOException {
-    // If this gets reused refactor to handle generic data from resources
-    Path trainedModelTempDir = Files.createTempDirectory("trained_model");
-
-    URL savedModelURL = this.getClass().getResource("/trained_model/saved_model.pb");
-    File savedModelFile = trainedModelTempDir.resolve("saved_model.pb").toFile();
-    FileUtils.copyURLToFile(savedModelURL, savedModelFile);
-
-    URL variablesDataUrl =
-        this.getClass().getResource("/trained_model/variables/variables.data-00000-of-00001");
-    File variableDataFile = trainedModelTempDir
-        .resolve("variables")
-        .resolve("variables.data-00000-of-00001").toFile();
-    FileUtils.copyURLToFile(variablesDataUrl, variableDataFile);
-
-    URL variablesIndexUrl =
-        this.getClass().getResource("/trained_model/variables/variables.index");
-    File variablesIndexFile = trainedModelTempDir
-        .resolve("variables")
-        .resolve("variables.index").toFile();
-    FileUtils.copyURLToFile(variablesIndexUrl, variablesIndexFile);
-    this.trainedModelTempDir = trainedModelTempDir.toFile().getAbsolutePath();
-  }
 
   @Test
   public void testLoad() throws Exception {
@@ -96,11 +63,11 @@ public class TensorFlowModelTest {
           .collect(Collectors.toList());
     });
 
-    Map<String, Long> classToId = ImmutableMap.of("Iris-setosa", 0L,
-                                                  "Iris-versicolor", 1L,
-                                                  "Iris-virginica", 2L);
+    final Map<String, Long> classToId = ImmutableMap.of("Iris-setosa", 0L,
+                                                        "Iris-versicolor", 1L,
+                                                        "Iris-virginica", 2L);
 
-    TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+    final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       return vectors.stream()
           .map(vector -> {
             Example example = vector.value();
@@ -113,11 +80,14 @@ public class TensorFlowModelTest {
           }).collect(Collectors.toList());
     };
 
-    TensorFlowModel<Iris> model = TensorFlowModel
-        .create(trainedModelTempDir, "resource:///settings.json", irisFeatureSpec);
-    FeatureExtractFn<Iris, Example> featureExtractFn = JFeatureExtractor::featureValuesExample;
+    final URI trainedModel = getClass().getResource("/trained_model").toURI();
+    final URI settings = getClass().getResource("/settings.json").toURI();
 
-    IntStream predictions = Predictor
+    final TensorFlowModel<Iris> model = TensorFlowModel
+        .create(trainedModel, settings, irisFeatureSpec);
+    final FeatureExtractFn<Iris, Example> featureExtractFn = JFeatureExtractor::featureValuesExample;
+
+    final IntStream predictions = Predictor
         .create(model, featureExtractFn, predictFn)
         .predict(irisStream)
         .stream()

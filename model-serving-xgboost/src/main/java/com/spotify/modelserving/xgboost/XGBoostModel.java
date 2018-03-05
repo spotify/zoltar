@@ -1,14 +1,14 @@
 package com.spotify.modelserving.xgboost;
 
-import static com.spotify.modelserving.fs.Resource.ReadFns.asString;
-
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
-import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import ml.dmlc.xgboost4j.java.Booster;
 import ml.dmlc.xgboost4j.java.GompLoader;
 import ml.dmlc.xgboost4j.java.XGBoost;
@@ -52,8 +52,9 @@ public class XGBoostModel<T> implements Model<Booster, T> {
                                            JFeatureSpec<T> featureSpec) throws IOException {
     try {
       GompLoader.start();
-      final InputStream is = Resource.from(modelUri).open();
-      final String settings = Resource.from(settingsUri).read(asString());
+      final InputStream is = Files.newInputStream(Paths.get(modelUri));
+      final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                         StandardCharsets.UTF_8);
       return new XGBoostModel<>(XGBoost.loadModel(is), settings, featureSpec);
     } catch (XGBoostError xgBoostError) {
       throw new IOException(xgBoostError);

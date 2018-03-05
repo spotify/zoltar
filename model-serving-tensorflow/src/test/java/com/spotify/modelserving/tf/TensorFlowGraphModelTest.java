@@ -25,6 +25,7 @@ import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.modelserving.Model;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class TensorFlowGraphModelTest {
   public void testDummyLoadOfTensorFlowGraph() throws Exception {
     Path graphFile = createADummyTFGraph();
     try (Graph newGraph = new Graph();
-         Tensor<Double> double3 = Tensors.create(3.0D)) {
+        Tensor<Double> double3 = Tensors.create(3.0D)) {
       newGraph.importGraphDef(Files.readAllBytes(graphFile));
       try (Session session = new Session(newGraph)) {
         List<Tensor<?>> result = null;
@@ -98,12 +99,13 @@ public class TensorFlowGraphModelTest {
     Path graphFile = createADummyTFGraph();
     JFeatureSpec<Double> featureSpec = JFeatureSpec.<Double>create()
         .required(d -> d, Identity.apply("feature"));
+    URI settings = getClass().getResource("/settings_dummy.json").toURI();
 
     TensorFlowGraphModel<Double> tfModel = TensorFlowGraphModel.from(
-        graphFile.toUri().toString(),
+        graphFile.toUri(),
         null,
         null,
-        "resource:///settings_dummy.json",
+        settings,
         featureSpec);
 
     Model.PredictFn<TensorFlowGraphModel<Double>, Double, double[], Double> predictFn =

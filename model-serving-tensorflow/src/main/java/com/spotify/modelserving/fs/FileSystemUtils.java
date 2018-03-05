@@ -19,27 +19,48 @@ package com.spotify.modelserving.fs;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.CopyOption;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class FileSystemUtils {
-  private FileSystemUtils() {}
+
+  private FileSystemUtils() {
+  }
 
   /**
    * If the path is not on a local filesystem, it will download the resource to a temporary path on
    * a local filesystem.
    */
   public static URI downloadIfNonLocal(URI path) throws IOException {
-    FileSystem fs = FileSystems.get(path);
-    if (fs instanceof LocalFileSystem) {
-      return path;
+    Path src = Paths.get(path);
+    if (src.getFileSystem().equals(FileSystems.getDefault())) {
+      return src.toUri();
     }
+
     Path temp = Files.createTempDirectory("model-serving-");
-    for (Resource r : fs.list(path)) {
-      String[] split = r.path().getPath().split("/");
-      String filename = split[split.length - 1];
-      Files.copy(r.open(), temp.resolve(filename));
-    }
-    return temp.toUri();
+    return copyDir(src, temp, true).toUri();
+  }
+
+  private static Path copyDir(Path src, Path dest, boolean overwrite) throws IOException {
+    Files.walk(src)
+        .filter(path -> !path.equals(src))
+        .forEach(path -> {
+          final String relative = path.toString().substring(src.toString().length() - 1);
+          final Path fullDst = Paths.get(dest.toString(), relative);
+          try {
+            CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
+                : new CopyOption[]{};
+            Files.copy(path, fullDst, flags);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        });
+
+    return dest;
+
   }
 }

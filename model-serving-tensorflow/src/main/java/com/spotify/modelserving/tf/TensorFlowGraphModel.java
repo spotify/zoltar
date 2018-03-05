@@ -17,13 +17,13 @@
 
 package com.spotify.modelserving.tf;
 
-import static com.spotify.modelserving.fs.Resource.ReadFns.asString;
-
-import com.google.common.io.ByteStreams;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
-import com.spotify.modelserving.fs.Resource;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,8 @@ import org.tensorflow.Session;
 import org.tensorflow.framework.ConfigProto;
 
 /**
- * This model can be used to load protobuf definition of a TensorFlow graph.
- * See: https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py
+ * This model can be used to load protobuf definition of a TensorFlow graph. See:
+ * https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py
  * TensorFlowGraphModel is thread-safe.
  */
 public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable {
@@ -56,7 +56,7 @@ public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable
   public static <T> TensorFlowGraphModel<T> from(final byte[] graphDef,
                                                  @Nullable final ConfigProto config,
                                                  @Nullable final String prefix,
-                                                 final String settingsResource,
+                                                 final URI settingsResource,
                                                  final JFeatureSpec<T> featureSpec)
       throws IOException {
     return new TensorFlowGraphModel(graphDef, config, prefix, settingsResource, featureSpec);
@@ -71,22 +71,23 @@ public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable
    * @param settingsResource URI to Featran settings
    * @param featureSpec Featran's FeatureSpec
    */
-  public static <T> TensorFlowGraphModel<T> from(final String graphUri,
+  public static <T> TensorFlowGraphModel<T> from(final URI graphUri,
                                                  @Nullable final ConfigProto config,
                                                  @Nullable final String prefix,
-                                                 final String settingsResource,
+                                                 final URI settingsResource,
                                                  final JFeatureSpec<T> featureSpec)
       throws IOException {
-    byte[] graphBytes = ByteStreams.toByteArray(Resource.from(graphUri).open());
+    byte[] graphBytes = Files.readAllBytes(Paths.get(graphUri));
     return new TensorFlowGraphModel(graphBytes, config, prefix, settingsResource, featureSpec);
   }
 
   private TensorFlowGraphModel(final byte[] graphDef,
                                @Nullable final ConfigProto config,
                                @Nullable final String prefix,
-                               final String settingsResource,
+                               final URI settingsResource,
                                final JFeatureSpec<T> featureSpec) throws IOException {
-    settings = Resource.from(settingsResource).read(asString());
+    settings = new String(Files.readAllBytes(Paths.get(settingsResource)),
+                          StandardCharsets.UTF_8);
     graph = new Graph();
     session = new Session(graph, config != null ? config.toByteArray() : null);
     this.featureSpec = featureSpec;

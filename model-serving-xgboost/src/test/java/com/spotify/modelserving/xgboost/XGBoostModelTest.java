@@ -10,10 +10,9 @@ import com.spotify.modelserving.IrisFeaturesSpec.Iris;
 import com.spotify.modelserving.Model.FeatureExtractFn;
 import com.spotify.modelserving.Model.Prediction;
 import com.spotify.modelserving.Model.Predictor;
-import com.spotify.modelserving.fs.Resource;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,32 +28,34 @@ public class XGBoostModelTest {
 
   @Test
   public void testLoadingModel() throws Exception {
-    final URI trainData = URI.create("resource:///iris.model");
-    final URI settings = URI.create("resource:///settings.json");
+    final URI trainedModel = getClass().getResource("/iris.model").toURI();
+    final URI settings = getClass().getResource("/settings.json").toURI();
     final FeatureSpec<Iris> featuresSpec = IrisFeaturesSpec.irisFeaturesSpec();
 
-    XGBoostModel.create(trainData, settings, featuresSpec);
+    XGBoostModel.create(trainedModel, settings, featuresSpec);
   }
 
   @Test
   public void testModelPrediction() throws Exception {
-    final List<Iris> irisStream = Resource.from("resource:///iris.csv").read(is -> {
-      return new BufferedReader(new InputStreamReader(is.open()))
-          .lines()
-          .map(l -> l.split(","))
-          .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
-                                Option.apply(Double.parseDouble(strs[1])),
-                                Option.apply(Double.parseDouble(strs[2])),
-                                Option.apply(Double.parseDouble(strs[3])),
-                                Option.apply(strs[4])))
-          .collect(Collectors.toList());
-    });
+    final URI trainedModel = getClass().getResource("/iris.model").toURI();
+    final URI settings = getClass().getResource("/settings.json").toURI();
+    final URI data = getClass().getResource("/iris.csv").toURI();
 
-    Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
-                                                     1, "Iris-versicolor",
-                                                     2, "Iris-virginica");
+    final List<Iris> irisStream = Files.readAllLines(Paths.get(data))
+        .stream()
+        .map(l -> l.split(","))
+        .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
+                              Option.apply(Double.parseDouble(strs[1])),
+                              Option.apply(Double.parseDouble(strs[2])),
+                              Option.apply(Double.parseDouble(strs[3])),
+                              Option.apply(strs[4])))
+        .collect(Collectors.toList());
 
-    XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
+    final Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
+                                                           1, "Iris-versicolor",
+                                                           2, "Iris-virginica");
+
+    final XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
       return vectors.stream().map(vector -> {
         LabeledPoint labeledPoints = new LabeledPoint(0, null, vector.value());
         try {
@@ -69,12 +70,12 @@ public class XGBoostModelTest {
       }).collect(Collectors.toList());
     };
 
-    XGBoostModel<Iris> model = XGBoostModel.create("resource:///iris.model",
-                                                   "resource:///settings.json",
-                                                   IrisFeaturesSpec.irisFeaturesSpec());
-    FeatureExtractFn<Iris, float[]> featureExtractFn = JFeatureExtractor::featureValuesFloat;
+    final XGBoostModel<Iris> model = XGBoostModel.create(trainedModel,
+                                                         settings,
+                                                         IrisFeaturesSpec.irisFeaturesSpec());
+    final FeatureExtractFn<Iris, float[]> featureExtractFn = JFeatureExtractor::featureValuesFloat;
 
-    IntStream predictions = Predictor
+    final IntStream predictions = Predictor
         .create(model, featureExtractFn, predictFn)
         .predict(irisStream)
         .stream()

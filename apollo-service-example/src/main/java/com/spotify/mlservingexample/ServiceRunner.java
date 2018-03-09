@@ -24,7 +24,6 @@ import com.spotify.apollo.Environment;
 import com.spotify.apollo.core.Service;
 import com.spotify.apollo.httpservice.HttpService;
 import com.spotify.apollo.httpservice.LoadingException;
-import com.spotify.apollo.logging.request.StructuredLoggingModule;
 import com.typesafe.config.Config;
 import java.io.IOException;
 import java.net.URI;
@@ -48,7 +47,6 @@ public class ServiceRunner {
 
     Service service = HttpService.usingAppInit(ServiceRunner::configure, SERVICE_NAME)
         .withEnvVarPrefix("SPOTIFY")
-        .withModule(new StructuredLoggingModule())
         .build();
 
     HttpService.boot(service, args);

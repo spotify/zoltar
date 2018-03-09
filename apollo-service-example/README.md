@@ -1,3 +1,3 @@
 # ml-serving-example
 
-We promise to update this description /flatmap-squad
+We promise to update this description...

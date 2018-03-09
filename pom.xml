@@ -89,6 +89,11 @@
         <artifactId>completable-futures</artifactId>
         <version>0.3.2</version>
       </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.9.2</version>
+      </dependency>
 
       <dependency>
         <groupId>junit</groupId>

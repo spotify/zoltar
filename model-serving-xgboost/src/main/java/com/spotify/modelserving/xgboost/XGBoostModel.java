@@ -21,11 +21,11 @@
 package com.spotify.modelserving.xgboost;
 
 import com.spotify.modelserving.Model;
+import com.spotify.modelserving.fs.FileSystemExtras;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import ml.dmlc.xgboost4j.java.Booster;
 import ml.dmlc.xgboost4j.java.GompLoader;
 import ml.dmlc.xgboost4j.java.XGBoost;
@@ -40,14 +40,10 @@ public class XGBoostModel implements Model<Booster> {
     this.booster = booster;
   }
 
-  public static XGBoostModel create(String modelUri) throws IOException {
-    return create(URI.create(modelUri));
-  }
-
   public static XGBoostModel create(URI modelUri) throws IOException {
     try {
       GompLoader.start();
-      final InputStream is = Files.newInputStream(Paths.get(modelUri));
+      final InputStream is = Files.newInputStream(FileSystemExtras.path(modelUri));
       return new XGBoostModel(XGBoost.loadModel(is));
     } catch (XGBoostError xgBoostError) {
       throw new IOException(xgBoostError);

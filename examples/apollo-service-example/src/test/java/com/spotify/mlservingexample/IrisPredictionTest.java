@@ -20,13 +20,8 @@
 
 package com.spotify.mlservingexample;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,42 +31,17 @@ public class IrisPredictionTest {
   @Before
   public void loadModelAndPredictor() {
     try {
-      Path trainedModelTempDir = Files.createTempDirectory("trained_model");
+      final URI trainedModelUri = getClass().getResource("/trained_model").toURI();
+      final URI settingsUri = getClass().getResource("/settings.json").toURI();
 
-      URL savedModelURL = this.getClass().getResource("/trained_model/saved_model.pb");
-      File savedModelFile = trainedModelTempDir.resolve("saved_model.pb").toFile();
-      FileUtils.copyURLToFile(savedModelURL, savedModelFile);
-
-      URL variablesDataUrl =
-          this.getClass().getResource("/trained_model/variables/variables.data-00000-of-00001");
-      File variableDataFile = trainedModelTempDir
-          .resolve("variables")
-          .resolve("variables.data-00000-of-00001").toFile();
-      FileUtils.copyURLToFile(variablesDataUrl, variableDataFile);
-
-      URL variablesIndexUrl =
-          this.getClass().getResource("/trained_model/variables/variables.index");
-      File variablesIndexFile = trainedModelTempDir
-          .resolve("variables")
-          .resolve("variables.index").toFile();
-      FileUtils.copyURLToFile(variablesIndexUrl, variablesIndexFile);
-
-      URL settingsUrl =
-          this.getClass().getResource("/settings.json");
-      File settingsFile = trainedModelTempDir
-          .resolve("settings.json").toFile();
-      FileUtils.copyURLToFile(settingsUrl, settingsFile);
-
-      URI modelDirPath = trainedModelTempDir.toUri();
-      URI settingsPath = trainedModelTempDir.resolve("settings.json").toUri();
-      IrisPrediction.configure(modelDirPath, settingsPath);
-    } catch (IOException e) {
+      IrisPrediction.configure(trainedModelUri, settingsUri);
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   @Test
-  public void testPrediction() {
+  public void testPrediction() throws IOException {
     final String testData = "5.3-2.7-2.0-1.9";
     final String expectedClass = "Iris-versicolor";
     final String predictedClass = IrisPrediction.predict(testData).payload().get();

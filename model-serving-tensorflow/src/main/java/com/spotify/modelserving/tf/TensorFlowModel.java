@@ -38,26 +38,17 @@ public class TensorFlowModel implements Model<SavedModelBundle> {
   private final SavedModelBundle model;
   private final Options options;
 
-  public static TensorFlowModel create(String modelUri) throws IOException {
-    return create(modelUri, DEFAULT_OPTIONS);
-  }
-
-  public static TensorFlowModel create(String modelUri,
-                                       Options options) throws IOException {
-    return create(URI.create(modelUri), options);
-  }
-
   public static TensorFlowModel create(URI modelResource) throws IOException {
     return create(modelResource, DEFAULT_OPTIONS);
   }
 
   public static TensorFlowModel create(URI modelResource,
                                        Options options) throws IOException {
-    return new TensorFlowModel(modelResource.toString(), options);
+    return new TensorFlowModel(modelResource, options);
   }
 
-  private TensorFlowModel(String exportDir, Options options) throws IOException {
-    final URI localDir = FileSystemExtras.downloadIfNonLocal(URI.create(exportDir));
+  private TensorFlowModel(URI modelUri, Options options) throws IOException {
+    final URI localDir = FileSystemExtras.downloadIfNonLocal(modelUri);
     this.model = SavedModelBundle.load(localDir.toString(), options.tags().toArray(new String[0]));
     this.options = options;
   }

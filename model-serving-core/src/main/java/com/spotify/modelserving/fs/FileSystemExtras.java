@@ -28,16 +28,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class FileSystemExtras {
 
   private FileSystemExtras() {
   }
 
-  public static Path path(String path) {
-    URI uri = URI.create(path);
+  public static Path path(URI uri) {
     if (uri.getScheme() == null) {
-      return Paths.get(path);
+      return Paths.get(uri.toString());
     }
 
     return Paths.get(uri);
@@ -48,7 +49,8 @@ public final class FileSystemExtras {
    * a local filesystem.
    */
   public static URI downloadIfNonLocal(URI path) throws IOException {
-    Path src = Paths.get(path);
+    String fixedPath = path.toString().endsWith("/") ? path.toString() : path.toString() + "/";
+    Path src = path(URI.create(fixedPath));
     if (src.getFileSystem().equals(FileSystems.getDefault())) {
       return src.toUri();
     }
@@ -58,21 +60,18 @@ public final class FileSystemExtras {
   }
 
   private static Path copyDir(Path src, Path dest, boolean overwrite) throws IOException {
-    Files.walk(src)
+    final List<Path> paths = Files.walk(src)
         .filter(path -> !path.equals(src))
-        .forEach(path -> {
-          final String relative = path.toString().substring(src.toString().length() - 1);
-          final Path fullDst = Paths.get(dest.toString(), relative);
-          try {
-            CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
-                : new CopyOption[]{};
-            Files.copy(path, fullDst, flags);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        });
+        .collect(Collectors.toList());
+
+    for (Path path : paths) {
+      final String relative = path.toString().substring(src.toString().length() - 1);
+      final Path fullDst = Paths.get(dest.toString(), relative);
+      CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
+          : new CopyOption[]{};
+      Files.copy(path, fullDst, flags);
+    }
 
     return dest;
-
   }
 }

@@ -21,10 +21,10 @@
 package com.spotify.modelserving.tf;
 
 import com.spotify.modelserving.Model;
+import com.spotify.modelserving.fs.FileSystemExtras;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
                                           @Nullable final ConfigProto config,
                                           @Nullable final String prefix)
       throws IOException {
-    byte[] graphBytes = Files.readAllBytes(Paths.get(graphUri));
+    byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
     return new TensorFlowGraphModel(graphBytes, config, prefix);
   }
 

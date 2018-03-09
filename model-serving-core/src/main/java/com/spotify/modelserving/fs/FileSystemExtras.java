@@ -29,9 +29,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-public class FileSystemUtils {
+public final class FileSystemExtras {
 
-  private FileSystemUtils() {
+  private FileSystemExtras() {
+  }
+
+  public static Path path(String path) {
+    URI uri = URI.create(path);
+    if (uri.getScheme() == null) {
+      return Paths.get(path);
+    }
+
+    return Paths.get(uri);
   }
 
   /**

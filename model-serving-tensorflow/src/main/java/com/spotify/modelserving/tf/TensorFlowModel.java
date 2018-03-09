@@ -24,7 +24,7 @@ import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
-import com.spotify.modelserving.fs.FileSystemUtils;
+import com.spotify.modelserving.fs.FileSystemExtras;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -107,8 +107,8 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
                           String settings,
                           JFeatureSpec<T> featureSpec,
                           Options options) throws IOException {
-    String localDir = FileSystemUtils.downloadIfNonLocal(URI.create(exportDir)).toString();
-    this.model = SavedModelBundle.load(localDir, options.tags().toArray(new String[0]));
+    URI localDir = FileSystemExtras.downloadIfNonLocal(URI.create(exportDir));
+    this.model = SavedModelBundle.load(localDir.toString(), options.tags().toArray(new String[0]));
     this.settings = settings;
     this.featureSpec = featureSpec;
     this.options = options;

@@ -29,11 +29,10 @@ import com.spotify.modelserving.IrisFeaturesSpec.Iris;
 import com.spotify.modelserving.Model.FeatureExtractFn;
 import com.spotify.modelserving.Model.Prediction;
 import com.spotify.modelserving.Model.Predictor;
-import com.spotify.modelserving.fs.Resource;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.LongBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -52,17 +51,15 @@ public class TensorFlowModelTest {
   @Test
   public void testLoad() throws Exception {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    final List<Iris> irisStream = Resource.from("resource:///iris.csv").read(is -> {
-      return new BufferedReader(new InputStreamReader(is.open()))
-          .lines()
-          .map(l -> l.split(","))
-          .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
-                                Option.apply(Double.parseDouble(strs[1])),
-                                Option.apply(Double.parseDouble(strs[2])),
-                                Option.apply(Double.parseDouble(strs[3])),
-                                Option.apply(strs[4])))
-          .collect(Collectors.toList());
-    });
+    final URI resourceUri = getClass().getResource("/iris.csv").toURI();
+    final List<Iris> irisStream = Files.readAllLines(Paths.get(resourceUri)).stream()
+        .map(l -> l.split(","))
+        .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
+                              Option.apply(Double.parseDouble(strs[1])),
+                              Option.apply(Double.parseDouble(strs[2])),
+                              Option.apply(Double.parseDouble(strs[3])),
+                              Option.apply(strs[4])))
+        .collect(Collectors.toList());
 
     final Map<String, Long> classToId = ImmutableMap.of("Iris-setosa", 0L,
                                                         "Iris-versicolor", 1L,

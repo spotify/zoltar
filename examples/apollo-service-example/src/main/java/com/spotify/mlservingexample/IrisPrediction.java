@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import com.spotify.apollo.Response;
 import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
-import com.spotify.featran.java.JFeatureExtractor;
+import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
@@ -71,7 +71,7 @@ public class IrisPrediction {
     final TensorFlowModel loadedModel = Models.tensorFlow(modelDirUri.toString());
 
     FeatureExtractor<Iris, Example> featureExtractor = FeatureExtractor
-        .create(irisFeatureSpec, settings, JFeatureExtractor::featureValuesExample);
+        .create(irisFeatureSpec, settings, JFeatureSpec::extractWithSettingsExample);
 
     TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Model.Prediction<Iris, Long>>> predictions =

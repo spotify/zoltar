@@ -139,7 +139,7 @@ public class TensorFlowGraphModelTest {
     FeatureExtractor<Double, double[]> irisFeatureExtractor = FeatureExtractor.create(
         featureSpec,
         settings,
-        JFeatureExtractor::featureValuesDouble);
+        JFeatureSpec::extractWithSettingsDouble);
 
     List<Double> input = Arrays.asList(0.0D, 1.0D, 7.0D);
     double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();

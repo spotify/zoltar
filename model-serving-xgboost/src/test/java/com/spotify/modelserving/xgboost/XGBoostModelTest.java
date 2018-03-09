@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.featran.java.JFeatureExtractor;
+import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
@@ -103,7 +104,7 @@ public class XGBoostModelTest {
     FeatureExtractor<Iris, float[]> irisFeatureExtractor = FeatureExtractor.create(
         IrisFeaturesSpec.irisFeaturesSpec(),
         settings,
-        JFeatureExtractor::featureValuesFloat);
+        JFeatureSpec::extractWithSettingsFloat);
 
     CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)

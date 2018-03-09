@@ -22,6 +22,7 @@ package com.spotify.modelserving.tf;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.featran.java.JFeatureExtractor;
+import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
@@ -85,7 +86,7 @@ public class TensorFlowModelTest {
     FeatureExtractor<Iris, Example> irisFeatureExtractor = FeatureExtractor.create(
         IrisFeaturesSpec.irisFeaturesSpec(),
         settings,
-        JFeatureExtractor::featureValuesExample);
+        JFeatureSpec::extractWithSettingsExample);
 
     CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)

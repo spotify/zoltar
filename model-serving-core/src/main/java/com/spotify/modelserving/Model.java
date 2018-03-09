@@ -23,8 +23,8 @@ package com.spotify.modelserving;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Lists;
 import com.spotify.featran.FeatureSpec;
-import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
+import com.spotify.featran.java.JRecordExtractor;
 import com.spotify.modelserving.Model.FeatureExtractFns.ExtractFn;
 import com.spotify.modelserving.Model.FeatureExtractFns.FeatranExtractFn;
 import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
@@ -39,6 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 public interface Model<UnderlyingT> extends AutoCloseable {
 
@@ -134,7 +135,7 @@ public interface Model<UnderlyingT> extends AutoCloseable {
     @FunctionalInterface
     interface FeatranExtractFn<InputT, ValueT> {
 
-      List<ValueT> apply(JFeatureExtractor<InputT> fn) throws Exception;
+      JRecordExtractor<InputT, ValueT> apply(JFeatureSpec<InputT> spec, String settings);
     }
   }
 
@@ -161,21 +162,13 @@ public interface Model<UnderlyingT> extends AutoCloseable {
     }
 
     static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
-        JFeatureSpec<InputT> featureSpec,
-        String settings,
-        FeatranExtractFn<InputT, ValueT> fn) {
-      return inputs -> {
-        final JFeatureExtractor<InputT> extractor =
-            featureSpec.extractWithSettings(inputs, settings);
-
-        List<Vector<InputT, ValueT>> result = Lists.newArrayList();
-        Iterator<InputT> i1 = inputs.iterator();
-        Iterator<ValueT> i2 = fn.apply(extractor).iterator();
-        while (i1.hasNext() && i2.hasNext()) {
-          result.add(Vector.create(i1.next(), i2.next()));
-        }
-        return result;
-      };
+            JFeatureSpec<InputT> featureSpec,
+            String settings,
+            FeatranExtractFn<InputT, ValueT> fn) {
+      JRecordExtractor<InputT, ValueT> extractor = fn.apply(featureSpec, settings);
+      return inputs -> inputs.stream()
+              .map(i -> Vector.create(i, extractor.featureValue(i)))
+              .collect(Collectors.toList());
     }
 
     List<Vector<InputT, ValueT>> extract(List<InputT> input) throws Exception;

@@ -27,6 +27,7 @@ import com.spotify.apollo.httpservice.LoadingException;
 import com.spotify.apollo.logging.request.StructuredLoggingModule;
 import com.typesafe.config.Config;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Application entry point.
@@ -56,8 +57,8 @@ public class ServiceRunner {
   static void configure(final Environment environment) {
 
     final Config config = environment.config();
-    String modelPath = config.getString("iris.model");
-    String settingsPath = config.getString("iris.settings");
+    URI modelPath = URI.create(config.getString("iris.model"));
+    URI settingsPath = URI.create(config.getString("iris.settings"));
     try {
       IrisPrediction.configure(modelPath, settingsPath);
     } catch (IOException e) {

@@ -22,6 +22,7 @@ package com.spotify.mlservingexample;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,8 +62,8 @@ public class IrisPredictionTest {
           .resolve("settings.json").toFile();
       FileUtils.copyURLToFile(settingsUrl, settingsFile);
 
-      String modelDirPath = trainedModelTempDir.toUri().toString();
-      String settingsPath = trainedModelTempDir.resolve("settings.json").toUri().toString();
+      URI modelDirPath = trainedModelTempDir.toUri();
+      URI settingsPath = trainedModelTempDir.resolve("settings.json").toUri();
       IrisPrediction.configure(modelDirPath, settingsPath);
     } catch (IOException e) {
       e.printStackTrace();

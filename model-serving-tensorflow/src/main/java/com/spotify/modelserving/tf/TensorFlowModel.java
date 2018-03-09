@@ -21,96 +21,44 @@
 package com.spotify.modelserving.tf;
 
 import com.google.auto.value.AutoValue;
-import com.spotify.featran.FeatureSpec;
-import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
 import com.spotify.modelserving.fs.FileSystemExtras;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import org.tensorflow.SavedModelBundle;
 
-public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
+public class TensorFlowModel implements Model<SavedModelBundle> {
 
   private static final Options DEFAULT_OPTIONS = Options.builder()
       .tags(Collections.singletonList("serve"))
       .build();
 
   private final SavedModelBundle model;
-  private final String settings;
-  private final JFeatureSpec<T> featureSpec;
   private final Options options;
 
-  public static <T> TensorFlowModel<T> create(String modelUri,
-                                              String settingsUri,
-                                              FeatureSpec<T> featureSpec) throws IOException {
-    return create(modelUri, settingsUri, JFeatureSpec.wrap(featureSpec), DEFAULT_OPTIONS);
+  public static TensorFlowModel create(String modelUri) throws IOException {
+    return create(modelUri, DEFAULT_OPTIONS);
   }
 
-  public static <T> TensorFlowModel<T> create(String modelUri,
-                                              String settingsUri,
-                                              FeatureSpec<T> featureSpec,
-                                              Options options) throws IOException {
-    return create(URI.create(modelUri),
-                  URI.create(settingsUri),
-                  JFeatureSpec.wrap(featureSpec),
-                  options);
+  public static TensorFlowModel create(String modelUri,
+                                       Options options) throws IOException {
+    return create(URI.create(modelUri), options);
   }
 
-  public static <T> TensorFlowModel<T> create(URI modelResource,
-                                              URI settingsResource,
-                                              FeatureSpec<T> featureSpec) throws IOException {
-    return create(modelResource, settingsResource, JFeatureSpec.wrap(featureSpec), DEFAULT_OPTIONS);
+  public static TensorFlowModel create(URI modelResource) throws IOException {
+    return create(modelResource, DEFAULT_OPTIONS);
   }
 
-  public static <T> TensorFlowModel<T> create(URI modelResource,
-                                              URI settingsResource,
-                                              FeatureSpec<T> featureSpec,
-                                              Options options) throws IOException {
-
-    return create(modelResource, settingsResource, JFeatureSpec.wrap(featureSpec), options);
+  public static TensorFlowModel create(URI modelResource,
+                                       Options options) throws IOException {
+    return new TensorFlowModel(modelResource.toString(), options);
   }
 
-  public static <T> TensorFlowModel<T> create(String modelUri,
-                                              String settingsUri,
-                                              JFeatureSpec<T> featureSpec) throws IOException {
-    return create(modelUri, settingsUri, featureSpec, DEFAULT_OPTIONS);
-  }
-
-  public static <T> TensorFlowModel<T> create(String modelUri,
-                                              String settingsUri,
-                                              JFeatureSpec<T> featureSpec,
-                                              Options options) throws IOException {
-    return create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
-  }
-
-  public static <T> TensorFlowModel<T> create(URI modelResource,
-                                              URI settingsResource,
-                                              JFeatureSpec<T> featureSpec) throws IOException {
-    return create(modelResource, settingsResource, featureSpec, DEFAULT_OPTIONS);
-  }
-
-  public static <T> TensorFlowModel<T> create(URI modelResource,
-                                              URI settingsResource,
-                                              JFeatureSpec<T> featureSpec,
-                                              Options options) throws IOException {
-    final String settings = new String(Files.readAllBytes(Paths.get(settingsResource)),
-                                       StandardCharsets.UTF_8);
-    return new TensorFlowModel<>(modelResource.toString(), settings, featureSpec, options);
-  }
-
-  private TensorFlowModel(String exportDir,
-                          String settings,
-                          JFeatureSpec<T> featureSpec,
-                          Options options) throws IOException {
-    URI localDir = FileSystemExtras.downloadIfNonLocal(URI.create(exportDir));
+  private TensorFlowModel(String exportDir, Options options) throws IOException {
+    final URI localDir = FileSystemExtras.downloadIfNonLocal(URI.create(exportDir));
     this.model = SavedModelBundle.load(localDir.toString(), options.tags().toArray(new String[0]));
-    this.settings = settings;
-    this.featureSpec = featureSpec;
     this.options = options;
   }
 
@@ -124,16 +72,6 @@ public class TensorFlowModel<T> implements Model<SavedModelBundle, T> {
   @Override
   public SavedModelBundle instance() {
     return model;
-  }
-
-  @Override
-  public String settings() {
-    return settings;
-  }
-
-  @Override
-  public JFeatureSpec<T> featureSpec() {
-    return featureSpec;
   }
 
   public Options options() {

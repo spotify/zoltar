@@ -21,16 +21,16 @@
 package com.spotify.modelserving.tf;
 
 import com.google.common.collect.ImmutableMap;
-import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
-import com.spotify.modelserving.Model.FeatureExtractFn;
+import com.spotify.modelserving.Model.FeatureExtractor;
 import com.spotify.modelserving.Model.Prediction;
 import com.spotify.modelserving.Model.Predictor;
 import java.net.URI;
 import java.nio.LongBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -50,9 +50,9 @@ public class TensorFlowModelTest {
 
   @Test
   public void testLoad() throws Exception {
-    final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    final URI resourceUri = getClass().getResource("/iris.csv").toURI();
-    final List<Iris> irisStream = Files.readAllLines(Paths.get(resourceUri)).stream()
+    final URI data = getClass().getResource("/iris.csv").toURI();
+    final List<Iris> irisStream = Files.readAllLines(Paths.get(data))
+        .stream()
         .map(l -> l.split(","))
         .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
                               Option.apply(Double.parseDouble(strs[1])),
@@ -76,15 +76,19 @@ public class TensorFlowModelTest {
       return CompletableFutures.allAsList(predictions);
     };
 
-    final URI trainedModel = getClass().getResource("/trained_model").toURI();
-    final URI settings = getClass().getResource("/settings.json").toURI();
+    final URI trainedModelUri = getClass().getResource("/trained_model").toURI();
+    final URI settingsUri = getClass().getResource("/settings.json").toURI();
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                             StandardCharsets.UTF_8);
 
-    final TensorFlowModel<Iris> model = TensorFlowModel
-        .create(trainedModel, settings, irisFeatureSpec);
-    final FeatureExtractFn<Iris, Example> featureExtractFn = JFeatureExtractor::featureValuesExample;
+    TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
+    FeatureExtractor<Iris, Example> irisFeatureExtractor = FeatureExtractor.create(
+        IrisFeaturesSpec.irisFeaturesSpec(),
+        settings,
+        JFeatureExtractor::featureValuesExample);
 
     CompletableFuture<Integer> sum = Predictor
-        .create(model, featureExtractFn, predictFn)
+        .create(model, irisFeatureExtractor, predictFn)
         .predict(irisStream, Duration.ofMillis(1000))
         .thenApply(predictions -> {
           return predictions.stream()
@@ -99,7 +103,7 @@ public class TensorFlowModelTest {
     Assert.assertTrue("Should be more the 0.8", sum.get() / 150f > .8);
   }
 
-  private long predict(TensorFlowModel<Iris> model, Example example) {
+  private long predict(TensorFlowModel model, Example example) {
     // rank 1 cause we need to account for batch
     byte[][] b = new byte[1][];
     b[0] = example.toByteArray();

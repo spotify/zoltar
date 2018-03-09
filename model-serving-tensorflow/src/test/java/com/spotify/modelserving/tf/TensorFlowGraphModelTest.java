@@ -27,13 +27,16 @@ import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.modelserving.Model;
+import com.spotify.modelserving.Model.FeatureExtractor;
 import com.spotify.modelserving.Model.PredictFns.PredictFn;
 import com.spotify.modelserving.Model.Prediction;
 import com.spotify.modelserving.Model.Predictor;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -106,16 +109,14 @@ public class TensorFlowGraphModelTest {
     Path graphFile = createADummyTFGraph();
     JFeatureSpec<Double> featureSpec = JFeatureSpec.<Double>create()
         .required(d -> d, Identity.apply("feature"));
-    URI settings = getClass().getResource("/settings_dummy.json").toURI();
+    URI settingsUri = getClass().getResource("/settings_dummy.json").toURI();
+    String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                 StandardCharsets.UTF_8);
 
-    TensorFlowGraphModel<Double> tfModel = TensorFlowGraphModel.from(
-        graphFile.toUri(),
-        null,
-        null,
-        settings,
-        featureSpec);
+    TensorFlowGraphModel tfModel =
+        TensorFlowGraphModel.from(graphFile.toUri(), null, null);
 
-    PredictFn<TensorFlowGraphModel<Double>, Double, double[], Double> predictFn =
+    PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()
             .map(vector -> {
               try (Tensor<Double> input = Tensors.create(vector.value()[0])) {
@@ -135,11 +136,15 @@ public class TensorFlowGraphModelTest {
                 throw new RuntimeException(e);
               }
             }).collect(Collectors.toList());
+    FeatureExtractor<Double, double[]> irisFeatureExtractor = FeatureExtractor.create(
+        featureSpec,
+        settings,
+        JFeatureExtractor::featureValuesDouble);
 
     List<Double> input = Arrays.asList(0.0D, 1.0D, 7.0D);
     double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();
     CompletableFuture<double[]> result = Predictor
-        .create(tfModel, JFeatureExtractor::featureValuesDouble, predictFn)
+        .create(tfModel, irisFeatureExtractor, predictFn)
         .predict(input)
         .thenApply(predictions -> {
           return predictions.stream()

@@ -20,11 +20,9 @@
 
 package com.spotify.modelserving.tf;
 
-import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.Model;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.annotation.Nullable;
@@ -39,13 +37,11 @@ import org.tensorflow.framework.ConfigProto;
  * https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py
  * TensorFlowGraphModel is thread-safe.
  */
-public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable {
+public class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
 
   private static final Logger logger = LoggerFactory.getLogger(TensorFlowGraphModel.class);
   private final Graph graph;
   private final Session session;
-  private final String settings;
-  private final JFeatureSpec<T> featureSpec;
 
   /**
    * Creates a TensorFlow model based on a frozen, serialized TensorFlow graph.
@@ -53,16 +49,12 @@ public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable
    * @param graphDef byte array representing the TensorFlow graph definition
    * @param config ConfigProto config for TensorFlow session
    * @param prefix a prefix that will be prepended to names in graphDef
-   * @param settingsResource URI to Featran settings
-   * @param featureSpec Featran's FeatureSpec
    */
-  public static <T> TensorFlowGraphModel<T> from(final byte[] graphDef,
-                                                 @Nullable final ConfigProto config,
-                                                 @Nullable final String prefix,
-                                                 final URI settingsResource,
-                                                 final JFeatureSpec<T> featureSpec)
+  public static TensorFlowGraphModel from(final byte[] graphDef,
+                                          @Nullable final ConfigProto config,
+                                          @Nullable final String prefix)
       throws IOException {
-    return new TensorFlowGraphModel(graphDef, config, prefix, settingsResource, featureSpec);
+    return new TensorFlowGraphModel(graphDef, config, prefix);
   }
 
   /**
@@ -71,29 +63,20 @@ public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable
    * @param graphUri URI to the TensorFlow graph definition
    * @param config ConfigProto config for TensorFlow session
    * @param prefix a prefix that will be prepended to names in graphDef
-   * @param settingsResource URI to Featran settings
-   * @param featureSpec Featran's FeatureSpec
    */
-  public static <T> TensorFlowGraphModel<T> from(final URI graphUri,
-                                                 @Nullable final ConfigProto config,
-                                                 @Nullable final String prefix,
-                                                 final URI settingsResource,
-                                                 final JFeatureSpec<T> featureSpec)
+  public static TensorFlowGraphModel from(final URI graphUri,
+                                          @Nullable final ConfigProto config,
+                                          @Nullable final String prefix)
       throws IOException {
     byte[] graphBytes = Files.readAllBytes(Paths.get(graphUri));
-    return new TensorFlowGraphModel(graphBytes, config, prefix, settingsResource, featureSpec);
+    return new TensorFlowGraphModel(graphBytes, config, prefix);
   }
 
   private TensorFlowGraphModel(final byte[] graphDef,
                                @Nullable final ConfigProto config,
-                               @Nullable final String prefix,
-                               final URI settingsResource,
-                               final JFeatureSpec<T> featureSpec) throws IOException {
-    settings = new String(Files.readAllBytes(Paths.get(settingsResource)),
-                          StandardCharsets.UTF_8);
+                               @Nullable final String prefix) throws IOException {
     graph = new Graph();
     session = new Session(graph, config != null ? config.toByteArray() : null);
-    this.featureSpec = featureSpec;
     final long loadStart = System.currentTimeMillis();
     if (prefix == null) {
       logger.debug("Loading graph definition without prefix");
@@ -130,13 +113,4 @@ public class TensorFlowGraphModel<T> implements Model<Session, T>, AutoCloseable
     return session;
   }
 
-  @Override
-  public String settings() {
-    return settings;
-  }
-
-  @Override
-  public JFeatureSpec<T> featureSpec() {
-    return featureSpec;
-  }
 }

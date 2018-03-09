@@ -22,8 +22,11 @@ package com.spotify.modelserving;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Streams;
+import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
+import com.spotify.modelserving.Model.FeatureExtractFns.ExtractFn;
+import com.spotify.modelserving.Model.FeatureExtractFns.FeatranExtractFn;
 import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
 import com.spotify.modelserving.Model.PredictFns.PredictFn;
 import java.time.Duration;
@@ -37,16 +40,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
+public interface Model<UnderlyingT> extends AutoCloseable {
 
   interface PredictFns {
 
     @FunctionalInterface
-    interface AsyncPredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> {
+    interface AsyncPredictFn<ModelT extends Model<?>, InputT, VectorT, ValueT> {
 
       @SuppressWarnings("checkstyle:LineLength")
-      static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> AsyncPredictFn<ModelT, SpecT, VectorT, ValueT> lift(
-          PredictFn<ModelT, SpecT, VectorT, ValueT> fn) {
+      static <ModelT extends Model<?>, InputT, VectorT, ValueT> AsyncPredictFn<ModelT, InputT, VectorT, ValueT> lift(
+          PredictFn<ModelT, InputT, VectorT, ValueT> fn) {
         return (model, vectors) -> CompletableFuture.supplyAsync(() -> {
           try {
             return fn.apply(model, vectors);
@@ -56,42 +59,40 @@ public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
         });
       }
 
-      CompletionStage<List<Prediction<SpecT, ValueT>>> apply(ModelT model,
-                                                             List<Vector<SpecT, VectorT>> vectors);
+      CompletionStage<List<Prediction<InputT, ValueT>>> apply(ModelT model,
+                                                             List<Vector<InputT, VectorT>> vectors);
     }
 
     @FunctionalInterface
-    interface PredictFn<ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> {
+    interface PredictFn<ModelT extends Model<?>, InputT, VectorT, ValueT> {
 
-      List<Prediction<SpecT, ValueT>> apply(ModelT model, List<Vector<SpecT, VectorT>> vectors)
+      List<Prediction<InputT, ValueT>> apply(ModelT model, List<Vector<InputT, VectorT>> vectors)
           throws Exception;
 
     }
   }
 
   @FunctionalInterface
-  interface Predictor<SpecT, ValueT> {
+  interface Predictor<InputT, ValueT> {
 
     ScheduledExecutorService SCHEDULER =
         Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
-    static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> Predictor<SpecT, ValueT> create(
+    static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
         ModelT model,
-        FeatureExtractFn<SpecT, VectorT> featureExtractFn,
-        PredictFn<ModelT, SpecT, VectorT, ValueT> predictFn) {
-      return create(model, featureExtractFn, AsyncPredictFn.lift(predictFn));
+        FeatureExtractor<InputT, VectorT> featureExtractor,
+        PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+      return create(model, featureExtractor, AsyncPredictFn.lift(predictFn));
     }
 
-    static <ModelT extends Model<?, SpecT>, SpecT, VectorT, ValueT> Predictor<SpecT, ValueT> create(
+    static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
         ModelT model,
-        FeatureExtractFn<SpecT, VectorT> featureExtractFn,
-        AsyncPredictFn<ModelT, SpecT, VectorT, ValueT> predictFn) {
+        FeatureExtractor<InputT, VectorT> featureExtractor,
+        AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
       return (input, timeout, scheduler) -> {
-        final List<Vector<SpecT, VectorT>> vectors = FeatureExtractor
-            .create(model, featureExtractFn)
-            .extract(input);
+        final List<Vector<InputT, VectorT>> vectors = featureExtractor.extract(input);
 
-        final CompletableFuture<List<Prediction<SpecT, ValueT>>> future =
+        final CompletableFuture<List<Prediction<InputT, ValueT>>> future =
             predictFn.apply(model, vectors).toCompletableFuture();
 
         ScheduledFuture<?> schedule = scheduler.schedule(() -> {
@@ -104,76 +105,97 @@ public interface Model<UnderlyingT, SpecT> extends AutoCloseable {
       };
     }
 
-    CompletionStage<List<Prediction<SpecT, ValueT>>> predict(List<SpecT> input,
+    CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input,
                                                              Duration timeout,
                                                              ScheduledExecutorService scheduler)
         throws Exception;
 
-    default CompletionStage<List<Prediction<SpecT, ValueT>>> predict(List<SpecT> input,
+    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input,
                                                                      Duration timeout)
         throws Exception {
       return predict(input, timeout, SCHEDULER);
     }
 
-    default CompletionStage<List<Prediction<SpecT, ValueT>>> predict(List<SpecT> input)
+    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input)
         throws Exception {
       return predict(input, Duration.ofDays(Integer.MAX_VALUE), SCHEDULER);
     }
 
   }
 
-  @FunctionalInterface
-  interface FeatureExtractFn<SpecT, ValueT> {
+  interface FeatureExtractFns {
 
-    List<ValueT> apply(JFeatureExtractor<SpecT> fn) throws Exception;
+    @FunctionalInterface
+    interface ExtractFn<InputT, ValueT> {
+
+      List<ValueT> apply(List<InputT> inputs) throws Exception;
+    }
+
+    @FunctionalInterface
+    interface FeatranExtractFn<InputT, ValueT> {
+
+      List<ValueT> apply(JFeatureExtractor<InputT> fn) throws Exception;
+    }
   }
 
   @FunctionalInterface
-  interface FeatureExtractor<SpecT, ValueT> {
+  interface FeatureExtractor<InputT, ValueT> {
 
-    static <SpecT, ValueT> FeatureExtractor<SpecT, ValueT> create(
-        Model<?, SpecT> model,
-        FeatureExtractFn<SpecT, ValueT> fn) {
+    static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(ExtractFn<InputT, ValueT> fn) {
+      return inputs ->
+          Streams
+              .zip(inputs.stream(), fn.apply(inputs).stream(), Vector::create)
+              .collect(Collectors.toList());
+    }
+
+    static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
+        FeatureSpec<InputT> featureSpec,
+        String settings,
+        FeatranExtractFn<InputT, ValueT> fn) {
+      return create(JFeatureSpec.wrap(featureSpec), settings, fn);
+    }
+
+    static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
+        JFeatureSpec<InputT> featureSpec,
+        String settings,
+        FeatranExtractFn<InputT, ValueT> fn) {
       return inputs -> {
-        final JFeatureExtractor<SpecT> extractor = model.featureSpec()
-            .extractWithSettings(inputs, model.settings());
+        final JFeatureExtractor<InputT> extractor =
+            featureSpec.extractWithSettings(inputs, settings);
 
-        return Streams.zip(inputs.stream(), fn.apply(extractor).stream(), Vector::create)
+        return Streams
+            .zip(inputs.stream(), fn.apply(extractor).stream(), Vector::create)
             .collect(Collectors.toList());
       };
     }
 
-    List<Vector<SpecT, ValueT>> extract(List<SpecT> input) throws Exception;
+    List<Vector<InputT, ValueT>> extract(List<InputT> input) throws Exception;
   }
 
   @AutoValue
-  abstract class Vector<SpecT, ValueT> {
+  abstract class Vector<InputT, ValueT> {
 
-    public abstract SpecT input();
+    public abstract InputT input();
 
     public abstract ValueT value();
 
-    public static <SpecT, ValueT> Vector<SpecT, ValueT> create(SpecT input, ValueT value) {
+    public static <InputT, ValueT> Vector<InputT, ValueT> create(InputT input, ValueT value) {
       return new AutoValue_Model_Vector<>(input, value);
     }
   }
 
   @AutoValue
-  abstract class Prediction<SpecT, ValueT> {
+  abstract class Prediction<InputT, ValueT> {
 
-    public abstract SpecT input();
+    public abstract InputT input();
 
     public abstract ValueT value();
 
-    public static <SpecT, ValueT> Prediction<SpecT, ValueT> create(SpecT input, ValueT value) {
+    public static <InputT, ValueT> Prediction<InputT, ValueT> create(InputT input, ValueT value) {
       return new AutoValue_Model_Prediction<>(input, value);
     }
   }
 
   UnderlyingT instance();
-
-  String settings();
-
-  JFeatureSpec<SpecT> featureSpec();
 
 }

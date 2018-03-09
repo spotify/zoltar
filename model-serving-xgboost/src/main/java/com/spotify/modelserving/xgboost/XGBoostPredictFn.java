@@ -24,6 +24,6 @@ import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @FunctionalInterface
-public interface XGBoostPredictFn<I, P> extends AsyncPredictFn<XGBoostModel<I>, I, float[], P> {
+public interface XGBoostPredictFn<I, P> extends AsyncPredictFn<XGBoostModel, I, float[], P> {
 
 }

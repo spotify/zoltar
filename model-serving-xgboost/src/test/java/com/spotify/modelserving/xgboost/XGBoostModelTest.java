@@ -23,15 +23,15 @@ package com.spotify.modelserving.xgboost;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
-import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
-import com.spotify.modelserving.Model.FeatureExtractFn;
+import com.spotify.modelserving.Model.FeatureExtractor;
 import com.spotify.modelserving.Model.Prediction;
 import com.spotify.modelserving.Model.Predictor;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -52,16 +52,14 @@ public class XGBoostModelTest {
   @Test
   public void testLoadingModel() throws Exception {
     final URI trainedModel = getClass().getResource("/iris.model").toURI();
-    final URI settings = getClass().getResource("/settings.json").toURI();
-    final FeatureSpec<Iris> featuresSpec = IrisFeaturesSpec.irisFeaturesSpec();
 
-    XGBoostModel.create(trainedModel, settings, featuresSpec);
+    XGBoostModel.create(trainedModel);
   }
 
   @Test
   public void testModelPrediction() throws Exception {
-    final URI trainedModel = getClass().getResource("/iris.model").toURI();
-    final URI settings = getClass().getResource("/settings.json").toURI();
+    final URI trainedModelUri = getClass().getResource("/iris.model").toURI();
+    final URI settingsUri = getClass().getResource("/settings.json").toURI();
     final URI data = getClass().getResource("/iris.csv").toURI();
 
     final List<Iris> irisStream = Files.readAllLines(Paths.get(data))
@@ -99,13 +97,16 @@ public class XGBoostModelTest {
       return CompletableFutures.allAsList(predictions);
     };
 
-    final XGBoostModel<Iris> model = XGBoostModel.create(trainedModel,
-                                                         settings,
-                                                         IrisFeaturesSpec.irisFeaturesSpec());
-    final FeatureExtractFn<Iris, float[]> featureExtractFn = JFeatureExtractor::featureValuesFloat;
+    String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                 StandardCharsets.UTF_8);
+    XGBoostModel model = XGBoostModel.create(trainedModelUri);
+    FeatureExtractor<Iris, float[]> irisFeatureExtractor = FeatureExtractor.create(
+        IrisFeaturesSpec.irisFeaturesSpec(),
+        settings,
+        JFeatureExtractor::featureValuesFloat);
 
     CompletableFuture<Integer> sum = Predictor
-        .create(model, featureExtractFn, predictFn)
+        .create(model, irisFeatureExtractor, predictFn)
         .predict(irisStream, Duration.ofMillis(1000))
         .thenApply(predictions -> {
           return predictions.stream()

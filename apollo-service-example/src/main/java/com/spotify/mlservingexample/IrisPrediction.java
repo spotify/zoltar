@@ -29,12 +29,16 @@ import com.spotify.futures.CompletableFutures;
 import com.spotify.modelserving.IrisFeaturesSpec;
 import com.spotify.modelserving.IrisFeaturesSpec.Iris;
 import com.spotify.modelserving.Model;
+import com.spotify.modelserving.Model.FeatureExtractor;
 import com.spotify.modelserving.Model.Predictor;
 import com.spotify.modelserving.models.Models;
 import com.spotify.modelserving.tf.TensorFlowModel;
 import com.spotify.modelserving.tf.TensorFlowPredictFn;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.LongBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,16 +62,17 @@ public class IrisPrediction {
 
   /**
    * Configure Iris prediction, should be called at the service startup/configuration stage.
-   * @param modelDirPath URI to the TensorFlow model directory
-   * @param settingsPath URI to the settings files for Featran
+   * @param modelDirUri URI to the TensorFlow model directory
+   * @param settingsUri URI to the settings files for Featran
    */
-  public static void configure(String modelDirPath, String settingsPath) throws IOException {
+  public static void configure(URI modelDirUri, URI settingsUri) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    final TensorFlowModel<Iris> loadedModel =
-        Models.tensorFlow(modelDirPath, settingsPath, irisFeatureSpec);
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
+    final TensorFlowModel loadedModel = Models.tensorFlow(modelDirUri.toString());
 
-    Model.FeatureExtractFn<Iris, Example> featureExtractFn =
-        JFeatureExtractor::featureValuesExample;
+    FeatureExtractor<Iris, Example> featureExtractor = FeatureExtractor
+        .create(irisFeatureSpec, settings, JFeatureExtractor::featureValuesExample);
+
     TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Model.Prediction<Iris, Long>>> predictions =
           vectors.stream()
@@ -78,7 +83,7 @@ public class IrisPrediction {
       return CompletableFutures.allAsList(predictions);
     };
 
-    predictor = Predictor.create(loadedModel, featureExtractFn, predictFn);
+    predictor = Predictor.create(loadedModel, featureExtractor, predictFn);
   }
 
   /**
@@ -124,7 +129,7 @@ public class IrisPrediction {
     return Response.forPayload(predictedClass);
   }
 
-  private static long predictFn(TensorFlowModel<Iris> model, Example example) {
+  private static long predictFn(TensorFlowModel model, Example example) {
     byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
     try (Tensor<String> t = Tensors.create(b)) {

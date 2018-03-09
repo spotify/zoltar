@@ -20,8 +20,6 @@
 
 package com.spotify.modelserving.models;
 
-import com.spotify.featran.FeatureSpec;
-import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.modelserving.tf.TensorFlowGraphModel;
 import com.spotify.modelserving.tf.TensorFlowModel;
 import com.spotify.modelserving.xgboost.XGBoostModel;
@@ -35,71 +33,24 @@ public final class Models {
   private Models() {
   }
 
-  public static <T> XGBoostModel<T> xgboost(final String modelUri,
-                                            final String settingsUri,
-                                            final JFeatureSpec<T> featureSpec) throws IOException {
-    return XGBoostModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+  public static XGBoostModel xgboost(final String modelUri) throws IOException {
+    return XGBoostModel.create(URI.create(modelUri));
   }
 
-  public static <T> XGBoostModel<T> xgboost(final String modelUri,
-                                            final String settingsUri,
-                                            final FeatureSpec<T> featureSpec) throws IOException {
-    return XGBoostModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+  public static TensorFlowModel tensorFlow(final String modelUri) throws IOException {
+    return TensorFlowModel.create(URI.create(modelUri));
   }
 
-  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                                  final String settingsUri,
-                                                  final FeatureSpec<T> featureSpec)
+  public static TensorFlowModel tensorFlow(final String modelUri,
+                                           final TensorFlowModel.Options options)
       throws IOException {
-    return TensorFlowModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
+    return TensorFlowModel.create(URI.create(modelUri), options);
   }
 
-  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                                  final String settingsUri,
-                                                  final JFeatureSpec<T> featureSpec)
+  public static TensorFlowGraphModel tensorFlowGraph(final String modelUri,
+                                                     @Nullable final ConfigProto config,
+                                                     @Nullable final String prefix)
       throws IOException {
-    return TensorFlowModel.create(URI.create(modelUri), URI.create(settingsUri), featureSpec);
-  }
-
-  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                                  final String settingsUri,
-                                                  final FeatureSpec<T> featureSpec,
-                                                  final TensorFlowModel.Options options)
-      throws IOException {
-    return TensorFlowModel
-        .create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
-  }
-
-  public static <T> TensorFlowModel<T> tensorFlow(final String modelUri,
-                                                  final String settingsUri,
-                                                  final JFeatureSpec<T> featureSpec,
-                                                  final TensorFlowModel.Options options)
-      throws IOException {
-    return TensorFlowModel
-        .create(URI.create(modelUri), URI.create(settingsUri), featureSpec, options);
-  }
-
-  public static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
-                                                            @Nullable final ConfigProto config,
-                                                            @Nullable final String prefix,
-                                                            final String settingsUri,
-                                                            final JFeatureSpec<T> featureSpec)
-      throws IOException {
-    return TensorFlowGraphModel
-        .from(URI.create(modelUri), config, prefix, URI.create(settingsUri), featureSpec);
-  }
-
-  public static <T> TensorFlowGraphModel<T> tensorFlowGraph(final String modelUri,
-                                                            @Nullable final ConfigProto config,
-                                                            @Nullable final String prefix,
-                                                            final String settingsUri,
-                                                            final FeatureSpec<T> featureSpec)
-      throws IOException {
-    return TensorFlowGraphModel.from(
-        URI.create(modelUri),
-        config,
-        prefix,
-        URI.create(settingsUri),
-        JFeatureSpec.wrap(featureSpec));
+    return TensorFlowGraphModel.from(URI.create(modelUri), config, prefix);
   }
 }

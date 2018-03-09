@@ -4,6 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>model-serving-parent</name>
+  <artifactId>model-serving-parent</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
   <modules>
     <module>model-serving-core</module>
     <module>model-serving-tensorflow</module>
@@ -11,12 +15,8 @@
     <module>model-serving-featran</module>
     <module>model-serving-tests</module>
     <module>model-serving-models</module>
-    <module>apollo-service-example</module>
+    <module>examples/apollo-service-example</module>
   </modules>
-  <artifactId>model-serving-parent</artifactId>
-  <packaging>pom</packaging>
-
-  <version>0.1.0-SNAPSHOT</version>
 
   <parent>
     <groupId>com.spotify</groupId>

@@ -7,6 +7,7 @@
     <artifactId>model-serving-parent</artifactId>
     <groupId>com.spotify</groupId>
     <version>0.1.0-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>

@@ -1,0 +1,18 @@
+{
+  "fields" : [ {
+    "name" : "sepal_length",
+    "type" : "FLOAT"
+  }, {
+    "name" : "sepal_width",
+    "type" : "FLOAT"
+  }, {
+    "name" : "petal_length",
+    "type" : "FLOAT"
+  }, {
+    "name" : "petal_width",
+    "type" : "FLOAT"
+  }, {
+    "name" : "class_name",
+    "type" : "STRING"
+  } ]
+}

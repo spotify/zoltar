@@ -33,7 +33,7 @@ import java.net.URI;
  */
 public class ServiceRunner {
 
-  private static final String SERVICE_NAME = "ml-serving-example";
+  private static final String SERVICE_NAME = "zoltar-example";
 
   private ServiceRunner() { }
 
@@ -45,9 +45,7 @@ public class ServiceRunner {
    */
   public static void main(final String... args) throws LoadingException {
 
-    Service service = HttpService.usingAppInit(ServiceRunner::configure, SERVICE_NAME)
-        .withEnvVarPrefix("SPOTIFY")
-        .build();
+    Service service = HttpService.usingAppInit(ServiceRunner::configure, SERVICE_NAME).build();
 
     HttpService.boot(service, args);
   }

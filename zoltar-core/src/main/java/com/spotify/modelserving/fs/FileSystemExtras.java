@@ -1,6 +1,6 @@
 /*-
  * -\-\-
- * model-serving-tensorflow
+ * zoltar-tensorflow
  * --
  * Copyright (C) 2016 - 2018 Spotify AB
  * --
@@ -55,7 +55,7 @@ public final class FileSystemExtras {
       return src.toUri();
     }
 
-    Path temp = Files.createTempDirectory("model-serving-");
+    Path temp = Files.createTempDirectory("zoltar-");
     return copyDir(src, temp, true).toUri();
   }
 

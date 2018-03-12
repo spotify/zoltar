@@ -35,8 +35,8 @@
   </properties>
 
   <scm>
-    <url>https://ghe.spotify.net/ml/zoltar</url>
-    <developerConnection>scm:git:ssh://git@ghe.spotify.net/ml/zoltar</developerConnection>
+    <url>https://github.com/spotify/zoltar</url>
+    <developerConnection>scm:git:ssh://git@github.com:spotify/zoltar.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 

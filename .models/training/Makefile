@@ -4,7 +4,7 @@ USERNAME ?= $(shell whoami)
 JOB_DIR ?= gs://ml-sketchbook-temp/iris/trained/$(USERNAME)/$(ID)
 TRAINING_SET ?= gs://ml-sketchbook-temp/iris
 EXTRA_FLAGS ?=
-IRIS_PYTHON_PKG := iris/model_serving_model_train.egg-info
+IRIS_PYTHON_PKG := iris/zoltar_model_train.egg-info
 
 
 .PHONY: help clean iris-tensorflow iris-xgboost

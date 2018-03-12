@@ -1,6 +1,6 @@
 /*-
  * -\-\-
- * model-serving-xgboost
+ * zoltar-xgboost
  * --
  * Copyright (C) 2016 - 2018 Spotify AB
  * --

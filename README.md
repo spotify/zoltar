@@ -1,4 +1,4 @@
-# model-serving
+# zoltar
 
 ## Raison d'être:
 

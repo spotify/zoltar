@@ -1,6 +1,6 @@
 /*-
  * -\-\-
- * model-serving-core
+ * zoltar-core
  * --
  * Copyright (C) 2016 - 2018 Spotify AB
  * --

@@ -1,15 +1,10 @@
-# zoltar
-
-## Raison d'être:
+zoltar
+======
 
 Common library for serving TensorFlow and XGBoost models in production.
 
+# License
 
----
+Copyright 2018 Spotify AB.
 
-```
-Copyright 2018 Spotify AB
-
-THIS REPOSITORY IS THE PROPERTY OF SPOTIFY AB
-UNAUTHORIZED ACCESS TO THIS DATA IS STRICTLY PROHIBITED.
-```
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

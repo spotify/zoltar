@@ -159,6 +159,13 @@
         <version>${scio.version}</version>
       </dependency>
       <dependency>
+        <!-- initial reason: breeze 1.0-RC2 from scio-tensorflow 0.5.0 -->
+        <groupId>com.chuusai</groupId>
+        <artifactId>shapeless_2.11</artifactId>
+        <version>2.3.3</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>scio-test_2.11</artifactId>
         <version>${scio.version}</version>

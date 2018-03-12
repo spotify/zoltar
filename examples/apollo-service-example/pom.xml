@@ -61,33 +61,6 @@
       <artifactId>model-serving-tensorflow</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.tensorflow</groupId>
-      <artifactId>tensorflow</artifactId>
-      <version>${tensorFlow.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.tensorflow</groupId>
-      <artifactId>proto</artifactId>
-      <version>${tensorFlow.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-java_2.11</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

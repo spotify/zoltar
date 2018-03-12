@@ -21,7 +21,7 @@
 package com.spotify.modelserving;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.Streams;
+import com.google.common.collect.Lists;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureExtractor;
 import com.spotify.featran.java.JFeatureSpec;
@@ -30,6 +30,7 @@ import com.spotify.modelserving.Model.FeatureExtractFns.FeatranExtractFn;
 import com.spotify.modelserving.Model.PredictFns.AsyncPredictFn;
 import com.spotify.modelserving.Model.PredictFns.PredictFn;
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -38,7 +39,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 public interface Model<UnderlyingT> extends AutoCloseable {
 
@@ -142,10 +142,15 @@ public interface Model<UnderlyingT> extends AutoCloseable {
   interface FeatureExtractor<InputT, ValueT> {
 
     static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(ExtractFn<InputT, ValueT> fn) {
-      return inputs ->
-          Streams
-              .zip(inputs.stream(), fn.apply(inputs).stream(), Vector::create)
-              .collect(Collectors.toList());
+      return inputs -> {
+        List<Vector<InputT, ValueT>> result = Lists.newArrayList();
+        Iterator<InputT> i1 = inputs.iterator();
+        Iterator<ValueT> i2 = fn.apply(inputs).iterator();
+        while (i1.hasNext() && i2.hasNext()) {
+          result.add(Vector.create(i1.next(), i2.next()));
+        }
+        return result;
+      };
     }
 
     static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
@@ -163,9 +168,13 @@ public interface Model<UnderlyingT> extends AutoCloseable {
         final JFeatureExtractor<InputT> extractor =
             featureSpec.extractWithSettings(inputs, settings);
 
-        return Streams
-            .zip(inputs.stream(), fn.apply(extractor).stream(), Vector::create)
-            .collect(Collectors.toList());
+        List<Vector<InputT, ValueT>> result = Lists.newArrayList();
+        Iterator<InputT> i1 = inputs.iterator();
+        Iterator<ValueT> i2 = fn.apply(extractor).iterator();
+        while (i1.hasNext() && i2.hasNext()) {
+          result.add(Vector.create(i1.next(), i2.next()));
+        }
+        return result;
       };
     }
 

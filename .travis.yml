@@ -1,6 +1,6 @@
 language: java
-install: mvn install -Dbigquery.project=dummy-project -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-script: mvn -Dbigquery.project=dummy-project clean verify checkstyle:checkstyle findbugs:findbugs
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -DargLine="-Dbigquery.project=dummy-project"
+script: mvn clean verify checkstyle:checkstyle findbugs:findbugs -DargLine="-Dbigquery.project=dummy-project"
 
 cache:
   directories:

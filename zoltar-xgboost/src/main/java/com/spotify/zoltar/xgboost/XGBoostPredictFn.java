@@ -21,9 +21,10 @@
 package com.spotify.zoltar.xgboost;
 
 import com.spotify.zoltar.Model.PredictFns.AsyncPredictFn;
+import ml.dmlc.xgboost4j.LabeledPoint;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @FunctionalInterface
-public interface XGBoostPredictFn<I, P> extends AsyncPredictFn<XGBoostModel, I, float[], P> {
+public interface XGBoostPredictFn<I, P> extends AsyncPredictFn<XGBoostModel, I, LabeledPoint, P> {
 
 }

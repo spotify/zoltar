@@ -2,11 +2,8 @@
 
 ## Raison d'être:
 
-Commong library to serving models in production.
+Common library for serving TensorFlow and XGBoost models in production.
 
-## RFC
-
-[RFC](https://docs.google.com/document/d/1KMankZLN4UzFLD_oHGtpnYMj7r4qPmM-mQH0O6OHkeA/edit).
 
 ---
 

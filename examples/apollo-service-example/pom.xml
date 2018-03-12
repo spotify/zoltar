@@ -20,7 +20,6 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <maven.install.skip>true</maven.install.skip>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
-    <gcpProjectId>ml-sketchbook</gcpProjectId>
     <tensorFlow.version>1.4.0</tensorFlow.version>
   </properties>
 
@@ -82,31 +81,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <!--
-          If you have customized the name of your Docker image in your
-          pom.xml to not refer to ${gcpProjectId}, then you can safely
-          remove this check and the entire execution element
-          -->
-          <execution>
-            <id>verify-gcp-project-id-set</id>
-            <!-- this check is only bound to install in order to run it just before 'deploy' phase -->
-            <phase>install</phase>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireProperty>
-                  <property>gcpProjectId</property>
-                  <message>The gcpProjectId must be set in order to build and push a Docker image to Google Container Registry</message>
-                  <regex>\w+.*</regex>
-                  <regexMessage>The gcpProjectId must be set and non-empty in order to build and push a Docker image to Google Container Registry</regexMessage>
-                </requireProperty>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
@@ -118,25 +92,6 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>1.0.0</version>
-      </plugin>
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.3.6</version>
-        <executions>
-          <execution>
-            <id>default</id>
-            <goals>
-              <goal>build</goal>
-              <goal>push</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -263,15 +218,6 @@
                   <Implementation-Version>${project.version}-${buildTimestamp}-${buildNumber}</Implementation-Version>
                 </manifestEntries>
               </archive>
-            </configuration>
-          </plugin>
-
-          <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>dockerfile-maven-plugin</artifactId>
-            <configuration>
-              <repository>gcr.io/${gcpProjectId}/${project.artifactId}</repository>
-              <tag>${project.version}-${buildTimestamp}-${buildNumber}</tag>
             </configuration>
           </plugin>
         </plugins>

@@ -1,3 +1,3 @@
-# ml-serving-example
+# zoltar-example
 
 We promise to update this description...

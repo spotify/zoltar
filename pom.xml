@@ -28,7 +28,7 @@
     <findbugs.excludeFilterFile>findbugsexclude.xml</findbugs.excludeFilterFile>
     <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
     <scala.version>2.11.12</scala.version>
-    <tensorFlow.version>1.4.0</tensorFlow.version>
+    <tensorFlow.version>1.6.0</tensorFlow.version>
     <scio.version>0.5.0</scio.version>
     <featran.version>0.1.18</featran.version>
     <proto.version>3.5.1</proto.version>

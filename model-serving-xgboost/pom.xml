@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>model-serving-parent</artifactId>
+    <artifactId>zoltar-parent</artifactId>
     <groupId>com.spotify</groupId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>model-serving-xgboost</artifactId>
+  <artifactId>zoltar-xgboost</artifactId>
 
   <properties>
     <!-- Downgrade tensorflow to 1.4.0 due to https://github.com/tensorflow/tensorflow/issues/16899 -->
@@ -18,7 +18,7 @@
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>model-serving-core</artifactId>
+      <artifactId>zoltar-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -55,7 +55,7 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>model-serving-tests</artifactId>
+      <artifactId>zoltar-tests</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

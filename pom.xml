@@ -3,18 +3,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>model-serving-parent</name>
-  <artifactId>model-serving-parent</artifactId>
+  <name>zoltar-parent</name>
+  <artifactId>zoltar-parent</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>model-serving-core</module>
-    <module>model-serving-tensorflow</module>
-    <module>model-serving-xgboost</module>
-    <module>model-serving-featran</module>
-    <module>model-serving-tests</module>
-    <module>model-serving-models</module>
+    <module>zoltar-core</module>
+    <module>zoltar-tensorflow</module>
+    <module>zoltar-xgboost</module>
+    <module>zoltar-featran</module>
+    <module>zoltar-tests</module>
+    <module>zoltar-models</module>
     <module>examples/apollo-service-example</module>
   </modules>
 
@@ -35,8 +35,8 @@
   </properties>
 
   <scm>
-    <url>https://ghe.spotify.net/ml/model-serving</url>
-    <developerConnection>scm:git:ssh://git@ghe.spotify.net/ml/model-serving</developerConnection>
+    <url>https://ghe.spotify.net/ml/zoltar</url>
+    <developerConnection>scm:git:ssh://git@ghe.spotify.net/ml/zoltar</developerConnection>
     <tag>HEAD</tag>
   </scm>
 

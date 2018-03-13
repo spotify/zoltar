@@ -54,8 +54,8 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * Returns a TensorFlow model given {@link SavedModelBundle} export directory URI and
-   * {@link Options}.
+   * Returns a TensorFlow model given {@link SavedModelBundle} export directory URI and {@link
+   * Options}.
    */
   public static TensorFlowModel create(final URI modelResource,
                                        final Options options) throws IOException {
@@ -65,7 +65,9 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     return new AutoValue_TensorFlowModel(model, options);
   }
 
-  /** Close the model. */
+  /**
+   * Close the model.
+   */
   @Override
   public void close() throws Exception {
     if (instance() != null) {
@@ -73,20 +75,25 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     }
   }
 
-  /** Returns TensorFlow {@link SavedModelBundle}. */
+  /**
+   * Returns TensorFlow {@link SavedModelBundle}.
+   */
   @Override
   public abstract SavedModelBundle instance();
 
-  /** {@link Options} of this model. */
+  /**
+   * {@link Options} of this model.
+   */
   public abstract Options options();
 
-  /** Value class for our TensorFlow options. */
+  /**
+   * Value class for our TensorFlow options.
+   */
   @AutoValue
   public abstract static class Options {
 
     /**
-     * Returns a list of Tags, see
-     * <a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py#L26">tags</a>.
+     * Returns a list of Tags, see <a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py#L26">tags</a>.
      */
     public abstract List<String> tags();
 

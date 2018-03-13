@@ -25,11 +25,10 @@ import static org.junit.Assert.assertEquals;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.Model.FeatureExtractor;
-import com.spotify.zoltar.Model.PredictFns.PredictFn;
-import com.spotify.zoltar.Model.Prediction;
-import com.spotify.zoltar.Model.Predictor;
+import com.spotify.zoltar.FeatureExtractor;
+import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.Predictor;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -147,7 +146,7 @@ public class TensorFlowGraphModelTest {
                       .fetch(mulResult)
                       .feed(inputOpName, input)
                       .run();
-                  return Model.Prediction.create(vector.input(), results.get(0).doubleValue());
+                  return Prediction.create(vector.input(), results.get(0).doubleValue());
                 } finally {
                   if (results != null) {
                     results.forEach(Tensor::close);

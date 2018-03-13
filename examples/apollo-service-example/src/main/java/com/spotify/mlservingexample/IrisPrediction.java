@@ -26,12 +26,12 @@ import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
+import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.Model.FeatureExtractor;
-import com.spotify.zoltar.Model.Predictor;
 import com.spotify.zoltar.Models;
+import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
@@ -75,11 +75,11 @@ public class IrisPrediction {
         .create(irisFeatureSpec, settings, JFeatureSpec::extractWithSettingsExample);
 
     final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
-      final List<CompletableFuture<Model.Prediction<Iris, Long>>> predictions =
+      final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
           vectors.stream()
               .map(vector -> CompletableFuture
                   .supplyAsync(() -> predictFn(model, vector.value()))
-                  .thenApply(v -> Model.Prediction.create(vector.input(), v)))
+                  .thenApply(v -> Prediction.create(vector.input(), v)))
               .collect(Collectors.toList());
       return CompletableFutures.allAsList(predictions);
     };

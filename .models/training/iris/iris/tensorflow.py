@@ -17,10 +17,10 @@
 # under the License.
 #
 from __future__ import absolute_import
-from os.path import join as pjoin
 
-from spotify_tensorflow import Datasets, Trainer
 import tensorflow as tf
+from os.path import join as pjoin
+from spotify_tensorflow import Datasets, Trainer
 
 FLAGS = tf.flags.FLAGS
 

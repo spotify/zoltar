@@ -89,7 +89,9 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
     return new AutoValue_TensorFlowGraphModel(graph, session);
   }
 
-  /** Close the model. */
+  /**
+   * Close the model.
+   */
   @Override
   public void close() {
     if (instance() != null) {
@@ -102,10 +104,14 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
     }
   }
 
-  /** Returns TensorFlow graph. */
+  /**
+   * Returns TensorFlow graph.
+   */
   public abstract Graph graph();
 
-  /** Returns TensorFlow {@link Session}. */
+  /**
+   * Returns TensorFlow {@link Session}.
+   */
   @Override
   public abstract Session instance();
 

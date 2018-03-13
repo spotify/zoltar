@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.mlservingexample;
+package com.spotify.zoltar.examples.apollo;
 
 import com.spotify.apollo.Response;
 import com.spotify.apollo.route.AsyncHandler;

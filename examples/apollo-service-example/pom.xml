@@ -15,7 +15,7 @@
   <artifactId>apollo-service-example</artifactId>
 
   <properties>
-    <service.mainClass>com.spotify.mlservingexample.ServiceRunner</service.mainClass>
+    <service.mainClass>com.spotify.zoltar.examples.apollo.ServiceRunner</service.mainClass>
     <findbugs.excludeFilterFile>findbugsexclude.xml</findbugs.excludeFilterFile>
     <maven.deploy.skip>true</maven.deploy.skip>
     <maven.install.skip>true</maven.install.skip>

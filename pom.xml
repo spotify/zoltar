@@ -171,6 +171,7 @@
         <version>2.3.3</version>
       </dependency>
 
+      <!-- Test dependencies -->
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>scio-test_2.11</artifactId>

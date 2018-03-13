@@ -37,6 +37,7 @@
       <artifactId>protobuf-java-util</artifactId>
     </dependency>
 
+    <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -46,7 +47,6 @@
 
   <build>
     <finalName>${project.artifactId}</finalName>
-
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -73,6 +73,5 @@
       </plugin>
     </plugins>
   </build>
-
 
 </project>

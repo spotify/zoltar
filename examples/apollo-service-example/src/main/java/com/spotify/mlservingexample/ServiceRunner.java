@@ -35,17 +35,18 @@ public class ServiceRunner {
 
   private static final String SERVICE_NAME = "zoltar-example";
 
-  private ServiceRunner() { }
+  private ServiceRunner() {
+  }
 
   /**
    * Runs the app locally.
    *
-   * <p>$ curl http://localhost:8080/predict/5.8-2.7-5.1-1.9
-   * Lengths seperated by "-"
+   * <p>$ curl http://localhost:8080/predict/5.8-2.7-5.1-1.9 Lengths seperated by "-"
    */
   public static void main(final String... args) throws LoadingException {
 
-    Service service = HttpService.usingAppInit(ServiceRunner::configure, SERVICE_NAME).build();
+    final Service service = HttpService.usingAppInit(ServiceRunner::configure, SERVICE_NAME)
+        .build();
 
     HttpService.boot(service, args);
   }
@@ -53,15 +54,15 @@ public class ServiceRunner {
   static void configure(final Environment environment) {
 
     final Config config = environment.config();
-    URI modelPath = URI.create(config.getString("iris.model"));
-    URI settingsPath = URI.create(config.getString("iris.settings"));
+    final URI modelPath = URI.create(config.getString("iris.model"));
+    final URI settingsPath = URI.create(config.getString("iris.settings"));
     try {
       IrisPrediction.configure(modelPath, settingsPath);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new RuntimeException(
           String.format("Could not load model! Model path: `%s`, settings path `%s`.",
-              modelPath,
-              settingsPath));
+                        modelPath,
+                        settingsPath));
     }
 
     final EndPoints endPoints = new EndPoints();

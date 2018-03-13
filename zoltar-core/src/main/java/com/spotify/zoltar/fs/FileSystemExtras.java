@@ -36,7 +36,7 @@ public final class FileSystemExtras {
   private FileSystemExtras() {
   }
 
-  public static Path path(URI uri) {
+  public static Path path(final URI uri) {
     if (uri.getScheme() == null) {
       return Paths.get(uri.toString());
     }
@@ -48,26 +48,28 @@ public final class FileSystemExtras {
    * If the path is not on a local filesystem, it will download the resource to a temporary path on
    * a local filesystem.
    */
-  public static URI downloadIfNonLocal(URI path) throws IOException {
-    String fixedPath = path.toString().endsWith("/") ? path.toString() : path.toString() + "/";
-    Path src = path(URI.create(fixedPath));
+  public static URI downloadIfNonLocal(final URI path) throws IOException {
+    final String fixedPath =
+        path.toString().endsWith("/") ? path.toString() : path.toString() + "/";
+    final Path src = path(URI.create(fixedPath));
     if (src.getFileSystem().equals(FileSystems.getDefault())) {
       return src.toUri();
     }
 
-    Path temp = Files.createTempDirectory("zoltar-");
+    final Path temp = Files.createTempDirectory("zoltar-");
     return copyDir(src, temp, true).toUri();
   }
 
-  private static Path copyDir(Path src, Path dest, boolean overwrite) throws IOException {
+  private static Path copyDir(final Path src, final Path dest, final boolean overwrite)
+      throws IOException {
     final List<Path> paths = Files.walk(src)
         .filter(path -> !path.equals(src))
         .collect(Collectors.toList());
 
-    for (Path path : paths) {
+    for (final Path path : paths) {
       final String relative = path.toString().substring(src.toString().length() - 1);
       final Path fullDst = Paths.get(dest.toString(), relative);
-      CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
+      final CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
           : new CopyOption[]{};
       Files.copy(path, fullDst, flags);
     }

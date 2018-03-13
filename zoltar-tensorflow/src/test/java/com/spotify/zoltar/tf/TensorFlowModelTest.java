@@ -65,7 +65,7 @@ public class TensorFlowModelTest {
                                                         "Iris-versicolor", 1L,
                                                         "Iris-virginica", 2L);
 
-    TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+    final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, Long>>> predictions = vectors.stream()
           .map(vector -> {
             return CompletableFuture
@@ -79,15 +79,15 @@ public class TensorFlowModelTest {
     final URI trainedModelUri = getClass().getResource("/trained_model").toURI();
     final URI settingsUri = getClass().getResource("/settings.json").toURI();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
-                                             StandardCharsets.UTF_8);
+                                       StandardCharsets.UTF_8);
 
-    TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
-    FeatureExtractor<Iris, Example> irisFeatureExtractor = FeatureExtractor.create(
+    final TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
+    final FeatureExtractor<Iris, Example> irisFeatureExtractor = FeatureExtractor.create(
         IrisFeaturesSpec.irisFeaturesSpec(),
         settings,
         JFeatureSpec::extractWithSettingsExample);
 
-    CompletableFuture<Integer> sum = Predictor
+    final CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)
         .predict(irisStream, Duration.ofMillis(1000))
         .thenApply(predictions -> {
@@ -103,16 +103,16 @@ public class TensorFlowModelTest {
     Assert.assertTrue("Should be more the 0.8", sum.get() / 150f > .8);
   }
 
-  private long predict(TensorFlowModel model, Example example) {
+  private long predict(final TensorFlowModel model, final Example example) {
     // rank 1 cause we need to account for batch
-    byte[][] b = new byte[1][];
+    final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
     try (Tensor<String> t = Tensors.create(b)) {
-      Session.Runner runner = model.instance().session().runner()
+      final Session.Runner runner = model.instance().session().runner()
           .feed("input_example_tensor", t)
           .fetch("linear/head/predictions/class_ids");
-      List<Tensor<?>> output = runner.run();
-      LongBuffer incomingClassId = LongBuffer.allocate(1);
+      final List<Tensor<?>> output = runner.run();
+      final LongBuffer incomingClassId = LongBuffer.allocate(1);
 
       try {
         output.get(0).writeTo(incomingClassId);

@@ -57,16 +57,16 @@ public class TensorFlowGraphModelTest {
    * via multiply operation.
    */
   private Path createADummyTFGraph() throws IOException {
-    Path graphFile;
+    final Path graphFile;
     try (
         Graph graph = new Graph();
         Tensor<Double> t = Tensors.create(2.0D)
     ) {
-      Output<Double> input = graph.opBuilder("Placeholder", inputOpName)
+      final Output<Double> input = graph.opBuilder("Placeholder", inputOpName)
           .setAttr("dtype", t.dataType())
           .build().output(0);
 
-      Output<Double> two = graph.opBuilder("Const", "two")
+      final Output<Double> two = graph.opBuilder("Const", "two")
           .setAttr("dtype", t.dataType())
           .setAttr("value", t).build().output(0);
 
@@ -82,7 +82,7 @@ public class TensorFlowGraphModelTest {
 
   @Test
   public void testDummyLoadOfTensorFlowGraph() throws Exception {
-    Path graphFile = createADummyTFGraph();
+    final Path graphFile = createADummyTFGraph();
     try (Graph newGraph = new Graph();
         Tensor<Double> double3 = Tensors.create(3.0D)) {
       newGraph.importGraphDef(Files.readAllBytes(graphFile));
@@ -105,17 +105,17 @@ public class TensorFlowGraphModelTest {
 
   @Test
   public void testModelInference() throws Exception {
-    Path graphFile = createADummyTFGraph();
-    JFeatureSpec<Double> featureSpec = JFeatureSpec.<Double>create()
+    final Path graphFile = createADummyTFGraph();
+    final JFeatureSpec<Double> featureSpec = JFeatureSpec.<Double>create()
         .required(d -> d, Identity.apply("feature"));
-    URI settingsUri = getClass().getResource("/settings_dummy.json").toURI();
-    String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
-                                 StandardCharsets.UTF_8);
+    final URI settingsUri = getClass().getResource("/settings_dummy.json").toURI();
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                       StandardCharsets.UTF_8);
 
-    TensorFlowGraphModel tfModel =
+    final TensorFlowGraphModel tfModel =
         TensorFlowGraphModel.from(graphFile.toUri(), null, null);
 
-    PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
+    final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()
             .map(vector -> {
               try (Tensor<Double> input = Tensors.create(vector.value()[0])) {
@@ -135,14 +135,14 @@ public class TensorFlowGraphModelTest {
                 throw new RuntimeException(e);
               }
             }).collect(Collectors.toList());
-    FeatureExtractor<Double, double[]> irisFeatureExtractor = FeatureExtractor.create(
+    final FeatureExtractor<Double, double[]> irisFeatureExtractor = FeatureExtractor.create(
         featureSpec,
         settings,
         JFeatureSpec::extractWithSettingsDouble);
 
-    List<Double> input = Arrays.asList(0.0D, 1.0D, 7.0D);
-    double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();
-    CompletableFuture<double[]> result = Predictor
+    final List<Double> input = Arrays.asList(0.0D, 1.0D, 7.0D);
+    final double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();
+    final CompletableFuture<double[]> result = Predictor
         .create(tfModel, irisFeatureExtractor, predictFn)
         .predict(input)
         .thenApply(predictions -> {

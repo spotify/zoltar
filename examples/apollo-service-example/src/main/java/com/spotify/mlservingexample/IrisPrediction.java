@@ -62,18 +62,19 @@ public class IrisPrediction {
 
   /**
    * Configure Iris prediction, should be called at the service startup/configuration stage.
+   *
    * @param modelDirUri URI to the TensorFlow model directory
    * @param settingsUri URI to the settings files for Featran
    */
-  public static void configure(URI modelDirUri, URI settingsUri) throws IOException {
+  public static void configure(final URI modelDirUri, final URI settingsUri) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
     final TensorFlowModel loadedModel = Models.tensorFlow(modelDirUri.toString());
 
-    FeatureExtractor<Iris, Example> featureExtractor = FeatureExtractor
+    final FeatureExtractor<Iris, Example> featureExtractor = FeatureExtractor
         .create(irisFeatureSpec, settings, JFeatureSpec::extractWithSettingsExample);
 
-    TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+    final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Model.Prediction<Iris, Long>>> predictions =
           vectors.stream()
               .map(vector -> CompletableFuture
@@ -101,14 +102,14 @@ public class IrisPrediction {
       return Response.forStatus(Status.BAD_REQUEST);
     }
 
-    Iris featureData = new Iris(
+    final Iris featureData = new Iris(
         Option.apply(Double.parseDouble(features[0])),
         Option.apply(Double.parseDouble(features[1])),
         Option.apply(Double.parseDouble(features[2])),
         Option.apply(Double.parseDouble(features[3])),
         Option.empty());
 
-    List<Iris> irisStream = new ArrayList<Iris>();
+    final List<Iris> irisStream = new ArrayList<Iris>();
     irisStream.add(featureData);
 
     int[] predictions = new int[0];
@@ -119,25 +120,25 @@ public class IrisPrediction {
               .stream()
               .mapToInt(prediction -> {
                 long value = prediction.value();
-                return (int)value;
+                return (int) value;
               }).toArray()).toCompletableFuture().get();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
       //TODO: what to return in case of failure here?
     }
-    String predictedClass = idToClass.get(predictions[0]);
+    final String predictedClass = idToClass.get(predictions[0]);
     return Response.forPayload(predictedClass);
   }
 
-  private static long predictFn(TensorFlowModel model, Example example) {
-    byte[][] b = new byte[1][];
+  private static long predictFn(final TensorFlowModel model, final Example example) {
+    final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
     try (Tensor<String> t = Tensors.create(b)) {
-      List<Tensor<?>> output = model.instance().session().runner()
+      final List<Tensor<?>> output = model.instance().session().runner()
           .feed("input_example_tensor", t)
           .fetch("linear/head/predictions/class_ids")
           .run();
-      LongBuffer incomingClassId = LongBuffer.allocate(1);
+      final LongBuffer incomingClassId = LongBuffer.allocate(1);
       try {
         output.get(0).writeTo(incomingClassId);
       } finally {

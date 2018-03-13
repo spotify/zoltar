@@ -38,33 +38,33 @@ public class GompLoader {
     }
   }
 
-  private static void load(String name) throws IOException {
+  private static void load(final String name) throws IOException {
     try {
-      Vector<String> libraries = getLoadedLibraries(ClassLoader.getSystemClassLoader());
+      final Vector<String> libraries = getLoadedLibraries(ClassLoader.getSystemClassLoader());
       System.out.println("Loaded libs" + libraries);
-      String[] libs = libraries.toArray(new String[libraries.size()]);
+      final String[] libs = libraries.toArray(new String[libraries.size()]);
 
-      String libFile = name.substring(name.lastIndexOf('/') + 1, name.length());
-      String libName = libFile.substring(0, libFile.indexOf('.'));
+      final String libFile = name.substring(name.lastIndexOf('/') + 1, name.length());
+      final String libName = libFile.substring(0, libFile.indexOf('.'));
       if (!Arrays.stream(libs).anyMatch(n -> n.contains(libName))) {
         System.load(NativeLibLoader.createTempFileFromResource(name));
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new IOException(e);
     }
 
   }
 
-  private static Vector<String> getLoadedLibraries(ClassLoader loader) throws IOException {
+  private static Vector<String> getLoadedLibraries(final ClassLoader loader) throws IOException {
     try {
-      Field libField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
+      final Field libField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
       libField.setAccessible(true);
-      Vector<String> libraries = (java.util.Vector<String>) libField.get(loader);
+      final Vector<String> libraries = (java.util.Vector<String>) libField.get(loader);
 
       return libraries;
-    } catch (NoSuchFieldException noSuchFieldError) {
+    } catch (final NoSuchFieldException noSuchFieldError) {
       throw new IOException(noSuchFieldError);
-    } catch (IllegalAccessException illAccessError) {
+    } catch (final IllegalAccessException illAccessError) {
       throw new IOException(illAccessError);
     }
   }

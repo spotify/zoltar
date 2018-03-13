@@ -35,7 +35,7 @@ public class IrisPredictionTest {
       final URI settingsUri = getClass().getResource("/settings.json").toURI();
 
       IrisPrediction.configure(trainedModelUri, settingsUri);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
   }

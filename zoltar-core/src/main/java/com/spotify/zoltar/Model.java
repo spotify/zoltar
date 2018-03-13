@@ -50,18 +50,18 @@ public interface Model<UnderlyingT> extends AutoCloseable {
 
       @SuppressWarnings("checkstyle:LineLength")
       static <ModelT extends Model<?>, InputT, VectorT, ValueT> AsyncPredictFn<ModelT, InputT, VectorT, ValueT> lift(
-          PredictFn<ModelT, InputT, VectorT, ValueT> fn) {
+          final PredictFn<ModelT, InputT, VectorT, ValueT> fn) {
         return (model, vectors) -> CompletableFuture.supplyAsync(() -> {
           try {
             return fn.apply(model, vectors);
-          } catch (Exception e) {
+          } catch (final Exception e) {
             throw new RuntimeException(e.getCause());
           }
         });
       }
 
       CompletionStage<List<Prediction<InputT, ValueT>>> apply(ModelT model,
-                                                             List<Vector<InputT, VectorT>> vectors);
+                                                              List<Vector<InputT, VectorT>> vectors);
     }
 
     @FunctionalInterface
@@ -80,23 +80,23 @@ public interface Model<UnderlyingT> extends AutoCloseable {
         Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
     static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-        ModelT model,
-        FeatureExtractor<InputT, VectorT> featureExtractor,
-        PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+        final ModelT model,
+        final FeatureExtractor<InputT, VectorT> featureExtractor,
+        final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
       return create(model, featureExtractor, AsyncPredictFn.lift(predictFn));
     }
 
     static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-        ModelT model,
-        FeatureExtractor<InputT, VectorT> featureExtractor,
-        AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+        final ModelT model,
+        final FeatureExtractor<InputT, VectorT> featureExtractor,
+        final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
       return (input, timeout, scheduler) -> {
         final List<Vector<InputT, VectorT>> vectors = featureExtractor.extract(input);
 
         final CompletableFuture<List<Prediction<InputT, ValueT>>> future =
             predictFn.apply(model, vectors).toCompletableFuture();
 
-        ScheduledFuture<?> schedule = scheduler.schedule(() -> {
+        final ScheduledFuture<?> schedule = scheduler.schedule(() -> {
           future.completeExceptionally(new TimeoutException());
         }, timeout.toMillis(), TimeUnit.MILLISECONDS);
 
@@ -107,17 +107,17 @@ public interface Model<UnderlyingT> extends AutoCloseable {
     }
 
     CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input,
-                                                             Duration timeout,
-                                                             ScheduledExecutorService scheduler)
+                                                              Duration timeout,
+                                                              ScheduledExecutorService scheduler)
         throws Exception;
 
-    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input,
-                                                                     Duration timeout)
+    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final List<InputT> input,
+                                                                      final Duration timeout)
         throws Exception {
       return predict(input, timeout, SCHEDULER);
     }
 
-    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input)
+    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final List<InputT> input)
         throws Exception {
       return predict(input, Duration.ofDays(Integer.MAX_VALUE), SCHEDULER);
     }
@@ -142,11 +142,12 @@ public interface Model<UnderlyingT> extends AutoCloseable {
   @FunctionalInterface
   interface FeatureExtractor<InputT, ValueT> {
 
-    static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(ExtractFn<InputT, ValueT> fn) {
+    static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
+        final ExtractFn<InputT, ValueT> fn) {
       return inputs -> {
-        List<Vector<InputT, ValueT>> result = Lists.newArrayList();
-        Iterator<InputT> i1 = inputs.iterator();
-        Iterator<ValueT> i2 = fn.apply(inputs).iterator();
+        final List<Vector<InputT, ValueT>> result = Lists.newArrayList();
+        final Iterator<InputT> i1 = inputs.iterator();
+        final Iterator<ValueT> i2 = fn.apply(inputs).iterator();
         while (i1.hasNext() && i2.hasNext()) {
           result.add(Vector.create(i1.next(), i2.next()));
         }
@@ -155,20 +156,20 @@ public interface Model<UnderlyingT> extends AutoCloseable {
     }
 
     static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
-        FeatureSpec<InputT> featureSpec,
-        String settings,
-        FeatranExtractFn<InputT, ValueT> fn) {
+        final FeatureSpec<InputT> featureSpec,
+        final String settings,
+        final FeatranExtractFn<InputT, ValueT> fn) {
       return create(JFeatureSpec.wrap(featureSpec), settings, fn);
     }
 
     static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
-            JFeatureSpec<InputT> featureSpec,
-            String settings,
-            FeatranExtractFn<InputT, ValueT> fn) {
-      JRecordExtractor<InputT, ValueT> extractor = fn.apply(featureSpec, settings);
+        final JFeatureSpec<InputT> featureSpec,
+        final String settings,
+        final FeatranExtractFn<InputT, ValueT> fn) {
+      final JRecordExtractor<InputT, ValueT> extractor = fn.apply(featureSpec, settings);
       return inputs -> inputs.stream()
-              .map(i -> Vector.create(i, extractor.featureValue(i)))
-              .collect(Collectors.toList());
+          .map(i -> Vector.create(i, extractor.featureValue(i)))
+          .collect(Collectors.toList());
     }
 
     List<Vector<InputT, ValueT>> extract(List<InputT> input) throws Exception;
@@ -181,7 +182,8 @@ public interface Model<UnderlyingT> extends AutoCloseable {
 
     public abstract ValueT value();
 
-    public static <InputT, ValueT> Vector<InputT, ValueT> create(InputT input, ValueT value) {
+    public static <InputT, ValueT> Vector<InputT, ValueT> create(final InputT input,
+                                                                 final ValueT value) {
       return new AutoValue_Model_Vector<>(input, value);
     }
   }
@@ -193,7 +195,8 @@ public interface Model<UnderlyingT> extends AutoCloseable {
 
     public abstract ValueT value();
 
-    public static <InputT, ValueT> Prediction<InputT, ValueT> create(InputT input, ValueT value) {
+    public static <InputT, ValueT> Prediction<InputT, ValueT> create(final InputT input,
+                                                                     final ValueT value) {
       return new AutoValue_Model_Prediction<>(input, value);
     }
   }

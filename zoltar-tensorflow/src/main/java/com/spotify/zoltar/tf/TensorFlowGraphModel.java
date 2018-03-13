@@ -54,7 +54,7 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
                                           @Nullable final ConfigProto config,
                                           @Nullable final String prefix)
       throws IOException {
-    byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
+    final byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
     return from(graphBytes, config, prefix);
   }
 
@@ -69,8 +69,8 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
                                           @Nullable final ConfigProto config,
                                           @Nullable final String prefix)
       throws IOException {
-    Graph graph = new Graph();
-    Session session = new Session(graph, config != null ? config.toByteArray() : null);
+    final Graph graph = new Graph();
+    final Session session = new Session(graph, config != null ? config.toByteArray() : null);
     final long loadStart = System.currentTimeMillis();
     if (prefix == null) {
       logger.debug("Loading graph definition without prefix");

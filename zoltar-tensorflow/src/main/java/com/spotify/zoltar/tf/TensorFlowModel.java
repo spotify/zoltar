@@ -36,12 +36,12 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
       .tags(Collections.singletonList("serve"))
       .build();
 
-  public static TensorFlowModel create(URI modelResource) throws IOException {
+  public static TensorFlowModel create(final URI modelResource) throws IOException {
     return create(modelResource, DEFAULT_OPTIONS);
   }
 
-  public static TensorFlowModel create(URI modelResource,
-                                       Options options) throws IOException {
+  public static TensorFlowModel create(final URI modelResource,
+                                       final Options options) throws IOException {
     final URI localDir = FileSystemExtras.downloadIfNonLocal(modelResource);
     final SavedModelBundle model = SavedModelBundle.load(localDir.toString(),
                                                          options.tags().toArray(new String[0]));

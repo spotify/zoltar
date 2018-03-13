@@ -1,5 +1,6 @@
 zoltar
 ======
+[![Build Status](https://travis-ci.org/spotify/zoltar.svg?branch=master)](https://travis-ci.org/spotify/zoltar)
 
 Common library for serving TensorFlow and XGBoost models in production.
 

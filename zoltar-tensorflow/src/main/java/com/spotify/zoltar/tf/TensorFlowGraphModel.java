@@ -67,7 +67,7 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
    *
    * Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
    *
-   * @param graphDef byte array representing the TensorFlow graph definition.
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config ConfigProto config for TensorFlow {@link Session}.
    * @param prefix a prefix that will be prepended to names in graphDef.
    */

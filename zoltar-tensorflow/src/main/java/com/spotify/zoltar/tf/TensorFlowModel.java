@@ -29,14 +29,12 @@ import java.util.Collections;
 import java.util.List;
 import org.tensorflow.SavedModelBundle;
 
-public class TensorFlowModel implements Model<SavedModelBundle> {
+@AutoValue
+public abstract class TensorFlowModel implements Model<SavedModelBundle> {
 
   private static final Options DEFAULT_OPTIONS = Options.builder()
       .tags(Collections.singletonList("serve"))
       .build();
-
-  private final SavedModelBundle model;
-  private final Options options;
 
   public static TensorFlowModel create(URI modelResource) throws IOException {
     return create(modelResource, DEFAULT_OPTIONS);
@@ -44,30 +42,23 @@ public class TensorFlowModel implements Model<SavedModelBundle> {
 
   public static TensorFlowModel create(URI modelResource,
                                        Options options) throws IOException {
-    return new TensorFlowModel(modelResource, options);
-  }
-
-  private TensorFlowModel(URI modelUri, Options options) throws IOException {
-    final URI localDir = FileSystemExtras.downloadIfNonLocal(modelUri);
-    this.model = SavedModelBundle.load(localDir.toString(), options.tags().toArray(new String[0]));
-    this.options = options;
+    final URI localDir = FileSystemExtras.downloadIfNonLocal(modelResource);
+    final SavedModelBundle model = SavedModelBundle.load(localDir.toString(),
+                                                         options.tags().toArray(new String[0]));
+    return new AutoValue_TensorFlowModel(model, options);
   }
 
   @Override
   public void close() throws Exception {
-    if (model != null) {
-      model.close();
+    if (instance() != null) {
+      instance().close();
     }
   }
 
   @Override
-  public SavedModelBundle instance() {
-    return model;
-  }
+  public abstract SavedModelBundle instance();
 
-  public Options options() {
-    return options;
-  }
+  public abstract Options options();
 
   @AutoValue
   public abstract static class Options {

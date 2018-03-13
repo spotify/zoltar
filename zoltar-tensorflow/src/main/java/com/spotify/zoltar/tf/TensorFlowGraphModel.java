@@ -54,12 +54,12 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
    * @param config config for TensorFlow {@link Session}.
    * @param prefix optional prefix that will be prepended to names in the graph.
    */
-  public static TensorFlowGraphModel from(final URI graphUri,
-                                          @Nullable final ConfigProto config,
-                                          @Nullable final String prefix)
+  public static TensorFlowGraphModel create(final URI graphUri,
+                                            @Nullable final ConfigProto config,
+                                            @Nullable final String prefix)
       throws IOException {
     final byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
-    return from(graphBytes, config, prefix);
+    return create(graphBytes, config, prefix);
   }
 
   /**
@@ -71,9 +71,9 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
    * @param config ConfigProto config for TensorFlow {@link Session}.
    * @param prefix a prefix that will be prepended to names in graphDef.
    */
-  public static TensorFlowGraphModel from(final byte[] graphDef,
-                                          @Nullable final ConfigProto config,
-                                          @Nullable final String prefix)
+  public static TensorFlowGraphModel create(final byte[] graphDef,
+                                            @Nullable final ConfigProto config,
+                                            @Nullable final String prefix)
       throws IOException {
     final Graph graph = new Graph();
     final Session session = new Session(graph, config != null ? config.toByteArray() : null);

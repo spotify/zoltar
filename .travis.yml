@@ -13,6 +13,8 @@ install:
 
 script:
   - mvn clean verify checkstyle:checkstyle findbugs:findbugs -Dbigquery.project.arg="-Dbigquery.project=dummy-project"
+  # Tricks to avoid unnecessary cache updates
+  - rm -rf $HOME/.m2/repository/com/spotify/zoltar-*
 
 after_success:
   - ./deploy.sh

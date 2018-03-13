@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar.tf;
 
+import com.google.auto.value.AutoValue;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
 import java.io.IOException;
@@ -37,25 +38,10 @@ import org.tensorflow.framework.ConfigProto;
  * https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py
  * TensorFlowGraphModel is thread-safe.
  */
-public class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
+@AutoValue
+public abstract class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
 
   private static final Logger logger = LoggerFactory.getLogger(TensorFlowGraphModel.class);
-  private final Graph graph;
-  private final Session session;
-
-  /**
-   * Creates a TensorFlow model based on a frozen, serialized TensorFlow graph.
-   *
-   * @param graphDef byte array representing the TensorFlow graph definition
-   * @param config ConfigProto config for TensorFlow session
-   * @param prefix a prefix that will be prepended to names in graphDef
-   */
-  public static TensorFlowGraphModel from(final byte[] graphDef,
-                                          @Nullable final ConfigProto config,
-                                          @Nullable final String prefix)
-      throws IOException {
-    return new TensorFlowGraphModel(graphDef, config, prefix);
-  }
 
   /**
    * Creates a TensorFlow model based on a frozen, serialized TensorFlow graph.
@@ -69,14 +55,22 @@ public class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
                                           @Nullable final String prefix)
       throws IOException {
     byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
-    return new TensorFlowGraphModel(graphBytes, config, prefix);
+    return from(graphBytes, config, prefix);
   }
 
-  private TensorFlowGraphModel(final byte[] graphDef,
-                               @Nullable final ConfigProto config,
-                               @Nullable final String prefix) throws IOException {
-    graph = new Graph();
-    session = new Session(graph, config != null ? config.toByteArray() : null);
+  /**
+   * Creates a TensorFlow model based on a frozen, serialized TensorFlow graph.
+   *
+   * @param graphDef byte array representing the TensorFlow graph definition
+   * @param config ConfigProto config for TensorFlow session
+   * @param prefix a prefix that will be prepended to names in graphDef
+   */
+  public static TensorFlowGraphModel from(final byte[] graphDef,
+                                          @Nullable final ConfigProto config,
+                                          @Nullable final String prefix)
+      throws IOException {
+    Graph graph = new Graph();
+    Session session = new Session(graph, config != null ? config.toByteArray() : null);
     final long loadStart = System.currentTimeMillis();
     if (prefix == null) {
       logger.debug("Loading graph definition without prefix");
@@ -86,31 +80,27 @@ public class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
       graph.importGraphDef(graphDef, prefix);
     }
     logger.info("TensorFlow graph loaded in %d ms", System.currentTimeMillis() - loadStart);
+    return new AutoValue_TensorFlowGraphModel(graph, session);
   }
-
 
   @Override
   public void close() {
-    if (session != null) {
+    if (instance() != null) {
       logger.debug("Closing TensorFlow session");
-      session.close();
+      instance().close();
     }
-    if (graph != null) {
+    if (graph() != null) {
       logger.debug("Closing TensorFlow graph");
-      graph.close();
+      graph().close();
     }
   }
 
   /**
    * Returns TensorFlow graph.
    */
-  public Graph graph() {
-    return graph;
-  }
+  public abstract Graph graph();
 
   @Override
-  public Session instance() {
-    return session;
-  }
+  public abstract Session instance();
 
 }

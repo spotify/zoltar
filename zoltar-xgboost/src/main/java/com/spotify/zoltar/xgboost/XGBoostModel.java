@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar.xgboost;
 
+import com.google.auto.value.AutoValue;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
 import java.io.IOException;
@@ -32,28 +33,20 @@ import ml.dmlc.xgboost4j.java.XGBoost;
 import ml.dmlc.xgboost4j.java.XGBoostError;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-public class XGBoostModel implements Model<Booster> {
-
-  private final Booster booster;
-
-  private XGBoostModel(Booster booster) {
-    this.booster = booster;
-  }
+@AutoValue
+public abstract class XGBoostModel implements Model<Booster> {
 
   public static XGBoostModel create(URI modelUri) throws IOException {
     try {
       GompLoader.start();
       final InputStream is = Files.newInputStream(FileSystemExtras.path(modelUri));
-      return new XGBoostModel(XGBoost.loadModel(is));
+      return new AutoValue_XGBoostModel(XGBoost.loadModel(is));
     } catch (XGBoostError xgBoostError) {
       throw new IOException(xgBoostError);
     }
   }
 
-  @Override
-  public Booster instance() {
-    return booster;
-  }
+  public abstract Booster instance();
 
   @Override
   public void close() throws Exception {

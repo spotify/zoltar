@@ -26,6 +26,7 @@ import com.spotify.zoltar.xgboost.XGBoostModel;
 import java.io.IOException;
 import java.net.URI;
 import javax.annotation.Nullable;
+import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
 
 /**
@@ -75,9 +76,10 @@ public final class Models {
   }
 
   /**
-   * Returns a TensorFlow model based on a serialized TensorFlow {@link org.tensorflow.Graph}.
+   * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
    *
-   * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph}
+   * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph} file on
+   *                 local filesystem, resource, GCS etc.
    * @param config optional TensorFlow {@link ConfigProto} config.
    * @param prefix optional prefix that will be prepended to names in the graph.
    */
@@ -86,5 +88,19 @@ public final class Models {
                                                      @Nullable final String prefix)
       throws IOException {
     return TensorFlowGraphModel.from(URI.create(modelUri), config, prefix);
+  }
+
+  /**
+   * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
+   *
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param config optional TensorFlow {@link ConfigProto} config.
+   * @param prefix optional prefix that will be prepended to names in the graph.
+   */
+  public static TensorFlowGraphModel tensorFlowGraph(final byte[] graphDef,
+                                                     @Nullable final ConfigProto config,
+                                                     @Nullable final String prefix)
+      throws IOException {
+    return TensorFlowGraphModel.from(graphDef, config, prefix);
   }
 }

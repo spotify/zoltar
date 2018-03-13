@@ -31,8 +31,9 @@ import okio.ByteString;
  * Route endpoints.
  */
 class EndPoints {
+
   Stream<Route<AsyncHandler<Response<ByteString>>>> routes() {
-    Stream<Route<AsyncHandler<Response<ByteString>>>> routes = Stream.of(
+    final Stream<Route<AsyncHandler<Response<ByteString>>>> routes = Stream.of(
         Route.sync("GET", "/<features>", context ->
             IrisPrediction.predict(context.pathArgs().get("features")))
             .withMiddleware(EndPoints::serialize)

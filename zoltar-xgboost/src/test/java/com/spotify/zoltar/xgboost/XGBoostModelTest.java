@@ -76,7 +76,7 @@ public class XGBoostModelTest {
                                                            1, "Iris-versicolor",
                                                            2, "Iris-virginica");
 
-    XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
+    final XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, float[]>>> predictions =
           vectors.stream().map(vector -> {
             return CompletableFuture.supplyAsync(() -> {
@@ -95,15 +95,15 @@ public class XGBoostModelTest {
       return CompletableFutures.allAsList(predictions);
     };
 
-    String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
-                                 StandardCharsets.UTF_8);
-    XGBoostModel model = XGBoostModel.create(trainedModelUri);
-    FeatureExtractor<Iris, LabeledPoint> irisFeatureExtractor = FeatureExtractor.create(
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                       StandardCharsets.UTF_8);
+    final XGBoostModel model = XGBoostModel.create(trainedModelUri);
+    final FeatureExtractor<Iris, LabeledPoint> irisFeatureExtractor = FeatureExtractor.create(
         IrisFeaturesSpec.irisFeaturesSpec(),
         settings,
         JFeatureSpec::extractWithSettingsLabeledPoint);
 
-    CompletableFuture<Integer> sum = Predictor
+    final CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)
         .predict(irisStream, Duration.ofMillis(1000))
         .thenApply(predictions -> {

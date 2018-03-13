@@ -36,12 +36,12 @@ import ml.dmlc.xgboost4j.java.XGBoostError;
 @AutoValue
 public abstract class XGBoostModel implements Model<Booster> {
 
-  public static XGBoostModel create(URI modelUri) throws IOException {
+  public static XGBoostModel create(final URI modelUri) throws IOException {
     try {
       GompLoader.start();
       final InputStream is = Files.newInputStream(FileSystemExtras.path(modelUri));
       return new AutoValue_XGBoostModel(XGBoost.loadModel(is));
-    } catch (XGBoostError xgBoostError) {
+    } catch (final XGBoostError xgBoostError) {
       throw new IOException(xgBoostError);
     }
   }

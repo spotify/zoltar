@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.mlservingexample;
+package com.spotify.zoltar.examples.apollo;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.apollo.Response;

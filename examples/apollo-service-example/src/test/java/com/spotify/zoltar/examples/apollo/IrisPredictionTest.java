@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.mlservingexample;
+package com.spotify.zoltar.examples.apollo;
 
 import java.io.IOException;
 import java.net.URI;

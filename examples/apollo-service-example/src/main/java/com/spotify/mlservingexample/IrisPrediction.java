@@ -31,7 +31,7 @@ import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.Model.FeatureExtractor;
 import com.spotify.zoltar.Model.Predictor;
-import com.spotify.zoltar.models.Models;
+import com.spotify.zoltar.Models;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;

@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.models;
+package com.spotify.zoltar;
 
 import com.spotify.zoltar.tf.TensorFlowGraphModel;
 import com.spotify.zoltar.tf.TensorFlowModel;

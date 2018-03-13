@@ -11,10 +11,6 @@
 
   <artifactId>zoltar-xgboost</artifactId>
 
-  <properties>
-    <!-- Downgrade tensorflow to 1.4.0 due to https://github.com/tensorflow/tensorflow/issues/16899 -->
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
@@ -35,14 +31,17 @@
       <version>0.7-20171122-70a4c419</version>
     </dependency>
     <dependency>
-      <groupId>org.tensorflow</groupId>
-      <artifactId>tensorflow</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-java_2.11</artifactId>
     </dependency>
 
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>zoltar-tests</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
@@ -54,13 +53,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-tests</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -69,7 +61,6 @@
 
   <build>
     <finalName>${project.artifactId}</finalName>
-
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -96,6 +87,5 @@
       </plugin>
     </plugins>
   </build>
-
 
 </project>

@@ -81,11 +81,9 @@ public class XGBoostModelTest {
           vectors.stream().map(vector -> {
             return CompletableFuture.supplyAsync(() -> {
               try {
-                LabeledPoint labeledPoints = new LabeledPoint(0, null, vector.value());
                 final Iterator<LabeledPoint> iterator =
-                    Collections.singletonList(labeledPoints).iterator();
+                    Collections.singletonList(vector.value()).iterator();
                 final DMatrix dMatrix = new DMatrix(iterator, null);
-
                 return Prediction.create(vector.input(),
                                          model.instance().predict(dMatrix)[0]);
               } catch (Exception e) {
@@ -100,10 +98,10 @@ public class XGBoostModelTest {
     String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
                                  StandardCharsets.UTF_8);
     XGBoostModel model = XGBoostModel.create(trainedModelUri);
-    FeatureExtractor<Iris, float[]> irisFeatureExtractor = FeatureExtractor.create(
+    FeatureExtractor<Iris, LabeledPoint> irisFeatureExtractor = FeatureExtractor.create(
         IrisFeaturesSpec.irisFeaturesSpec(),
         settings,
-        JFeatureSpec::extractWithSettingsFloat);
+        JFeatureSpec::extractWithSettingsLabeledPoint);
 
     CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)

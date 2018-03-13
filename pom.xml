@@ -30,7 +30,7 @@
     <scala.version>2.11.12</scala.version>
     <tensorFlow.version>1.4.0</tensorFlow.version>
     <scio.version>0.5.0</scio.version>
-    <featran.version>0.1.18</featran.version>
+    <featran.version>0.1.19</featran.version>
     <proto.version>3.5.1</proto.version>
   </properties>
 
@@ -157,6 +157,12 @@
         <groupId>com.spotify</groupId>
         <artifactId>scio-tensorflow_2.11</artifactId>
         <version>${scio.version}</version>
+      </dependency>
+      <dependency>
+        <!-- initial reason: breeze 1.0-RC2 from featran 0.1.19 -->
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math3</artifactId>
+        <version>3.6.1</version>
       </dependency>
       <dependency>
         <!-- initial reason: breeze 1.0-RC2 from scio-tensorflow 0.5.0 -->

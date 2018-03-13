@@ -17,6 +17,7 @@ script:
   - rm -rf $HOME/.m2/repository/com/spotify/zoltar-*
 
 after_success:
+  - bash <(curl -s https://codecov.io/bash)
   - ./deploy.sh
 
 notifications:

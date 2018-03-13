@@ -113,7 +113,7 @@ public class TensorFlowGraphModelTest {
                                        StandardCharsets.UTF_8);
 
     final TensorFlowGraphModel tfModel =
-        TensorFlowGraphModel.from(graphFile.toUri(), null, null);
+        TensorFlowGraphModel.create(graphFile.toUri(), null, null);
 
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()

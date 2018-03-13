@@ -87,7 +87,7 @@ public final class Models {
                                                      @Nullable final ConfigProto config,
                                                      @Nullable final String prefix)
       throws IOException {
-    return TensorFlowGraphModel.from(URI.create(modelUri), config, prefix);
+    return TensorFlowGraphModel.create(URI.create(modelUri), config, prefix);
   }
 
   /**
@@ -101,6 +101,6 @@ public final class Models {
                                                      @Nullable final ConfigProto config,
                                                      @Nullable final String prefix)
       throws IOException {
-    return TensorFlowGraphModel.from(graphDef, config, prefix);
+    return TensorFlowGraphModel.create(graphDef, config, prefix);
   }
 }

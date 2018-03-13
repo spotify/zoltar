@@ -20,12 +20,11 @@
 from __future__ import absolute_import
 
 import logging
-from collections import defaultdict
-from os.path import join as pjoin
-
 import numpy as np
 import tensorflow as tf
 import xgboost as xgb
+from collections import defaultdict
+from os.path import join as pjoin
 from spotify_tensorflow.dataset import Datasets
 from tensorflow.python.lib.io import file_io
 

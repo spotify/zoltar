@@ -20,17 +20,24 @@
 
 package com.spotify.zoltar;
 
+import com.google.auto.value.AutoValue;
+
 /**
- * Model interface. In most cases you can just use the prebaked implementations.
- *
- * @param <UnderlyingT> the underlying type of the model.
+ * Value class for prediction result. Holds both the original input and the result of the prediction
+ * for the input.
  */
-public interface Model<UnderlyingT> extends AutoCloseable {
+@AutoValue
+public abstract class Prediction<InputT, ValueT> {
 
-  /**
-   * Returns an instance of the underlying model. This could be for example TensorFlow's graph,
-   * session or XGBoost's booster.
-   */
-  UnderlyingT instance();
+  /** Input to the prediction. */
+  public abstract InputT input();
 
+  /** Result of the prediction. */
+  public abstract ValueT value();
+
+  /** Create a new prediction result. */
+  public static <InputT, ValueT> Prediction<InputT, ValueT> create(final InputT input,
+                                                                   final ValueT value) {
+    return new AutoValue_Prediction<>(input, value);
+  }
 }

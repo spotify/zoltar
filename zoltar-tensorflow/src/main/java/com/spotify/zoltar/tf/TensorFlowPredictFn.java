@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.tf;
 
-import com.spotify.zoltar.Model.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import org.tensorflow.example.Example;
 
 /**

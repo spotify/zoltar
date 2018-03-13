@@ -73,7 +73,9 @@ public class GompLoader {
     }
   }
 
-  /** The entry to to load the GOMP library" */
+  /**
+   * The entry to to load the GOMP library"
+   */
   public static void start() throws IOException {
     if (isLinux()) {
       loadGomp();

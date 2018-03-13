@@ -44,7 +44,7 @@ public final class Models {
    * Returns a XGBoost model given the serialized model stored in the model URI.
    *
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
-   *                 filesystem, resource, GCS etc.
+   * filesystem, resource, GCS etc.
    */
   public static XGBoostModel xgboost(final String modelUri) throws IOException {
     return XGBoostModel.create(URI.create(modelUri));
@@ -53,9 +53,8 @@ public final class Models {
   /**
    * Returns a TensorFlow model based on a saved model.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow
-   *                 {@link org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
-   *                 resource, GCS etc.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    */
   public static TensorFlowModel tensorFlow(final String modelUri) throws IOException {
     return TensorFlowModel.create(URI.create(modelUri));
@@ -64,9 +63,8 @@ public final class Models {
   /**
    * Returns a TensorFlow model based on a saved model.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow
-   *                 {@link org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
-   *                 resource, GCS etc.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
    */
   public static TensorFlowModel tensorFlow(final String modelUri,

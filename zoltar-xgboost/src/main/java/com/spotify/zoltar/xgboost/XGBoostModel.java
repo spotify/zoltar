@@ -56,10 +56,14 @@ public abstract class XGBoostModel implements Model<Booster> {
     }
   }
 
-  /** Returns XGBoost's {@link Booster}. */
+  /**
+   * Returns XGBoost's {@link Booster}.
+   */
   public abstract Booster instance();
 
-  /** Closes the model */
+  /**
+   * Closes the model
+   */
   @Override
   public void close() throws Exception {
   }

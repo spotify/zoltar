@@ -20,17 +20,24 @@
 
 package com.spotify.zoltar;
 
+import com.google.auto.value.AutoValue;
+
 /**
- * Model interface. In most cases you can just use the prebaked implementations.
- *
- * @param <UnderlyingT> the underlying type of the model.
+ * Value class for feature extraction result. Holds both the original input and the result of the
+ * feature extraction for the input.
  */
-public interface Model<UnderlyingT> extends AutoCloseable {
+@AutoValue
+public abstract class Vector<InputT, ValueT> {
 
-  /**
-   * Returns an instance of the underlying model. This could be for example TensorFlow's graph,
-   * session or XGBoost's booster.
-   */
-  UnderlyingT instance();
+  /** Input to the feature extraction. */
+  public abstract InputT input();
 
+  /** Result of the feature extraction. */
+  public abstract ValueT value();
+
+  /** Create a new feature extraction result. */
+  public static <InputT, ValueT> Vector<InputT, ValueT> create(final InputT input,
+                                                               final ValueT value) {
+    return new AutoValue_Vector<>(input, value);
+  }
 }

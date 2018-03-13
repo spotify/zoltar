@@ -28,25 +28,59 @@ import java.net.URI;
 import javax.annotation.Nullable;
 import org.tensorflow.framework.ConfigProto;
 
+/**
+ * This class consists exclusively of static methods that return Models.
+ *
+ * This is the public entry point for get get a Model.
+ */
 public final class Models {
 
+  // Suppresses default constructor, ensuring non-instantiability.
   private Models() {
   }
 
+  /**
+   * Returns a XGBoost model given the serialized model stored in the model URI.
+   *
+   * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
+   *                 filesystem, resource, GCS etc.
+   */
   public static XGBoostModel xgboost(final String modelUri) throws IOException {
     return XGBoostModel.create(URI.create(modelUri));
   }
 
+  /**
+   * Returns a TensorFlow model based on a saved model.
+   *
+   * @param modelUri should point to a directory of the saved TensorFlow
+   *                 {@link org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                 resource, GCS etc.
+   */
   public static TensorFlowModel tensorFlow(final String modelUri) throws IOException {
     return TensorFlowModel.create(URI.create(modelUri));
   }
 
+  /**
+   * Returns a TensorFlow model based on a saved model.
+   *
+   * @param modelUri should point to a directory of the saved TensorFlow
+   *                 {@link org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                 resource, GCS etc.
+   * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
+   */
   public static TensorFlowModel tensorFlow(final String modelUri,
                                            final TensorFlowModel.Options options)
       throws IOException {
     return TensorFlowModel.create(URI.create(modelUri), options);
   }
 
+  /**
+   * Returns a TensorFlow model based on a serialized TensorFlow {@link org.tensorflow.Graph}.
+   *
+   * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph}
+   * @param config optional TensorFlow {@link ConfigProto} config.
+   * @param prefix optional prefix that will be prepended to names in the graph.
+   */
   public static TensorFlowGraphModel tensorFlowGraph(final String modelUri,
                                                      @Nullable final ConfigProto config,
                                                      @Nullable final String prefix)

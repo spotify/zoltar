@@ -31,11 +31,18 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * FileSystem utils and extras.
+ */
 public final class FileSystemExtras {
 
+  // Suppresses default constructor, ensuring non-instantiability.
   private FileSystemExtras() {
   }
 
+  /**
+   * Creates a {@link Path} given a {@link URI} in a user-friendly and safe way.
+   */
   public static Path path(final URI uri) {
     if (uri.getScheme() == null) {
       return Paths.get(uri.toString());
@@ -45,8 +52,10 @@ public final class FileSystemExtras {
   }
 
   /**
+   * NOTE: Zoltar internal use only!
+   *
    * If the path is not on a local filesystem, it will download the resource to a temporary path on
-   * a local filesystem.
+   * the local filesystem.
    */
   public static URI downloadIfNonLocal(final URI path) throws IOException {
     final String fixedPath =

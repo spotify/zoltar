@@ -34,8 +34,10 @@ import org.tensorflow.Session;
 import org.tensorflow.framework.ConfigProto;
 
 /**
- * This model can be used to load protobuf definition of a TensorFlow graph. See:
- * https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py
+ * This model can be used to load protobuf definition of a TensorFlow {@link Graph}.
+ *
+ * For an easy model freezing function see <a href="https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py">spotify-tensorflow</a>
+ *
  * TensorFlowGraphModel is thread-safe.
  */
 @AutoValue
@@ -44,11 +46,13 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
   private static final Logger logger = LoggerFactory.getLogger(TensorFlowGraphModel.class);
 
   /**
-   * Creates a TensorFlow model based on a frozen, serialized TensorFlow graph.
+   * Note: Please use Models from zoltar-models module.
    *
-   * @param graphUri URI to the TensorFlow graph definition
-   * @param config ConfigProto config for TensorFlow session
-   * @param prefix a prefix that will be prepended to names in graphDef
+   * Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
+   *
+   * @param graphUri URI to the TensorFlow graph definition.
+   * @param config config for TensorFlow {@link Session}.
+   * @param prefix optional prefix that will be prepended to names in the graph.
    */
   public static TensorFlowGraphModel from(final URI graphUri,
                                           @Nullable final ConfigProto config,
@@ -59,11 +63,13 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
   }
 
   /**
-   * Creates a TensorFlow model based on a frozen, serialized TensorFlow graph.
+   * Note: Please use Models from zoltar-models module.
    *
-   * @param graphDef byte array representing the TensorFlow graph definition
-   * @param config ConfigProto config for TensorFlow session
-   * @param prefix a prefix that will be prepended to names in graphDef
+   * Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
+   *
+   * @param graphDef byte array representing the TensorFlow graph definition.
+   * @param config ConfigProto config for TensorFlow {@link Session}.
+   * @param prefix a prefix that will be prepended to names in graphDef.
    */
   public static TensorFlowGraphModel from(final byte[] graphDef,
                                           @Nullable final ConfigProto config,
@@ -83,6 +89,7 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
     return new AutoValue_TensorFlowGraphModel(graph, session);
   }
 
+  /** Close the model. */
   @Override
   public void close() {
     if (instance() != null) {
@@ -95,11 +102,10 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
     }
   }
 
-  /**
-   * Returns TensorFlow graph.
-   */
+  /** Returns TensorFlow graph. */
   public abstract Graph graph();
 
+  /** Returns TensorFlow {@link Session}. */
   @Override
   public abstract Session instance();
 

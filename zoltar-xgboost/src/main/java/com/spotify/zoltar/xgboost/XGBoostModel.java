@@ -32,10 +32,20 @@ import ml.dmlc.xgboost4j.java.GompLoader;
 import ml.dmlc.xgboost4j.java.XGBoost;
 import ml.dmlc.xgboost4j.java.XGBoostError;
 
+/**
+ * XGBoost model.
+ *
+ * XGBoostModel is thread-safe.
+ */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @AutoValue
 public abstract class XGBoostModel implements Model<Booster> {
 
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * Returns a XGBoost model given a URI to the serialized model file.
+   */
   public static XGBoostModel create(final URI modelUri) throws IOException {
     try {
       GompLoader.start();
@@ -46,10 +56,11 @@ public abstract class XGBoostModel implements Model<Booster> {
     }
   }
 
+  /** Returns XGBoost's {@link Booster}. */
   public abstract Booster instance();
 
+  /** Closes the model */
   @Override
   public void close() throws Exception {
-
   }
 }

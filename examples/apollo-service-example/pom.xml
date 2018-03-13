@@ -20,7 +20,6 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <maven.install.skip>true</maven.install.skip>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
-    <tensorFlow.version>1.4.0</tensorFlow.version>
   </properties>
 
   <dependencyManagement>

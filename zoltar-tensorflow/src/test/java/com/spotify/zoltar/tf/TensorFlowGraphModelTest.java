@@ -83,21 +83,43 @@ public class TensorFlowGraphModelTest {
   @Test
   public void testDummyLoadOfTensorFlowGraph() throws Exception {
     final Path graphFile = createADummyTFGraph();
-    try (Graph newGraph = new Graph();
-        Tensor<Double> double3 = Tensors.create(3.0D)) {
-      newGraph.importGraphDef(Files.readAllBytes(graphFile));
-      try (Session session = new Session(newGraph)) {
-        List<Tensor<?>> result = null;
-        try {
-          result = session.runner()
-              .fetch(mulResult)
-              .feed(inputOpName, double3)
-              .run();
-          assertEquals(result.get(0).doubleValue(), 6.0D, Double.MIN_VALUE);
-        } finally {
-          if (result != null) {
-            result.forEach(Tensor::close);
-          }
+    try (TensorFlowGraphModel model =
+             TensorFlowGraphModel.create(graphFile.toUri(), null, null);
+         Session session = model.instance();
+         Tensor<Double> double3 = Tensors.create(3.0D)) {
+      List<Tensor<?>> result = null;
+      try {
+        result = session.runner()
+            .fetch(mulResult)
+            .feed(inputOpName, double3)
+            .run();
+        assertEquals(result.get(0).doubleValue(), 6.0D, Double.MIN_VALUE);
+      } finally {
+        if (result != null) {
+          result.forEach(Tensor::close);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testDummyLoadOfTensorFlowGraphWithPrefix() throws Exception {
+    final String prefix = "test";
+    final Path graphFile = createADummyTFGraph();
+    try (TensorFlowGraphModel model =
+             TensorFlowGraphModel.create(graphFile.toUri(), null, prefix);
+         Session session = model.instance();
+         Tensor<Double> double3 = Tensors.create(3.0D)) {
+      List<Tensor<?>> result = null;
+      try {
+        result = session.runner()
+            .fetch(prefix + "/" + mulResult)
+            .feed(prefix + "/" + inputOpName, double3)
+            .run();
+        assertEquals(result.get(0).doubleValue(), 6.0D, Double.MIN_VALUE);
+      } finally {
+        if (result != null) {
+          result.forEach(Tensor::close);
         }
       }
     }

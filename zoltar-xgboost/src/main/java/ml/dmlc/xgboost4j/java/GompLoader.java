@@ -26,6 +26,10 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Vector;
 
+/**
+ * Utility class to load <a href="https://gcc.gnu.org/projects/gomp/">GOMP</a> library on both Mac
+ * and Linux environment.
+ */
 public class GompLoader {
 
   private static boolean isLinux() {
@@ -69,6 +73,7 @@ public class GompLoader {
     }
   }
 
+  /** The entry to to load the GOMP library" */
   public static void start() throws IOException {
     if (isLinux()) {
       loadGomp();

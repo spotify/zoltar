@@ -29,6 +29,7 @@ import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -156,10 +157,8 @@ public class TensorFlowGraphModelTest {
                 throw new RuntimeException(e);
               }
             }).collect(Collectors.toList());
-    final FeatureExtractor<Double, double[]> irisFeatureExtractor = FeatureExtractor.create(
-        featureSpec,
-        settings,
-        JFeatureSpec::extractWithSettingsDouble);
+    final FeatureExtractor<Double, double[]> irisFeatureExtractor =
+        FeatureExtractor.create(FeatranExtractFns.doubles(featureSpec, settings));
 
     final Double[] input = new Double[]{0.0D, 1.0D, 7.0D};
     final double[] expected = Arrays.stream(input).mapToDouble(d -> d * 2.0D).toArray();

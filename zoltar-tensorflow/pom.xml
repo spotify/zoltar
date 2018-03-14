@@ -18,16 +18,17 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>zoltar-featran</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.tensorflow</groupId>
       <artifactId>tensorflow</artifactId>
     </dependency>
     <dependency>
       <groupId>org.tensorflow</groupId>
       <artifactId>proto</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-java_2.11</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

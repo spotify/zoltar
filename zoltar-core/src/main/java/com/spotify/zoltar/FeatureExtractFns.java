@@ -22,9 +22,6 @@ package com.spotify.zoltar;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.spotify.featran.java.JFeatureSpec;
-import com.spotify.featran.java.JRecordExtractor;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -77,22 +74,4 @@ public interface FeatureExtractFns {
     }
   }
 
-  /**
-   * <a href="https://github.com/spotify/featran">Featran</a> specific feature extraction function.
-   *
-   * @param <InputT> type of the input to the {@link JFeatureSpec}.
-   * @param <ValueT> type of the output from {@link JRecordExtractor}.
-   */
-  @FunctionalInterface
-  interface FeatranExtractFn<InputT, ValueT> {
-
-    /**
-     * Functional interface. Perform feature extraction given Featran's feature specification and
-     * settings.
-     *
-     * @param spec Featran's feature spec.
-     * @param settings Featran's settings.
-     */
-    JRecordExtractor<InputT, ValueT> apply(JFeatureSpec<InputT> spec, String settings);
-  }
 }

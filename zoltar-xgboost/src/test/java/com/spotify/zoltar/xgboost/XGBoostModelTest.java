@@ -30,6 +30,7 @@ import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -98,10 +99,9 @@ public class XGBoostModelTest {
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
                                        StandardCharsets.UTF_8);
     final XGBoostModel model = XGBoostModel.create(trainedModelUri);
-    final FeatureExtractor<Iris, LabeledPoint> irisFeatureExtractor = FeatureExtractor.create(
-        IrisFeaturesSpec.irisFeaturesSpec(),
-        settings,
-        JFeatureSpec::extractWithSettingsLabeledPoint);
+    final FeatureExtractor<Iris, LabeledPoint> irisFeatureExtractor =
+        FeatureExtractor
+            .create(FeatranExtractFns.labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings));
 
     final CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)

@@ -28,6 +28,7 @@ import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.net.URI;
 import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
@@ -82,11 +83,9 @@ public class TensorFlowModelTest {
                                        StandardCharsets.UTF_8);
 
     final TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
-    final FeatureExtractor<Iris, Example> irisFeatureExtractor = FeatureExtractor.create(
-        IrisFeaturesSpec.irisFeaturesSpec(),
-        settings,
-        JFeatureSpec::extractWithSettingsExample);
-
+    final FeatureExtractor<Iris, Example> irisFeatureExtractor =
+        FeatureExtractor.create(FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings));
+    
     final CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)
         .predict(Duration.ofMillis(1000), irisStream)

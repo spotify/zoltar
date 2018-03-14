@@ -159,6 +159,11 @@
         <version>${scio.version}</version>
       </dependency>
       <dependency>
+        <groupId>me.lyh</groupId>
+        <artifactId>xgboost4j</artifactId>
+        <version>0.7-20171122-70a4c419</version>
+      </dependency>
+      <dependency>
         <!-- initial reason: breeze 1.0-RC2 from featran 0.1.19 -->
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-math3</artifactId>

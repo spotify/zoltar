@@ -18,6 +18,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>zoltar-featran</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
@@ -28,11 +33,6 @@
     <dependency>
       <groupId>me.lyh</groupId>
       <artifactId>xgboost4j</artifactId>
-      <version>0.7-20171122-70a4c419</version>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-java_2.11</artifactId>
     </dependency>
 
     <!-- Test dependencies -->

@@ -20,8 +20,11 @@
 
 package com.spotify.zoltar;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.java.JRecordExtractor;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,8 +36,8 @@ import java.util.List;
 public interface FeatureExtractFns {
 
   /**
-   * Generic feature extraction function, takes raw input and should return extracted features of
-   * user defined type.
+   * Generic feature extraction function, takes multiple raw input and should return extracted
+   * features of user defined type.
    *
    * @param <InputT> type of the input to feature extraction.
    * @param <ValueT> type of feature extraction result.
@@ -46,6 +49,32 @@ public interface FeatureExtractFns {
      * Functional interface. Perform feature extraction.
      */
     List<ValueT> apply(InputT... inputs) throws Exception;
+  }
+
+  /**
+   * Generic feature extraction function, takes a single raw input and should return extracted
+   * features of user defined type.
+   *
+   * @param <InputT> type of the input to feature extraction.
+   * @param <ValueT> type of feature extraction result.
+   */
+  @FunctionalInterface
+  interface SingleExtractFn<InputT, ValueT> extends ExtractFn<InputT, ValueT> {
+
+    /**
+     * Functional interface. Perform feature extraction.
+     */
+    ValueT apply(InputT input) throws Exception;
+
+    default List<ValueT> apply(final InputT... inputs) throws Exception {
+      final Builder<ValueT> builder = ImmutableList.builder();
+
+      for(final InputT input: inputs) {
+        builder.add(apply(input));
+      }
+
+      return builder.build();
+    }
   }
 
   /**

@@ -86,7 +86,6 @@ public class TensorFlowModelTest {
         IrisFeaturesSpec.irisFeaturesSpec(),
         settings,
         JFeatureSpec::extractWithSettingsExample);
-    JFeatureSpec.wrap(IrisFeaturesSpec.irisFeaturesSpec()).extractWithSettingsExample(settings);
 
     final CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)

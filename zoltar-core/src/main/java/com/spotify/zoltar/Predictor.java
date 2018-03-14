@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar;
 
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import java.time.Duration;
@@ -51,6 +52,24 @@ public interface Predictor<InputT, ValueT> {
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
    * @param model model to perform prediction on.
+   * @param extractFn a feature extract function to use to transform input into extracted features.
+   * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
+   * @param <ModelT> underlying type of the {@link Model}.
+   * @param <InputT> type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT> type of the output from {@link FeatureExtractor}.
+   * @param <ValueT> type of the prediction result.
+   */
+  static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
+      final ModelT model,
+      final ExtractFn<InputT, VectorT> extractFn,
+      final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+    return create(model, FeatureExtractor.create(extractFn), AsyncPredictFn.lift(predictFn));
+  }
+
+  /**
+   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
+   *
+   * @param model model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -63,6 +82,25 @@ public interface Predictor<InputT, ValueT> {
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return create(model, featureExtractor, AsyncPredictFn.lift(predictFn));
+  }
+
+  /**
+   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * AsyncPredictFn}.
+   *
+   * @param model model to perform prediction on.
+   * @param extractFn a feature extract function to use to transform input into extracted features.
+   * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
+   * @param <ModelT> underlying type of the {@link Model}.
+   * @param <InputT> type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT> type of the output from {@link FeatureExtractor}.
+   * @param <ValueT> type of the prediction result.
+   */
+  static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
+      final ModelT model,
+      final ExtractFn<InputT, VectorT> extractFn,
+      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+    return create(model, FeatureExtractor.create(extractFn), predictFn);
   }
 
   /**

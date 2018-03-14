@@ -109,13 +109,10 @@ public class IrisPrediction {
         Option.apply(Double.parseDouble(features[3])),
         Option.empty());
 
-    final List<Iris> irisStream = new ArrayList<Iris>();
-    irisStream.add(featureData);
-
     int[] predictions = new int[0];
     try {
       predictions = predictor
-          .predict(irisStream)
+          .predict(featureData)
           .thenApply(p -> p
               .stream()
               .mapToInt(prediction -> {

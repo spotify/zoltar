@@ -26,6 +26,7 @@ import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.java.JRecordExtractor;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.FeatureExtractFns.FeatranExtractFn;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public interface FeatureExtractor<InputT, ValueT> {
       final ExtractFn<InputT, ValueT> fn) {
     return inputs -> {
       final List<Vector<InputT, ValueT>> result = Lists.newArrayList();
-      final Iterator<InputT> i1 = inputs.iterator();
+      final Iterator<InputT> i1 = Arrays.asList(inputs).iterator();
       final Iterator<ValueT> i2 = fn.apply(inputs).iterator();
       while (i1.hasNext() && i2.hasNext()) {
         result.add(Vector.create(i1.next(), i2.next()));
@@ -92,11 +93,11 @@ public interface FeatureExtractor<InputT, ValueT> {
       final String settings,
       final FeatranExtractFn<InputT, ValueT> fn) {
     final JRecordExtractor<InputT, ValueT> extractor = fn.apply(featureSpec, settings);
-    return inputs -> inputs.stream()
+    return inputs -> Arrays.stream(inputs)
         .map(i -> Vector.create(i, extractor.featureValue(i)))
         .collect(Collectors.toList());
   }
 
   /** Functional interface. Perform the feature extraction given the input. */
-  List<Vector<InputT, ValueT>> extract(List<InputT> input) throws Exception;
+  List<Vector<InputT, ValueT>> extract(InputT... input) throws Exception;
 }

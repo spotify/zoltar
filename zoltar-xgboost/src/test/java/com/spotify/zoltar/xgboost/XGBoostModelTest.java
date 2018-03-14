@@ -62,7 +62,7 @@ public class XGBoostModelTest {
     final URI settingsUri = getClass().getResource("/settings.json").toURI();
     final URI data = getClass().getResource("/iris.csv").toURI();
 
-    final List<Iris> irisStream = Files.readAllLines(Paths.get(data))
+    final Iris[] irisStream = Files.readAllLines(Paths.get(data))
         .stream()
         .map(l -> l.split(","))
         .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
@@ -70,7 +70,7 @@ public class XGBoostModelTest {
                               Option.apply(Double.parseDouble(strs[2])),
                               Option.apply(Double.parseDouble(strs[3])),
                               Option.apply(strs[4])))
-        .collect(Collectors.toList());
+        .toArray(Iris[]::new);
 
     final Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
                                                            1, "Iris-versicolor",
@@ -105,7 +105,7 @@ public class XGBoostModelTest {
 
     final CompletableFuture<Integer> sum = Predictor
         .create(model, irisFeatureExtractor, predictFn)
-        .predict(irisStream, Duration.ofMillis(1000))
+        .predict(Duration.ofMillis(1000), irisStream)
         .thenApply(predictions -> {
           return predictions.stream()
               .mapToInt(prediction -> {
@@ -119,6 +119,6 @@ public class XGBoostModelTest {
               }).sum();
         }).toCompletableFuture();
 
-    assertTrue("Should be more the 0.8", sum.get() / (float) irisStream.size() > .8);
+    assertTrue("Should be more the 0.8", sum.get() / (float) irisStream.length > .8);
   }
 }

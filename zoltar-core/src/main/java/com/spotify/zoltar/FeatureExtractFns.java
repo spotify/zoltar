@@ -45,7 +45,7 @@ public interface FeatureExtractFns {
     /**
      * Functional interface. Perform feature extraction.
      */
-    List<ValueT> apply(List<InputT> inputs) throws Exception;
+    List<ValueT> apply(InputT... inputs) throws Exception;
   }
 
   /**

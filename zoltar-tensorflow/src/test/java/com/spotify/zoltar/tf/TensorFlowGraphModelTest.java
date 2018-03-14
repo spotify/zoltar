@@ -161,8 +161,8 @@ public class TensorFlowGraphModelTest {
         settings,
         JFeatureSpec::extractWithSettingsDouble);
 
-    final List<Double> input = Arrays.asList(0.0D, 1.0D, 7.0D);
-    final double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();
+    final Double[] input = new Double[]{0.0D, 1.0D, 7.0D};
+    final double[] expected = Arrays.stream(input).mapToDouble(d -> d * 2.0D).toArray();
     final CompletableFuture<double[]> result = Predictor
         .create(tfModel, irisFeatureExtractor, predictFn)
         .predict(input)

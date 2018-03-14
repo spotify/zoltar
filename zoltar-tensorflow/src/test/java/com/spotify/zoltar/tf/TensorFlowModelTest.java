@@ -21,9 +21,8 @@
 package com.spotify.zoltar.tf;
 
 import com.google.common.collect.ImmutableMap;
-import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
-import com.spotify.zoltar.FeatureExtractor;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Prediction;
@@ -83,11 +82,11 @@ public class TensorFlowModelTest {
                                        StandardCharsets.UTF_8);
 
     final TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
-    final FeatureExtractor<Iris, Example> irisFeatureExtractor =
-        FeatureExtractor.create(FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings));
-    
+    final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
+        .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
+
     final CompletableFuture<Integer> sum = Predictor
-        .create(model, irisFeatureExtractor, predictFn)
+        .create(model, extractFn, predictFn)
         .predict(Duration.ofMillis(1000), irisStream)
         .thenApply(predictions -> {
           return predictions.stream()

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
-import com.spotify.zoltar.FeatureExtractor;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
@@ -157,13 +157,12 @@ public class TensorFlowGraphModelTest {
                 throw new RuntimeException(e);
               }
             }).collect(Collectors.toList());
-    final FeatureExtractor<Double, double[]> irisFeatureExtractor =
-        FeatureExtractor.create(FeatranExtractFns.doubles(featureSpec, settings));
+    final ExtractFn<Double, double[]> extractFn = FeatranExtractFns.doubles(featureSpec, settings);
 
     final Double[] input = new Double[]{0.0D, 1.0D, 7.0D};
     final double[] expected = Arrays.stream(input).mapToDouble(d -> d * 2.0D).toArray();
     final CompletableFuture<double[]> result = Predictor
-        .create(tfModel, irisFeatureExtractor, predictFn)
+        .create(tfModel, extractFn, predictFn)
         .predict(input)
         .thenApply(predictions -> {
           return predictions.stream()

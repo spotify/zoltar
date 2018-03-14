@@ -31,7 +31,7 @@ public class FileSystemExtrasTest {
 
   @Test
   public void getLatestDateTest() throws IOException, URISyntaxException {
-    String abspath = new File(getClass().getResource("/testdir").toURI()).getAbsolutePath();
+    final String abspath = new File(getClass().getResource("/testdir").toURI()).getAbsolutePath();
     assertEquals(FileSystemExtras.getLatestDate(abspath).get(), "2018-03-01");
   }
 

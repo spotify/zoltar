@@ -48,7 +48,7 @@ public final class FileSystemExtras {
    * Finds the latest date directory in the directory src. It assumes that partitions are
    * formatted using ISO_LOCAL_DATE (e.g. YYYY-MM-DD).
    */
-  public static Optional<String> getLatestDate(String src) throws IOException {
+  public static Optional<String> getLatestDate(final String src) throws IOException {
     return Files.list(Paths.get(src))
         .filter(Files::isDirectory)
         .map(p -> LocalDate.parse(p.getFileName().toString()))

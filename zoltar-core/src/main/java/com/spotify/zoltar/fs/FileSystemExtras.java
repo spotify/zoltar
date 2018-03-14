@@ -29,6 +29,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +41,19 @@ public final class FileSystemExtras {
 
   // Suppresses default constructor, ensuring non-instantiability.
   private FileSystemExtras() {
+  }
+
+
+  /**
+   * Finds the latest date directory in the directory src. It assumes that partitions are
+   * formatted using ISO_LOCAL_DATE (e.g. YYYY-MM-DD).
+   */
+  public static Optional<String> getLatestDate(String src) throws IOException {
+    return Files.list(Paths.get(src))
+        .filter(Files::isDirectory)
+        .map(p -> LocalDate.parse(p.getFileName().toString()))
+        .reduce((x,y) -> x.compareTo(y) > 0 ? x : y)
+        .map(LocalDate::toString);
   }
 
   /**

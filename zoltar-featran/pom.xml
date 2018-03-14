@@ -21,6 +21,11 @@
       <groupId>com.spotify</groupId>
       <artifactId>featran-java_2.11</artifactId>
     </dependency>
+    <dependency>
+      <groupId>me.lyh</groupId>
+      <artifactId>xgboost4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

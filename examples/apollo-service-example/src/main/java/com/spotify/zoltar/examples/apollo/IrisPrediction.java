@@ -32,6 +32,7 @@ import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class IrisPrediction {
     final TensorFlowModel loadedModel = Models.tensorFlow(modelDirUri.toString());
 
     final FeatureExtractor<Iris, Example> featureExtractor = FeatureExtractor
-        .create(irisFeatureSpec, settings, JFeatureSpec::extractWithSettingsExample);
+        .create(FeatranExtractFns.example(irisFeatureSpec, settings));
 
     final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, Long>>> predictions =

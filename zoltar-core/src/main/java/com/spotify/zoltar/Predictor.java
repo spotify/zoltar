@@ -81,8 +81,8 @@ public interface Predictor<InputT, ValueT> {
       final ModelT model,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return (input, timeout, scheduler) -> {
-      final List<Vector<InputT, VectorT>> vectors = featureExtractor.extract(input);
+    return (scheduler, timeout, inputs) -> {
+      final List<Vector<InputT, VectorT>> vectors = featureExtractor.extract(inputs);
 
       final CompletableFuture<List<Prediction<InputT, ValueT>>> future =
           predictFn.apply(model, vectors).toCompletableFuture();
@@ -107,22 +107,22 @@ public interface Predictor<InputT, ValueT> {
    * @param scheduler implementation specific scheduler, see {@link Predictor#create(Model,
    * FeatureExtractor, AsyncPredictFn)} for an example of usage.
    */
-  CompletionStage<List<Prediction<InputT, ValueT>>> predict(List<InputT> input,
+  CompletionStage<List<Prediction<InputT, ValueT>>> predict(ScheduledExecutorService scheduler,
                                                             Duration timeout,
-                                                            ScheduledExecutorService scheduler)
+                                                            InputT... input)
       throws Exception;
 
   /** Perform prediction with a default scheduler. */
-  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final List<InputT> input,
-                                                                    final Duration timeout)
+  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final Duration timeout,
+                                                                    final InputT... input)
       throws Exception {
-    return predict(input, timeout, SCHEDULER);
+    return predict(SCHEDULER, timeout, input);
   }
 
   /** Perform prediction with a default scheduler, and practically infinite timeout. */
-  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final List<InputT> input)
+  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input)
       throws Exception {
-    return predict(input, Duration.ofDays(Integer.MAX_VALUE), SCHEDULER);
+    return predict(SCHEDULER, Duration.ofDays(Integer.MAX_VALUE), input);
   }
 
 }

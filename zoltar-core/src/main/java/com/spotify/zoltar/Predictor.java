@@ -26,6 +26,7 @@ import com.spotify.zoltar.PredictFns.PredictFn;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -120,10 +121,15 @@ public interface Predictor<InputT, ValueT> {
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return (scheduler, timeout, inputs) -> {
-      final List<Vector<InputT, VectorT>> vectors = featureExtractor.extract(inputs);
-
-      final CompletableFuture<List<Prediction<InputT, ValueT>>> future =
-          predictFn.apply(model, vectors).toCompletableFuture();
+      final CompletableFuture<List<Prediction<InputT, ValueT>>> future = CompletableFuture
+          .supplyAsync(() -> {
+            try {
+              return featureExtractor.extract(inputs);
+            } catch (final Exception e) {
+              throw new CompletionException(e);
+            }
+          })
+          .thenCompose(vectors -> predictFn.apply(model, vectors));
 
       final ScheduledFuture<?> schedule = scheduler.schedule(() -> {
         future.completeExceptionally(new TimeoutException());
@@ -147,19 +153,16 @@ public interface Predictor<InputT, ValueT> {
    */
   CompletionStage<List<Prediction<InputT, ValueT>>> predict(ScheduledExecutorService scheduler,
                                                             Duration timeout,
-                                                            InputT... input)
-      throws Exception;
+                                                            InputT... input);
 
   /** Perform prediction with a default scheduler. */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final Duration timeout,
-                                                                    final InputT... input)
-      throws Exception {
+                                                                    final InputT... input) {
     return predict(SCHEDULER, timeout, input);
   }
 
   /** Perform prediction with a default scheduler, and practically infinite timeout. */
-  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input)
-      throws Exception {
+  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input) {
     return predict(SCHEDULER, Duration.ofDays(Integer.MAX_VALUE), input);
   }
 

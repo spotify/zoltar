@@ -35,6 +35,8 @@ import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
+import com.spotify.zoltar.tf.JTensor;
+import com.spotify.zoltar.tf.TensorFlowExtras;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
@@ -47,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
 import org.tensorflow.example.Example;
@@ -134,17 +138,11 @@ public class IrisPrediction {
     final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
     try (Tensor<String> t = Tensors.create(b)) {
-      final List<Tensor<?>> output = model.instance().session().runner()
-          .feed("input_example_tensor", t)
-          .fetch("linear/head/predictions/class_ids")
-          .run();
-      final LongBuffer incomingClassId = LongBuffer.allocate(1);
-      try {
-        output.get(0).writeTo(incomingClassId);
-      } finally {
-        output.forEach(Tensor::close);
-      }
-      return incomingClassId.get(0);
+      Session.Runner runner = model.instance().session().runner()
+              .feed("input_example_tensor", t);
+      String op = "linear/head/predictions/class_ids";
+      Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, op);
+      return result.get(op).longValue()[0];
     }
   }
 }

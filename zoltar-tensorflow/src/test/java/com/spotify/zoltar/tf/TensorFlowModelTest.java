@@ -25,6 +25,7 @@ import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.IrisHelper;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
@@ -44,27 +45,10 @@ import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
 import org.tensorflow.example.Example;
-import scala.Option;
 
 public class TensorFlowModelTest {
 
-  @Test
-  public void testLoad() throws Exception {
-    final URI data = getClass().getResource("/iris.csv").toURI();
-    final Iris[] irisStream = Files.readAllLines(Paths.get(data))
-        .stream()
-        .map(l -> l.split(","))
-        .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
-                              Option.apply(Double.parseDouble(strs[1])),
-                              Option.apply(Double.parseDouble(strs[2])),
-                              Option.apply(Double.parseDouble(strs[3])),
-                              Option.apply(strs[4])))
-        .toArray(Iris[]::new);
-
-    final Map<String, Long> classToId = ImmutableMap.of("Iris-setosa", 0L,
-                                                        "Iris-versicolor", 1L,
-                                                        "Iris-virginica", 2L);
-
+  public static Predictor<Iris, Long> getTFIrisPredictor() throws Exception {
     final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, Long>>> predictions = vectors.stream()
           .map(vector -> {
@@ -76,17 +60,27 @@ public class TensorFlowModelTest {
       return CompletableFutures.allAsList(predictions);
     };
 
-    final URI trainedModelUri = getClass().getResource("/trained_model").toURI();
-    final URI settingsUri = getClass().getResource("/settings.json").toURI();
+    final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
+    final URI settingsUri = TensorFlowModelTest.class.getResource("/settings.json").toURI();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
-                                       StandardCharsets.UTF_8);
+        StandardCharsets.UTF_8);
 
     final TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
-    final CompletableFuture<Integer> sum = Predictor
-        .create(model, extractFn, predictFn)
+    return Predictor.create(model, extractFn, predictFn);
+  }
+
+  @Test
+  public void testModelInference() throws Exception {
+    final Iris[] irisStream = IrisHelper.getIrisTestData();
+
+    final Map<String, Long> classToId = ImmutableMap.of("Iris-setosa", 0L,
+        "Iris-versicolor", 1L,
+        "Iris-virginica", 2L);
+
+    final CompletableFuture<Integer> sum = getTFIrisPredictor()
         .predict(Duration.ofMillis(1000), irisStream)
         .thenApply(predictions -> {
           return predictions.stream()
@@ -101,7 +95,7 @@ public class TensorFlowModelTest {
     Assert.assertTrue("Should be more the 0.8", sum.get() / 150f > .8);
   }
 
-  private long predict(final TensorFlowModel model, final Example example) {
+  private static long predict(final TensorFlowModel model, final Example example) {
     // rank 1 cause we need to account for batch
     final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();

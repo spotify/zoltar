@@ -20,8 +20,6 @@
 
 package com.spotify.zoltar.xgboost;
 
-import static org.junit.Assert.assertTrue;
-
 import com.google.common.collect.ImmutableMap;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
@@ -30,6 +28,7 @@ import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
 import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.IrisHelper;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
@@ -50,45 +49,33 @@ import ml.dmlc.xgboost4j.java.DMatrix;
 import org.junit.Test;
 import scala.Option;
 
+import static org.junit.Assert.assertTrue;
+
 public class XGBoostModelTest {
 
   @Test
   public void testLoadingModel() throws Exception {
     final URI trainedModel = getClass().getResource("/iris.model").toURI();
-
     XGBoostModel.create(trainedModel);
   }
 
-  @Test
-  public void testModelPrediction() throws Exception {
-    final URI trainedModelUri = getClass().getResource("/iris.model").toURI();
-    final URI settingsUri = getClass().getResource("/settings.json").toURI();
-    final URI data = getClass().getResource("/iris.csv").toURI();
+  public static Predictor<Iris, Long> getXGBoostIrisPredictor() throws Exception {
+    final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
+    final URI settingsUri = XGBoostModelTest.class.getResource("/settings.json").toURI();
 
-    final Iris[] irisStream = Files.readAllLines(Paths.get(data))
-        .stream()
-        .map(l -> l.split(","))
-        .map(strs -> new Iris(Option.apply(Double.parseDouble(strs[0])),
-                              Option.apply(Double.parseDouble(strs[1])),
-                              Option.apply(Double.parseDouble(strs[2])),
-                              Option.apply(Double.parseDouble(strs[3])),
-                              Option.apply(strs[4])))
-        .toArray(Iris[]::new);
-
-    final Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
-                                                           1, "Iris-versicolor",
-                                                           2, "Iris-virginica");
-
-    final XGBoostPredictFn<Iris, float[]> predictFn = (model, vectors) -> {
-      final List<CompletableFuture<Prediction<Iris, float[]>>> predictions =
+    final XGBoostPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+      final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
           vectors.stream().map(vector -> {
             return CompletableFuture.supplyAsync(() -> {
               try {
                 final Iterator<LabeledPoint> iterator =
                     Collections.singletonList(vector.value()).iterator();
                 final DMatrix dMatrix = new DMatrix(iterator, null);
-                return Prediction.create(vector.input(),
-                                         model.instance().predict(dMatrix)[0]);
+                final float[] score = model.instance().predict(dMatrix)[0];
+                int idx = IntStream.range(0, score.length)
+                    .reduce((i, j) -> score[i] >= score[j] ? i : j)
+                    .getAsInt();
+                return Prediction.create(vector.input(), (long)idx);
               } catch (Exception e) {
                 throw new RuntimeException(e);
               }
@@ -99,24 +86,30 @@ public class XGBoostModelTest {
     };
 
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
-                                       StandardCharsets.UTF_8);
+        StandardCharsets.UTF_8);
     final XGBoostModel model = XGBoostModel.create(trainedModelUri);
     final ExtractFn<Iris, LabeledPoint> extractFn = FeatranExtractFns
         .labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
-    final CompletableFuture<Integer> sum = Predictor
-        .create(model, extractFn, predictFn)
+    return Predictor.create(model, extractFn, predictFn);
+  }
+
+  @Test
+  public void testModelPrediction() throws Exception {
+    final Iris[] irisStream = IrisHelper.getIrisTestData();
+
+    final Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
+        1, "Iris-versicolor",
+        2, "Iris-virginica");
+
+    final CompletableFuture<Integer> sum = getXGBoostIrisPredictor()
         .predict(Duration.ofMillis(1000), irisStream)
         .thenApply(predictions -> {
           return predictions.stream()
               .mapToInt(prediction -> {
                 String className = prediction.input().className().get();
-                float[] score = prediction.value();
-                int idx = IntStream.range(0, score.length)
-                    .reduce((i, j) -> score[i] >= score[j] ? i : j)
-                    .getAsInt();
-
-                return classToId.get(idx).equals(className) ? 1 : 0;
+                int score = prediction.value().intValue();
+                return classToId.get(score).equals(className) ? 1 : 0;
               }).sum();
         }).toCompletableFuture();
 

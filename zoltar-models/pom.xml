@@ -3,7 +3,7 @@
   <parent>
     <artifactId>zoltar-parent</artifactId>
     <groupId>com.spotify</groupId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,18 +13,18 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tensorflow</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-xgboost</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -42,27 +42,27 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tensorflow</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-xgboost</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tests</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tests</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

@@ -15,12 +15,12 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
-      <version>${project.version}</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-featran</artifactId>
-      <version>${project.version}</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -39,13 +39,13 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tests</artifactId>
-      <version>${project.version}</version>
+      <version>0.1.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tests</artifactId>
-      <version>${project.version}</version>
+      <version>0.1.0-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

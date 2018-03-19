@@ -2,7 +2,8 @@
 
 These instructions are based on the [instructions](http://central.sonatype.org/pages/ossrh-guide.html)
 for deploying to the Central Repository using [Maven](http://central.sonatype.org/pages/apache-maven.html).
-Note that this is for Spotify internal use only.
+
+Note: this section only applies for internal Spotify developers.
 
 You will need the following:
 - Sign up for a Sonatype account [here](https://issues.sonatype.org/secure/Signup!default.jspa)

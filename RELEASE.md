@@ -1,0 +1,22 @@
+# Release Instructions
+
+These instructions are based on the [instructions](http://central.sonatype.org/pages/ossrh-guide.html)
+for deploying to the Central Repository using [Maven](http://central.sonatype.org/pages/apache-maven.html).
+Note that this is for Spotify internal use only.
+
+You will need the following:
+- Sign up for a Sonatype account [here](https://issues.sonatype.org/secure/Signup!default.jspa)
+- Ask for permissions to push to com.spotify domain like in this [ticket](https://issues.sonatype.org/browse/OSSRH-20689)
+- [GPG set up on the machine you're deploying from](http://central.sonatype.org/pages/working-with-pgp-signatures.html)
+
+Once you've got that in place, you should be able to do deployment using the following commands:
+
+```
+# deploy snapshot version
+mvn clean deploy # -Prelease to test signing
+
+# make and deploy a release
+mvn release:clean release:prepare release:perform
+```
+
+Then update https://github.com/spotify/zoltar/releases with release notes!

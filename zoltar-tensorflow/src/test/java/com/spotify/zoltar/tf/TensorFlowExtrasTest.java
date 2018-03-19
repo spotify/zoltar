@@ -76,6 +76,8 @@ public class TensorFlowExtrasTest {
     Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2);
     assertEquals(Sets.newHashSet(mul2), result.keySet());
     assertScalar(result.get(mul2), 20.0);
+    session.close();
+    graph.close();
   }
 
   @Test
@@ -88,6 +90,8 @@ public class TensorFlowExtrasTest {
     assertEquals(Lists.newArrayList(mul2, mul3), new ArrayList<>(result.keySet()));
     assertScalar(result.get(mul2), 20.0);
     assertScalar(result.get(mul3), 30.0);
+    session.close();
+    graph.close();
   }
 
   @Test
@@ -100,6 +104,8 @@ public class TensorFlowExtrasTest {
     assertEquals(Lists.newArrayList(mul3, mul2), new ArrayList<>(result.keySet()));
     assertScalar(result.get(mul2), 20.0);
     assertScalar(result.get(mul3), 30.0);
+    session.close();
+    graph.close();
   }
 
   private void assertScalar(JTensor jt, Double value) {

@@ -234,8 +234,7 @@
           <artifactId>maven-checkstyle-plugin</artifactId>
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
-            <failOnViolation>false</failOnViolation>
-            <violationSeverity>warning</violationSeverity>
+            <failsOnError>true</failsOnError>
           </configuration>
         </plugin>
         <plugin>

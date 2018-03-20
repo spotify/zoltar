@@ -50,7 +50,7 @@ public class GompLoader {
 
       final String libFile = name.substring(name.lastIndexOf('/') + 1, name.length());
       final String libName = libFile.substring(0, libFile.indexOf('.'));
-      if (!Arrays.stream(libs).anyMatch(n -> n.contains(libName))) {
+      if (Arrays.stream(libs).noneMatch(n -> n.contains(libName))) {
         System.load(NativeLibLoader.createTempFileFromResource(name));
       }
     } catch (final IOException e) {
@@ -63,13 +63,10 @@ public class GompLoader {
     try {
       final Field libField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
       libField.setAccessible(true);
-      final Vector<String> libraries = (Vector<String>) libField.get(loader);
 
-      return libraries;
-    } catch (final NoSuchFieldException noSuchFieldError) {
+      return (Vector<String>) libField.get(loader);
+    } catch (final NoSuchFieldException | IllegalAccessException noSuchFieldError) {
       throw new IOException(noSuchFieldError);
-    } catch (final IllegalAccessException illAccessError) {
-      throw new IOException(illAccessError);
     }
   }
 

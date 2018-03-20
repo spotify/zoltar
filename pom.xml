@@ -241,6 +241,18 @@
           <artifactId>findbugs-maven-plugin</artifactId>
           <version>3.0.5</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <failOnError>false</failOnError>
+            <links>
+              <link>https://www.tensorflow.org/api_docs/java/reference</link>
+              <link>http://dmlc.ml/docs/javadocs</link>
+            </links>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 

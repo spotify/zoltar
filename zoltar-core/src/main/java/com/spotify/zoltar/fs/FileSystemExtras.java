@@ -28,9 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.time.LocalDate;
-import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -68,10 +67,10 @@ public final class FileSystemExtras {
   }
 
   /**
-   * NOTE: Zoltar internal use only!
-   *
    * If the path is not on a local filesystem, it will download the resource to a temporary path on
    * the local filesystem.
+   *
+   * <p>NOTE: Zoltar internal use only!</p>
    */
   public static URI downloadIfNonLocal(final URI path) throws IOException {
     final String fixedPath =

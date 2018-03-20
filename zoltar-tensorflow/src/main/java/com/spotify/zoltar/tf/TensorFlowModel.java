@@ -33,7 +33,7 @@ import org.tensorflow.SavedModelBundle;
  * This model can be used to load TensorFlow {@link SavedModelBundle} model. Whenever possible
  * {@link TensorFlowModel} should be used in favour of {@link TensorFlowGraphModel}.
  *
- * TensorFlowModel is thread-safe.
+ * <p>TensorFlowModel is thread-safe.</p>
  */
 @AutoValue
 public abstract class TensorFlowModel implements Model<SavedModelBundle> {
@@ -45,7 +45,7 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * Returns a TensorFlow model given {@link SavedModelBundle} export directory URI.
+   * <p>Returns a TensorFlow model given {@link SavedModelBundle} export directory URI.</p>
    */
   public static TensorFlowModel create(final URI modelResource) throws IOException {
     return create(modelResource, DEFAULT_OPTIONS);
@@ -54,8 +54,8 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * Returns a TensorFlow model given {@link SavedModelBundle} export directory URI and {@link
-   * Options}.
+   * <p>Returns a TensorFlow model given {@link SavedModelBundle} export directory URI and
+   * {@link Options}.</p>
    */
   public static TensorFlowModel create(final URI modelResource,
                                        final Options options) throws IOException {

@@ -36,9 +36,9 @@ import org.tensorflow.framework.ConfigProto;
 /**
  * This model can be used to load protobuf definition of a TensorFlow {@link Graph}.
  *
- * For an easy model freezing function see <a href="https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py">spotify-tensorflow</a>
+ * <p>For an easy model freezing function see <a href="https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py">spotify-tensorflow</a></p>
  *
- * TensorFlowGraphModel is thread-safe.
+ * <p>TensorFlowGraphModel is thread-safe.</p>
  */
 @AutoValue
 public abstract class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
@@ -48,7 +48,7 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
+   * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.</p>
    *
    * @param graphUri URI to the TensorFlow graph definition.
    * @param config config for TensorFlow {@link Session}.
@@ -65,7 +65,7 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
+   * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.</p>
    *
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config ConfigProto config for TensorFlow {@link Session}.

@@ -20,16 +20,20 @@
 
 package com.spotify.zoltar.tf;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.junit.Test;
-import org.tensorflow.*;
-
-import java.util.ArrayList;
-import java.util.Map;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.Map;
+import org.junit.Test;
+import org.tensorflow.DataType;
+import org.tensorflow.Graph;
+import org.tensorflow.Output;
+import org.tensorflow.Session;
+import org.tensorflow.Tensor;
+import org.tensorflow.Tensors;
 
 public class TensorFlowExtrasTest {
 
@@ -37,20 +41,20 @@ public class TensorFlowExtrasTest {
   private static final String mul3 = "mul3";
 
   private static Graph createDummyGraph() {
-    Tensor<Double> t2 = Tensors.create(2.0);
-    Tensor<Double> t3 = Tensors.create(3.0);
+    final Tensor<Double> t2 = Tensors.create(2.0);
+    final Tensor<Double> t3 = Tensors.create(3.0);
 
-    Graph graph = new Graph();
-    Output<Double> input = graph.opBuilder("Placeholder", "input")
+    final Graph graph = new Graph();
+    final Output<Double> input = graph.opBuilder("Placeholder", "input")
             .setAttr("dtype", DataType.DOUBLE)
             .build().output(0);
 
-    Output<Double> two = graph.opBuilder("Const", "two")
+    final Output<Double> two = graph.opBuilder("Const", "two")
             .setAttr("dtype", t2.dataType())
             .setAttr("value", t2)
             .build().output(0);
 
-    Output<Double> three = graph.opBuilder("Const", "three")
+    final Output<Double> three = graph.opBuilder("Const", "three")
             .setAttr("dtype", t3.dataType())
             .setAttr("value", t3)
             .build().output(0);
@@ -69,11 +73,11 @@ public class TensorFlowExtrasTest {
 
   @Test
   public void testExtract1() {
-    Graph graph = createDummyGraph();
-    Session session = new Session(graph);
-    Session.Runner runner = session.runner();
+    final Graph graph = createDummyGraph();
+    final Session session = new Session(graph);
+    final Session.Runner runner = session.runner();
     runner.feed("input", Tensors.create(10.0));
-    Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2);
+    final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2);
     assertEquals(Sets.newHashSet(mul2), result.keySet());
     assertScalar(result.get(mul2), 20.0);
     session.close();
@@ -82,11 +86,11 @@ public class TensorFlowExtrasTest {
 
   @Test
   public void testExtract2a() {
-    Graph graph = createDummyGraph();
-    Session session = new Session(graph);
-    Session.Runner runner = session.runner();
+    final Graph graph = createDummyGraph();
+    final Session session = new Session(graph);
+    final Session.Runner runner = session.runner();
     runner.feed("input", Tensors.create(10.0));
-    Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2, mul3);
+    final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2, mul3);
     assertEquals(Lists.newArrayList(mul2, mul3), new ArrayList<>(result.keySet()));
     assertScalar(result.get(mul2), 20.0);
     assertScalar(result.get(mul3), 30.0);
@@ -96,11 +100,11 @@ public class TensorFlowExtrasTest {
 
   @Test
   public void testExtract2b() {
-    Graph graph = createDummyGraph();
-    Session session = new Session(graph);
-    Session.Runner runner = session.runner();
+    final Graph graph = createDummyGraph();
+    final Session session = new Session(graph);
+    final Session.Runner runner = session.runner();
     runner.feed("input", Tensors.create(10.0));
-    Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul3, mul2);
+    final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul3, mul2);
     assertEquals(Lists.newArrayList(mul3, mul2), new ArrayList<>(result.keySet()));
     assertScalar(result.get(mul2), 20.0);
     assertScalar(result.get(mul3), 30.0);
@@ -108,11 +112,11 @@ public class TensorFlowExtrasTest {
     graph.close();
   }
 
-  private void assertScalar(JTensor jt, Double value) {
+  private void assertScalar(final JTensor jt, final Double value) {
     assertEquals(DataType.DOUBLE, jt.dataType());
     assertEquals(0, jt.numDimensions());
     assertEquals(0, jt.shape().length);
-    double[] expected = {value};
+    final double[] expected = {value};
     assertArrayEquals(expected, jt.doubleValue(), 0.0);
   }
 }

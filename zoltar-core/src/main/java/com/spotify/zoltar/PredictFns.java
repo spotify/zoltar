@@ -67,8 +67,10 @@ public interface PredictFns {
      * The functional interface. Your function/lambda takes model and features after extractions as
      * input, should perform a asynchronous prediction and return the "future" of predictions.
      *
-     * Note: if you have a synchronous implementation of prediction function you can use {@link
-     * AsyncPredictFn#lift} to make it asynchronous.
+     * <p>
+     *   Note: if you have a synchronous implementation of prediction function you can use
+     *   {@link AsyncPredictFn#lift} to make it asynchronous.
+     * </p>
      *
      * @param model model to perform prediction on.
      * @param vectors extracted features.

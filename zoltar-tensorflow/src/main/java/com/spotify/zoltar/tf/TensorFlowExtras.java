@@ -21,35 +21,37 @@
 package com.spotify.zoltar.tf;
 
 import com.google.common.collect.Maps;
-import org.tensorflow.Session;
-import org.tensorflow.Tensor;
-
 import java.util.List;
 import java.util.Map;
+import org.tensorflow.Session;
+import org.tensorflow.Tensor;
 
 /**
  * TensorFlow utilities and extras.
  */
 public class TensorFlowExtras {
 
-  private TensorFlowExtras() {}
+  private TensorFlowExtras() {
+  }
 
   /**
    * Fetch a list of operations from a {@link Session.Runner}, run it, extract output
    * {@link Tensor}s as {@link JTensor}s and close them.
+   *
    * @param runner {@link Session.Runner} to fetch operations and extract outputs from.
    * @param fetchOps operations to fetch.
-   * @return a {@link Map} of operations and output {@link JTensor}s. Map keys are in the same
-   * order as {@code fetchOps}.
+   * @return a {@link Map} of operations and output {@link JTensor}s.
+   *         Map keys are in the same order as {@code fetchOps}.
    */
-  public static Map<String, JTensor> runAndExtract(Session.Runner runner, String ...fetchOps) {
-    for (String op : fetchOps) {
+  public static Map<String, JTensor> runAndExtract(final Session.Runner runner,
+                                                   final String... fetchOps) {
+    for (final String op : fetchOps) {
       runner.fetch(op);
     }
-    List<Tensor<?>> tensors = runner.run();
-    Map<String, JTensor> result = Maps.newLinkedHashMapWithExpectedSize(fetchOps.length);
+    final List<Tensor<?>> tensors = runner.run();
+    final Map<String, JTensor> result = Maps.newLinkedHashMapWithExpectedSize(fetchOps.length);
     for (int i = 0; i < fetchOps.length; i++) {
-      Tensor<?> tensor = tensors.get(i);
+      final Tensor<?> tensor = tensors.get(i);
       result.put(fetchOps[i], JTensor.create(tensor));
       tensor.close();
     }

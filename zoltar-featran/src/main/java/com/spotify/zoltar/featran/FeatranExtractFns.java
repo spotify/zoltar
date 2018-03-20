@@ -42,7 +42,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@code double[]}
+   * Extract features as {@code double[]}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -56,7 +56,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@code double[]}
+   * Extract features as {@code double[]}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -70,7 +70,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link Example}
+   * Extract features as {@link Example}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -84,7 +84,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link Example}
+   * Extract features as {@link Example}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -98,7 +98,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@code float[]}
+   * Extract features as {@code float[]}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -112,7 +112,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@code float[]}
+   * Extract features as {@code float[]}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -126,7 +126,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link FloatSparseArray}
+   * Extract features as {@link FloatSparseArray}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -140,7 +140,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link FloatSparseArray}
+   * Extract features as {@link FloatSparseArray}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -154,7 +154,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link DoubleSparseArray}
+   * Extract features as {@link DoubleSparseArray}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -168,7 +168,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link DoubleSparseArray}
+   * Extract features as {@link DoubleSparseArray}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -182,7 +182,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link LabeledPoint}
+   * Extract features as {@link LabeledPoint}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -196,7 +196,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link LabeledPoint}
+   * Extract features as {@link LabeledPoint}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -210,7 +210,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link SparseLabeledPoint}
+   * Extract features as {@link SparseLabeledPoint}.
    *
    * @param featureSpec Featran's {@link FeatureSpec}.
    * @param settings JSON settings from a previous session.
@@ -224,7 +224,7 @@ public final class FeatranExtractFns {
   }
 
   /**
-   * Extract features as {@link SparseLabeledPoint}
+   * Extract features as {@link SparseLabeledPoint}.
    *
    * @param featureSpec Featran's {@link JFeatureSpec}.
    * @param settings JSON settings from a previous session.

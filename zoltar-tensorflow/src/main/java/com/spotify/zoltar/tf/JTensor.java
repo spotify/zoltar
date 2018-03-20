@@ -22,13 +22,12 @@ package com.spotify.zoltar.tf;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
-import org.tensorflow.DataType;
-import org.tensorflow.Tensor;
-
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import org.tensorflow.DataType;
+import org.tensorflow.Tensor;
 
 /**
  * Wrapper for {@link Tensor} that manages memory in JVM heap and closes the underlying Tensor.
@@ -40,34 +39,34 @@ public abstract class JTensor {
    * and closing it afterwards.
    */
   public static JTensor create(final Tensor<?> tensor) {
-    AutoValue_JTensor jt;
+    final AutoValue_JTensor jt;
 
     switch (tensor.dataType()) {
       case STRING:
-        String value = new String(tensor.bytesValue());
+        final String value = new String(tensor.bytesValue());
         jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), value);
         break;
       case INT32:
-        IntBuffer intBuf = IntBuffer.allocate(tensor.numElements());
+        final IntBuffer intBuf = IntBuffer.allocate(tensor.numElements());
         tensor.writeTo(intBuf);
         jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), intBuf.array());
         break;
       case INT64:
-        LongBuffer longBuf = LongBuffer.allocate(tensor.numElements());
+        final LongBuffer longBuf = LongBuffer.allocate(tensor.numElements());
         tensor.writeTo(longBuf);
         jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), longBuf.array());
         break;
       case FLOAT:
-        FloatBuffer floatBuf = FloatBuffer.allocate(tensor.numElements());
+        final FloatBuffer floatBuf = FloatBuffer.allocate(tensor.numElements());
         tensor.writeTo(floatBuf);
         jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), floatBuf.array());
         break;
       case DOUBLE:
-        DoubleBuffer doubleBuf = DoubleBuffer.allocate(tensor.numElements());
+        final DoubleBuffer doubleBuf = DoubleBuffer.allocate(tensor.numElements());
         tensor.writeTo(doubleBuf);
         jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), doubleBuf.array());

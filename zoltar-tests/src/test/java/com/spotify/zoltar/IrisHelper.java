@@ -23,8 +23,6 @@ package com.spotify.zoltar;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
 import scala.Option;
 
 public class IrisHelper {
@@ -32,8 +30,8 @@ public class IrisHelper {
   private IrisHelper() {
   }
 
-  public static IrisFeaturesSpec.Iris fromCSVString(String features) {
-    String[] strs = features.split(",");
+  public static IrisFeaturesSpec.Iris fromCSVString(final String features) {
+    final String[] strs = features.split(",");
     return new IrisFeaturesSpec.Iris(Option.apply(Double.parseDouble(strs[0])),
             Option.apply(Double.parseDouble(strs[1])),
             Option.apply(Double.parseDouble(strs[2])),

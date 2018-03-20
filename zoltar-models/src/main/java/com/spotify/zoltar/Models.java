@@ -32,7 +32,7 @@ import org.tensorflow.framework.ConfigProto;
 /**
  * This class consists exclusively of static methods that return Models.
  *
- * This is the public entry point for get get a Model.
+ * <p>This is the public entry point for get get a Model.</p>
  */
 public final class Models {
 
@@ -44,7 +44,7 @@ public final class Models {
    * Returns a XGBoost model given the serialized model stored in the model URI.
    *
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
-   * filesystem, resource, GCS etc.
+   *                 filesystem, resource, GCS etc.
    */
   public static XGBoostModel xgboost(final String modelUri) throws IOException {
     return XGBoostModel.create(URI.create(modelUri));
@@ -54,7 +54,8 @@ public final class Models {
    * Returns a TensorFlow model based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
-   * org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
    */
   public static TensorFlowModel tensorFlow(final String modelUri) throws IOException {
     return TensorFlowModel.create(URI.create(modelUri));
@@ -64,8 +65,9 @@ public final class Models {
    * Returns a TensorFlow model based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
-   * org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
+   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
    */
   public static TensorFlowModel tensorFlow(final String modelUri,
                                            final TensorFlowModel.Options options)
@@ -78,8 +80,8 @@ public final class Models {
    *
    * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph} file on
    *                 local filesystem, resource, GCS etc.
-   * @param config optional TensorFlow {@link ConfigProto} config.
-   * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param config   optional TensorFlow {@link ConfigProto} config.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
    */
   public static TensorFlowGraphModel tensorFlowGraph(final String modelUri,
                                                      @Nullable final ConfigProto config,
@@ -92,8 +94,8 @@ public final class Models {
    * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
    *
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
-   * @param config optional TensorFlow {@link ConfigProto} config.
-   * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param config   optional TensorFlow {@link ConfigProto} config.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
    */
   public static TensorFlowGraphModel tensorFlowGraph(final byte[] graphDef,
                                                      @Nullable final ConfigProto config,

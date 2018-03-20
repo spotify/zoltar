@@ -20,12 +20,11 @@
 
 package com.spotify.zoltar.xgboost;
 
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.collect.ImmutableMap;
-import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
-import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
@@ -47,9 +46,6 @@ import java.util.stream.IntStream;
 import ml.dmlc.xgboost4j.LabeledPoint;
 import ml.dmlc.xgboost4j.java.DMatrix;
 import org.junit.Test;
-import scala.Option;
-
-import static org.junit.Assert.assertTrue;
 
 public class XGBoostModelTest {
 

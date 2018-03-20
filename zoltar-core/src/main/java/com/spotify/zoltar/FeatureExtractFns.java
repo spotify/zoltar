@@ -66,7 +66,7 @@ public interface FeatureExtractFns {
     default List<ValueT> apply(final InputT... inputs) throws Exception {
       final Builder<ValueT> builder = ImmutableList.builder();
 
-      for(final InputT input: inputs) {
+      for (final InputT input: inputs) {
         builder.add(apply(input));
       }
 

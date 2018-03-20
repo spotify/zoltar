@@ -20,15 +20,14 @@
 
 package com.spotify.zoltar.tf;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import java.util.function.Function;
 import org.junit.Test;
 import org.tensorflow.DataType;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
-
-import java.util.function.Function;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 public class JTensorTest {
 
@@ -36,9 +35,9 @@ public class JTensorTest {
 
   @Test
   public void testStringTensor() {
-    String stringValue = "world";
-    Tensor<String> tensor = Tensors.create(stringValue);
-    JTensor jt = JTensor.create(tensor);
+    final String stringValue = "world";
+    final Tensor<String> tensor = Tensors.create(stringValue);
+    final JTensor jt = JTensor.create(tensor);
     assertEquals(DataType.STRING, jt.dataType());
     assertEquals(0, jt.numDimensions());
     assertArrayEquals(new long[0], jt.shape());
@@ -51,9 +50,9 @@ public class JTensorTest {
 
   @Test
   public void testIntTensor() {
-    int[] intValue = {1, 2, 3, 4, 5};
-    Tensor<Integer> tensor = Tensors.create(intValue);
-    JTensor jt = JTensor.create(tensor);
+    final int[] intValue = {1, 2, 3, 4, 5};
+    final Tensor<Integer> tensor = Tensors.create(intValue);
+    final JTensor jt = JTensor.create(tensor);
     assertEquals(DataType.INT32, jt.dataType());
     assertEquals(1, jt.numDimensions());
     assertArrayEquals(shape, jt.shape());
@@ -66,9 +65,9 @@ public class JTensorTest {
 
   @Test
   public void testLongTensor() {
-    long[] longValue = {1, 2, 3, 4, 5};
-    Tensor<Long> tensor = Tensors.create(longValue);
-    JTensor jt = JTensor.create(tensor);
+    final long[] longValue = {1, 2, 3, 4, 5};
+    final Tensor<Long> tensor = Tensors.create(longValue);
+    final JTensor jt = JTensor.create(tensor);
     assertEquals(DataType.INT64, jt.dataType());
     assertEquals(1, jt.numDimensions());
     assertArrayEquals(shape, jt.shape());
@@ -81,9 +80,9 @@ public class JTensorTest {
 
   @Test
   public void testFloatTensor() {
-    float[] floatValue = {1, 2, 3, 4, 5};
-    Tensor<Float> tensor = Tensors.create(floatValue);
-    JTensor jt = JTensor.create(tensor);
+    final float[] floatValue = {1, 2, 3, 4, 5};
+    final Tensor<Float> tensor = Tensors.create(floatValue);
+    final JTensor jt = JTensor.create(tensor);
     assertEquals(DataType.FLOAT, jt.dataType());
     assertEquals(1, jt.numDimensions());
     assertArrayEquals(shape, jt.shape());
@@ -96,9 +95,9 @@ public class JTensorTest {
 
   @Test
   public void testDoubleTensor() {
-    double[] doubleValue = {1, 2, 3, 4, 5};
-    Tensor<Double> tensor = Tensors.create(doubleValue);
-    JTensor jt = JTensor.create(tensor);
+    final double[] doubleValue = {1, 2, 3, 4, 5};
+    final Tensor<Double> tensor = Tensors.create(doubleValue);
+    final JTensor jt = JTensor.create(tensor);
     assertEquals(DataType.DOUBLE, jt.dataType());
     assertEquals(1, jt.numDimensions());
     assertArrayEquals(shape, jt.shape());
@@ -109,11 +108,11 @@ public class JTensorTest {
     testException(jt, JTensor::floatValue);
   }
 
-  private <T> void testException(JTensor jt, Function<JTensor, T> fn) {
+  private <T> void testException(final JTensor jt, final Function<JTensor, T> fn) {
     try {
       fn.apply(jt);
       throw new AssertionError("IllegalStateException expected, nothing thrown");
-    } catch (IllegalStateException e) {
+    } catch (final IllegalStateException e) {
       // expected, do nothing
     }
   }

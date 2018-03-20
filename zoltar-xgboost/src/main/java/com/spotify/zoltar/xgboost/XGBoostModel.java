@@ -35,7 +35,7 @@ import ml.dmlc.xgboost4j.java.XGBoostError;
 /**
  * XGBoost model.
  *
- * XGBoostModel is thread-safe.
+ * <p>XGBoostModel is thread-safe.</p>
  */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @AutoValue
@@ -44,7 +44,7 @@ public abstract class XGBoostModel implements Model<Booster> {
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * Returns a XGBoost model given a URI to the serialized model file.
+   * <p>Returns a XGBoost model given a URI to the serialized model file.</p>
    */
   public static XGBoostModel create(final URI modelUri) throws IOException {
     try {
@@ -62,7 +62,7 @@ public abstract class XGBoostModel implements Model<Booster> {
   public abstract Booster instance();
 
   /**
-   * Closes the model
+   * Closes the model.
    */
   @Override
   public void close() throws Exception {

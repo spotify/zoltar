@@ -63,7 +63,7 @@ public class GompLoader {
     try {
       final Field libField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
       libField.setAccessible(true);
-      final Vector<String> libraries = (java.util.Vector<String>) libField.get(loader);
+      final Vector<String> libraries = (Vector<String>) libField.get(loader);
 
       return libraries;
     } catch (final NoSuchFieldException noSuchFieldError) {
@@ -74,7 +74,7 @@ public class GompLoader {
   }
 
   /**
-   * The entry to to load the GOMP library"
+   * The entry to to load the GOMP library.
    */
   public static void start() throws IOException {
     if (isLinux()) {

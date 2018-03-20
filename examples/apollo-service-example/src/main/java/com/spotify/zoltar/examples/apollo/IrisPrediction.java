@@ -24,11 +24,8 @@ import com.google.common.collect.ImmutableMap;
 import com.spotify.apollo.Response;
 import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
-import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
-import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Models;
@@ -41,15 +38,12 @@ import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.LongBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
@@ -122,10 +116,8 @@ public class IrisPrediction {
           .predict(featureData)
           .thenApply(p -> p
               .stream()
-              .mapToInt(prediction -> {
-                long value = prediction.value();
-                return (int) value;
-              }).toArray()).toCompletableFuture().get();
+              .mapToInt(prediction -> prediction.value().intValue())
+              .toArray()).toCompletableFuture().get();
     } catch (final Exception e) {
       e.printStackTrace();
       //TODO: what to return in case of failure here?
@@ -138,10 +130,10 @@ public class IrisPrediction {
     final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
     try (Tensor<String> t = Tensors.create(b)) {
-      Session.Runner runner = model.instance().session().runner()
+      final Session.Runner runner = model.instance().session().runner()
               .feed("input_example_tensor", t);
-      String op = "linear/head/predictions/class_ids";
-      Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, op);
+      final String op = "linear/head/predictions/class_ids";
+      final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, op);
       return result.get(op).longValue()[0];
     }
   }

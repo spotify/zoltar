@@ -20,6 +20,8 @@
 
 package com.spotify.zoltar;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.collect.Lists;
 import com.spotify.zoltar.tf.TensorFlowModelTest;
 import com.spotify.zoltar.xgboost.XGBoostModelTest;
@@ -27,8 +29,6 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class MultiPredictorTest {
 

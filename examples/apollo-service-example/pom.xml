@@ -17,6 +17,7 @@
     <findbugs.excludeFilterFile>findbugsexclude.xml</findbugs.excludeFilterFile>
     <maven.install.skip>true</maven.install.skip>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
+    <jacoco.skip>true</jacoco.skip>
   </properties>
 
   <dependencyManagement>

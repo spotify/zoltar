@@ -35,7 +35,7 @@ import org.tensorflow.framework.ConfigProto;
 public final class ModelLoaders {
 
   /**
-   * Returns a XGBoost model given the serialized model stored in the model URI.
+   * Returns a XGBoost model loader given the serialized model stored in the model URI.
    *
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *                 filesystem, resource, GCS etc.
@@ -53,7 +53,7 @@ public final class ModelLoaders {
   }
 
   /**
-   * Returns a TensorFlow model based on a saved model.
+   * Returns a TensorFlow model loader based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
@@ -72,7 +72,7 @@ public final class ModelLoaders {
   }
 
   /**
-   * Returns a TensorFlow model based on a saved model.
+   * Returns a TensorFlow model loader based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
@@ -93,7 +93,7 @@ public final class ModelLoaders {
   }
 
   /**
-   * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
    * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph} file on
    *                 local filesystem, resource, GCS etc.
@@ -116,7 +116,7 @@ public final class ModelLoaders {
   }
 
   /**
-   * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.

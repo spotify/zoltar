@@ -52,7 +52,7 @@ public interface Predictor<InputT, ValueT> {
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
-   * @param modelLoader model to perform prediction on.
+   * @param modelLoader model loader that loads the model to perform prediction on.
    * @param extractFn a feature extract function to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -70,7 +70,7 @@ public interface Predictor<InputT, ValueT> {
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
-   * @param modelLoader model to perform prediction on.
+   * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -89,7 +89,7 @@ public interface Predictor<InputT, ValueT> {
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
-   * @param modelLoader model to perform prediction on.
+   * @param modelLoader model loader that loads the model to perform prediction on.
    * @param extractFn a feature extract function to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -108,7 +108,7 @@ public interface Predictor<InputT, ValueT> {
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
-   * @param modelLoader model to perform prediction on.
+   * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.

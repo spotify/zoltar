@@ -26,6 +26,8 @@ import static org.junit.Assert.assertEquals;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
@@ -39,6 +41,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.tensorflow.Graph;
@@ -134,8 +137,18 @@ public class TensorFlowGraphModelTest {
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
                                        StandardCharsets.UTF_8);
 
-    final TensorFlowGraphModel tfModel =
-        TensorFlowGraphModel.create(graphFile.toUri(), null, null);
+    final ModelLoader<TensorFlowGraphModel> tfModel = Memoizer.memoize(() -> {
+      return CompletableFuture.supplyAsync(() -> {
+        try {
+          return TensorFlowGraphModel.create(graphFile.toUri(), null, null);
+        } catch (IOException e) {
+          throw new CompletionException(e);
+        }
+      });
+    });
+
+    // preload
+    tfModel.get();
 
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()

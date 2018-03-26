@@ -28,9 +28,12 @@ import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
+import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -41,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import ml.dmlc.xgboost4j.LabeledPoint;
@@ -83,7 +87,19 @@ public class XGBoostModelTest {
 
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
         StandardCharsets.UTF_8);
-    final XGBoostModel model = XGBoostModel.create(trainedModelUri);
+    final ModelLoader<XGBoostModel> model = Memoizer.memoize(() -> {
+      return CompletableFuture.supplyAsync(() -> {
+        try {
+          return XGBoostModel.create(trainedModelUri);
+        } catch (IOException e) {
+          throw new CompletionException(e);
+        }
+      });
+    });
+
+    // preload
+    model.get();
+
     final ExtractFn<Iris, LabeledPoint> extractFn = FeatranExtractFns
         .labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 

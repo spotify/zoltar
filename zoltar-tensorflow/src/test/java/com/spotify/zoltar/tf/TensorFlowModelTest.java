@@ -26,9 +26,12 @@ import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
+import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +41,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
@@ -65,7 +69,19 @@ public class TensorFlowModelTest {
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
         StandardCharsets.UTF_8);
 
-    final TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
+    final ModelLoader<TensorFlowModel> model = Memoizer.memoize(() -> {
+      return CompletableFuture.supplyAsync(() -> {
+        try {
+          return TensorFlowModel.create(trainedModelUri);
+        } catch (IOException e) {
+          throw new CompletionException(e);
+        }
+      });
+    });
+
+    // preload
+    model.get();
+
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 

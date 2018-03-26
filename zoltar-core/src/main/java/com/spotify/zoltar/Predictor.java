@@ -52,7 +52,7 @@ public interface Predictor<InputT, ValueT> {
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
-   * @param model model to perform prediction on.
+   * @param modelLoader model to perform prediction on.
    * @param extractFn a feature extract function to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -61,16 +61,16 @@ public interface Predictor<InputT, ValueT> {
    * @param <ValueT> type of the prediction result.
    */
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelT model,
+      final ModelLoader<ModelT> modelLoader,
       final ExtractFn<InputT, VectorT> extractFn,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(model, FeatureExtractor.create(extractFn), AsyncPredictFn.lift(predictFn));
+    return create(modelLoader, FeatureExtractor.create(extractFn), AsyncPredictFn.lift(predictFn));
   }
 
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
-   * @param model model to perform prediction on.
+   * @param modelLoader model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -79,17 +79,17 @@ public interface Predictor<InputT, ValueT> {
    * @param <ValueT> type of the prediction result.
    */
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelT model,
+      final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(model, featureExtractor, AsyncPredictFn.lift(predictFn));
+    return create(modelLoader, featureExtractor, AsyncPredictFn.lift(predictFn));
   }
 
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
-   * @param model model to perform prediction on.
+   * @param modelLoader model to perform prediction on.
    * @param extractFn a feature extract function to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -98,17 +98,17 @@ public interface Predictor<InputT, ValueT> {
    * @param <ValueT> type of the prediction result.
    */
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelT model,
+      final ModelLoader<ModelT> modelLoader,
       final ExtractFn<InputT, VectorT> extractFn,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(model, FeatureExtractor.create(extractFn), predictFn);
+    return create(modelLoader, FeatureExtractor.create(extractFn), predictFn);
   }
 
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
-   * @param model model to perform prediction on.
+   * @param modelLoader model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
    * @param <ModelT> underlying type of the {@link Model}.
@@ -117,19 +117,19 @@ public interface Predictor<InputT, ValueT> {
    * @param <ValueT> type of the prediction result.
    */
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelT model,
+      final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return (scheduler, timeout, inputs) -> {
-      final CompletableFuture<List<Prediction<InputT, ValueT>>> future = CompletableFuture
-          .supplyAsync(() -> {
+      final CompletableFuture<List<Prediction<InputT, ValueT>>> future = modelLoader.get()
+          .thenCompose(model -> {
             try {
-              return featureExtractor.extract(inputs);
+              return predictFn.apply(model, featureExtractor.extract(inputs));
             } catch (final Exception e) {
               throw new CompletionException(e);
             }
           })
-          .thenCompose(vectors -> predictFn.apply(model, vectors));
+          .toCompletableFuture();
 
       final ScheduledFuture<?> schedule = scheduler.schedule(() -> {
         future.completeExceptionally(new TimeoutException());
@@ -143,12 +143,12 @@ public interface Predictor<InputT, ValueT> {
 
   /**
    * Functional interface. You should perform E2E feature extraction and prediction. See {@link
-   * Predictor#create(Model, FeatureExtractor, AsyncPredictFn)} for an example of usage.
+   * Predictor#create(ModelLoader, FeatureExtractor, AsyncPredictFn)} for an example of usage.
    *
    * @param input a list of inputs to perform feature extraction and prediction on.
-   * @param timeout implementation specific timeout, see {@link Predictor#create(Model,
+   * @param timeout implementation specific timeout, see {@link Predictor#create(ModelLoader,
    * FeatureExtractor, AsyncPredictFn)} for an example of usage.
-   * @param scheduler implementation specific scheduler, see {@link Predictor#create(Model,
+   * @param scheduler implementation specific scheduler, see {@link Predictor#create(ModelLoader,
    * FeatureExtractor, AsyncPredictFn)} for an example of usage.
    */
   CompletionStage<List<Prediction<InputT, ValueT>>> predict(ScheduledExecutorService scheduler,

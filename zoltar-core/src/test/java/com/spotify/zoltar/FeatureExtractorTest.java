@@ -23,10 +23,10 @@ package com.spotify.zoltar;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 
@@ -34,21 +34,16 @@ public class FeatureExtractorTest {
 
   @Test
   public void emptyExtract() throws Exception {
-    final List<Vector<Object, Object>> vectors = FeatureExtractor
-        .create(inputs -> Collections.emptyList())
-        .extract();
+    final ExtractFn<Object, Object> fn = inputs -> Collections.emptyList();
+    final List<Vector<Object, Object>> vectors = FeatureExtractor.create(fn).extract();
 
     assertThat(vectors.size(), Is.is(0));
   }
 
   @Test
   public void nonEmptyExtract() throws Exception {
-    final List<Vector<Integer, Float>> vectors =
-        FeatureExtractor.<Integer, Float>create(inputs -> {
-          return Arrays.stream(inputs)
-              .map(i -> (float) i / 10)
-              .collect(Collectors.toList());
-        }).extract(1);
+    final SingleExtractFn<Integer, Float> fn = input -> (float) input / 10;
+    final List<Vector<Integer, Float>> vectors = FeatureExtractor.create(fn).extract(1);
 
     assertThat(vectors.size(), is(1));
     assertThat(vectors.get(0), is(Vector.create(1, 0.1f)));

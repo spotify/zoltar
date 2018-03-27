@@ -27,9 +27,15 @@ import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 public interface PredictorMetrics {
 
   @SuppressWarnings("checkstyle:LineLength")
-  <ModelT extends Model<?>, InputT, VectorT, ValueT> AsyncPredictFn<ModelT, InputT, VectorT, ValueT> timed(
+  <ModelT extends Model<?>, InputT, VectorT, ValueT> AsyncPredictFn<ModelT, InputT, VectorT, ValueT> duration(
       AsyncPredictFn<ModelT, InputT, VectorT, ValueT> fn);
 
-  <InputT, VectorT> FeatureExtractor<InputT, VectorT> timed(FeatureExtractor<InputT, VectorT> fn);
+  <InputT, VectorT> FeatureExtractor<InputT, VectorT> duration(FeatureExtractor<InputT, VectorT> fn);
+
+  @SuppressWarnings("checkstyle:LineLength")
+  <ModelT extends Model<?>, InputT, VectorT, ValueT> AsyncPredictFn<ModelT, InputT, VectorT, ValueT> rate(
+      AsyncPredictFn<ModelT, InputT, VectorT, ValueT> fn);
+
+  <InputT, VectorT> FeatureExtractor<InputT, VectorT> rate(FeatureExtractor<InputT, VectorT> fn);
 
 }

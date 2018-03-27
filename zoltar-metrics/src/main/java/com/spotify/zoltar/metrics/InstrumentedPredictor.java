@@ -118,12 +118,14 @@ public interface InstrumentedPredictor<InputT, ValueT> extends Predictor<InputT,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
       final PredictorMetrics metrics) {
-    final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> timedPredictFn = metrics.timed(predictFn);
-    final FeatureExtractor<InputT, VectorT> timedFeatureExtractor = metrics.timed(featureExtractor);
+    final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> instrumentedPredictFn =
+        metrics.rate(metrics.duration(predictFn));
+    final FeatureExtractor<InputT, VectorT> instrumentedFeatureExtractor =
+        metrics.rate(metrics.duration(featureExtractor));
 
     return (scheduler, timeout, input) -> {
       return Predictor
-          .create(model, timedFeatureExtractor, timedPredictFn)
+          .create(model, instrumentedFeatureExtractor, instrumentedPredictFn)
           .predict(scheduler, timeout, input);
     };
   }

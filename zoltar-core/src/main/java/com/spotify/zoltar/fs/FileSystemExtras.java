@@ -44,14 +44,14 @@ public final class FileSystemExtras {
 
 
   /**
-   * Finds the latest date directory in the directory src. It assumes that partitions are
-   * formatted using ISO_LOCAL_DATE (e.g. YYYY-MM-DD).
+   * Finds the latest date directory in the directory src. It assumes that partitions are formatted
+   * using ISO_LOCAL_DATE (e.g. YYYY-MM-DD).
    */
   public static Optional<String> getLatestDate(final String src) throws IOException {
     return Files.list(Paths.get(src))
         .filter(Files::isDirectory)
         .map(p -> LocalDate.parse(p.getFileName().toString()))
-        .reduce((x,y) -> x.compareTo(y) > 0 ? x : y)
+        .reduce((x, y) -> x.compareTo(y) > 0 ? x : y)
         .map(LocalDate::toString);
   }
 
@@ -84,14 +84,16 @@ public final class FileSystemExtras {
     return copyDir(src, temp, true).toUri();
   }
 
-  private static Path copyDir(final Path src, final Path dest, final boolean overwrite)
+  static Path copyDir(final Path src, final Path dest, final boolean overwrite)
       throws IOException {
     final List<Path> paths = Files.walk(src)
         .filter(path -> !path.equals(src))
         .collect(Collectors.toList());
 
     for (final Path path : paths) {
-      final String relative = path.toString().substring(src.toString().length() - 1);
+      final int parentIdx = path.toString().lastIndexOf(src.getFileName().toString());
+      final int idx = parentIdx + src.getFileName().toString().length();
+      final String relative = path.toString().substring(idx);
       final Path fullDst = Paths.get(dest.toString(), relative);
       final CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
           : new CopyOption[]{};

@@ -20,14 +20,31 @@
 
 package com.spotify.zoltar.fs;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.Test;
 
 public class FileSystemExtrasTest {
+
+  @Test
+  public void getPath() {
+    final Path noSchema = FileSystemExtras.path(URI.create("/tmp"));
+    assertNotNull(noSchema);
+
+    final Path withSchema = FileSystemExtras.path(URI.create("file:///tmp"));
+    assertNotNull(withSchema);
+  }
 
   @Test
   public void getLatestDateTest() throws IOException, URISyntaxException {
@@ -53,5 +70,29 @@ public class FileSystemExtrasTest {
   @Test(expected = IOException.class)
   public void getLatestDateTestInputBadSubdirs() throws IOException {
     FileSystemExtras.getLatestDate("/badsubdir");
+  }
+
+  @Test
+  public void noCopyIfDefaultFileSystem() throws IOException {
+    final URI uri = FileSystemExtras.downloadIfNonLocal(URI.create("/tmp"));
+    assertFalse(new File(uri).getName().startsWith("zoltar"));
+  }
+
+  @Test
+  public void copyDirectory() throws IOException {
+    final Path temp = Files.createTempDirectory("original-zoltar");
+    new File(temp.toFile(), "foobar").createNewFile();
+
+    final Path dest = Files.createTempDirectory("zoltar-");
+    final Path path = FileSystemExtras.copyDir(temp, dest, true);
+
+    assertTrue(path.toFile().getName().startsWith("zoltar"));
+    assertTrue(path.toFile().exists());
+    assertTrue(path.toFile().isDirectory());
+    assertThat(path.toFile().listFiles().length, is(1));
+
+    dest.toFile().deleteOnExit();
+    temp.toFile().deleteOnExit();
+    path.toFile().deleteOnExit();
   }
 }

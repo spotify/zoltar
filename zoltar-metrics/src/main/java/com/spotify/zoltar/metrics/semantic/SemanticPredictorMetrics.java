@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.metrics;
+package com.spotify.zoltar.metrics.semantic;
 
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
@@ -30,6 +30,7 @@ import com.spotify.zoltar.Model;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Vector;
+import com.spotify.zoltar.metrics.PredictorMetrics;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 

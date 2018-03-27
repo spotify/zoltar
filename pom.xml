@@ -13,6 +13,7 @@
     <module>zoltar-featran</module>
     <module>zoltar-tests</module>
     <module>zoltar-models</module>
+    <module>zoltar-metrics</module>
     <module>examples/apollo-service-example</module>
   </modules>
 

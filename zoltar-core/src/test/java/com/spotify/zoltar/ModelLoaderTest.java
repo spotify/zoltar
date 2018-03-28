@@ -18,22 +18,18 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.loaders;
+package com.spotify.zoltar;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.Memoizer;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class MemoizerTest {
+public class ModelLoaderTest {
 
   static class DummyModel implements Model<Object> {
     private final AtomicInteger inc;
@@ -60,9 +56,7 @@ public class MemoizerTest {
 
   @Test
   public void memoize() throws InterruptedException, ExecutionException, TimeoutException {
-    final ModelLoader<DummyModel> loader = Memoizer.memoize(() -> {
-      return CompletableFuture.completedFuture(new DummyModel());
-    });
+    final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new).memoize();
 
     final Duration duration = Duration.ofMillis(1000);
     loader.get(duration).instance();

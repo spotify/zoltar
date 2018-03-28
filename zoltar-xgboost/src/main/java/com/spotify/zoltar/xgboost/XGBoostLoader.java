@@ -21,12 +21,7 @@
 package com.spotify.zoltar.xgboost;
 
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.Memoizer;
-import com.spotify.zoltar.loaders.PreLoader;
-import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @FunctionalInterface
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -39,15 +34,12 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    *                 filesystem, resource, GCS etc.
    */
   static XGBoostLoader create(final String modelUri) {
-    return PreLoader.preload(Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return XGBoostModel.create(URI.create(modelUri));
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    }))::get;
+    final ModelLoader<XGBoostModel> loader = ModelLoader
+        .lift(() -> XGBoostModel.create(URI.create(modelUri)))
+        .memoize()
+        .preload();
+
+    return loader::get;
   }
 
 }

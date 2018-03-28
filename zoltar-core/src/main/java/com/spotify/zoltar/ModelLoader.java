@@ -21,10 +21,14 @@
 package com.spotify.zoltar;
 
 import java.time.Duration;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Handles the model loading logic.
@@ -33,6 +37,28 @@ import java.util.concurrent.TimeoutException;
  */
 @FunctionalInterface
 public interface ModelLoader<M extends Model<?>> {
+
+  interface ThrowableSupplier<M extends Model<?>> {
+
+    M get() throws Exception;
+
+  }
+
+  /**
+   * Lifts a supplier into a {@link ModelLoader}.
+   *
+   * @param supplier model supplier.
+   * @param <M> Underlying model instance.
+   */
+  static <M extends Model<?>> ModelLoader<M> lift(final ThrowableSupplier<M> supplier) {
+    return () -> CompletableFuture.supplyAsync(() -> {
+      try {
+        return supplier.get();
+      } catch (Exception e) {
+        throw new CompletionException(e);
+      }
+    });
+  }
 
   /**
    * Get's the underlying model instance.
@@ -52,6 +78,35 @@ public interface ModelLoader<M extends Model<?>> {
     return get()
         .toCompletableFuture()
         .get(duration.toMillis(), TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Calls {@link ModelLoader#get()} and return this loader.
+   */
+  default ModelLoader<M> preload() {
+    get();
+    return this;
+  }
+
+  /**
+   * Returns a new {@link ModelLoader} that memoizes the result.
+   */
+  default ModelLoader<M> memoize() {
+    final AtomicReference<CompletionStage<M>> value = new AtomicReference<>();
+    return () -> {
+      CompletionStage<M> val = value.get();
+      if (val == null) {
+        synchronized (value) {
+          val = value.get();
+          if (val == null) {
+            val = Objects.requireNonNull(get());
+            value.set(val);
+          }
+        }
+      }
+
+      return val;
+    };
   }
 
 }

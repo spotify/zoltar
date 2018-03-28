@@ -21,12 +21,7 @@
 package com.spotify.zoltar.tf;
 
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.Memoizer;
-import com.spotify.zoltar.loaders.PreLoader;
-import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
 import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
@@ -45,15 +40,12 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
   static TensorFlowGraphLoader create(final String modelUri,
                                       @Nullable final ConfigProto config,
                                       @Nullable final String prefix) {
-    return PreLoader.preload(Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowGraphModel.create(URI.create(modelUri), config, prefix);
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    }))::get;
+    final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
+        .lift(() -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix))
+        .memoize()
+        .preload();
+
+    return loader::get;
   }
 
   /**
@@ -66,15 +58,12 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
   static TensorFlowGraphLoader create(final byte[] graphDef,
                                       @Nullable final ConfigProto config,
                                       @Nullable final String prefix) {
-    return PreLoader.preload(Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowGraphModel.create(graphDef, config, prefix);
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    }))::get;
+    final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
+        .lift(() -> TensorFlowGraphModel.create(graphDef, config, prefix))
+        .memoize()
+        .preload();
+
+    return loader::get;
   }
 
 }

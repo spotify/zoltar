@@ -21,12 +21,7 @@
 package com.spotify.zoltar.tf;
 
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.Memoizer;
-import com.spotify.zoltar.loaders.PreLoader;
-import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @FunctionalInterface
 public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
@@ -39,15 +34,12 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *                 GCS etc.
    */
   static TensorFlowLoader create(final String modelUri) {
-    return PreLoader.preload(Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowModel.create(URI.create(modelUri));
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    }))::get;
+    final ModelLoader<TensorFlowModel> loader = ModelLoader
+        .lift(() -> TensorFlowModel.create(URI.create(modelUri)))
+        .memoize()
+        .preload();
+
+    return loader::get;
   }
 
   /**
@@ -60,15 +52,12 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    */
   static TensorFlowLoader create(final String modelUri,
                                  final TensorFlowModel.Options options) {
-    return PreLoader.preload(Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowModel.create(URI.create(modelUri), options);
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    }))::get;
+    final ModelLoader<TensorFlowModel> loader = ModelLoader
+        .lift(() -> TensorFlowModel.create(URI.create(modelUri), options))
+        .memoize()
+        .preload();
+
+    return loader::get;
   }
 
 }

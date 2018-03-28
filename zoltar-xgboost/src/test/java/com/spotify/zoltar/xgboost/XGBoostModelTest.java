@@ -97,9 +97,6 @@ public class XGBoostModelTest {
       });
     });
 
-    // preload
-    model.get();
-
     final ExtractFn<Iris, LabeledPoint> extractFn = FeatranExtractFns
         .labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 

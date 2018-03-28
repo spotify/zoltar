@@ -79,9 +79,6 @@ public class TensorFlowModelTest {
       });
     });
 
-    // preload
-    model.get();
-
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 

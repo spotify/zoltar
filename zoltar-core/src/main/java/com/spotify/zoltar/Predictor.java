@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
 @FunctionalInterface
 public interface Predictor<InputT, ValueT> {
 
-  /** Default scheduler for predict functions. */
+  /** PreLoader scheduler for predict functions. */
   ScheduledExecutorService SCHEDULER =
       Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 

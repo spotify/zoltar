@@ -20,18 +20,20 @@
 
 package com.spotify.zoltar;
 
-import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphModel;
+import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
-import com.spotify.zoltar.xgboost.XGBoostModel;
-import java.io.IOException;
-import java.net.URI;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
+import com.spotify.zoltar.xgboost.XGBoostLoader;
 import javax.annotation.Nullable;
 import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
 
+/**
+ * This class consists exclusively of static methods that return Model Loaders.
+ *
+ * <p>This is the public entry point for get get a Model.</p>
+ */
 public final class ModelLoaders {
 
   /**
@@ -40,16 +42,8 @@ public final class ModelLoaders {
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *                 filesystem, resource, GCS etc.
    */
-  public static ModelLoader<XGBoostModel> xgboost(final String modelUri) {
-    return Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return XGBoostModel.create(URI.create(modelUri));
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    });
+  public static XGBoostLoader xgboost(final String modelUri) {
+    return XGBoostLoader.create(modelUri);
   }
 
   /**
@@ -59,16 +53,8 @@ public final class ModelLoaders {
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    */
-  public static ModelLoader<TensorFlowModel> tensorFlow(final String modelUri) {
-    return Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowModel.create(URI.create(modelUri));
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    });
+  public static TensorFlowLoader tensorFlow(final String modelUri) {
+    return TensorFlowLoader.create(modelUri);
   }
 
   /**
@@ -79,17 +65,9 @@ public final class ModelLoaders {
    *                 GCS etc.
    * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
    */
-  public static ModelLoader<TensorFlowModel> tensorFlow(final String modelUri,
-                                                        final TensorFlowModel.Options options) {
-    return Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowModel.create(URI.create(modelUri), options);
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    });
+  public static TensorFlowLoader tensorFlow(final String modelUri,
+                                            final TensorFlowModel.Options options) {
+    return TensorFlowLoader.create(modelUri, options);
   }
 
   /**
@@ -104,15 +82,7 @@ public final class ModelLoaders {
       final String modelUri,
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
-    return Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowGraphModel.create(URI.create(modelUri), config, prefix);
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    });
+    return TensorFlowGraphLoader.create(modelUri, config, prefix);
   }
 
   /**
@@ -126,15 +96,7 @@ public final class ModelLoaders {
       final byte[] graphDef,
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
-    return Memoizer.memoize(() -> {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return TensorFlowGraphModel.create(graphDef, config, prefix);
-        } catch (IOException e) {
-          throw new CompletionException(e);
-        }
-      });
-    });
+    return TensorFlowGraphLoader.create(graphDef, config, prefix);
   }
 
 }

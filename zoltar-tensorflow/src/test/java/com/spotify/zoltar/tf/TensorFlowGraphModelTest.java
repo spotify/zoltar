@@ -147,9 +147,6 @@ public class TensorFlowGraphModelTest {
       });
     });
 
-    // preload
-    tfModel.get();
-
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()
             .map(vector -> {

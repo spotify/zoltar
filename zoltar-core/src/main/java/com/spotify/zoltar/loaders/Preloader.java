@@ -25,19 +25,36 @@ import com.spotify.zoltar.ModelLoader;
 import java.time.Duration;
 import java.util.function.Function;
 
+/**
+ * Preloader is model loader that calls {@link ModelLoader#get()} allowing model preloading.
+ *
+ * @param <M> Model instance type.
+ */
 @FunctionalInterface
 public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
 
+  /**
+   * Returns a blocking {@link Preloader}. Blocks till the model is loaded
+   * or a {@link Duration} is met.
+   *
+   * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
+   */
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload(
       final Duration duration) {
     return loader -> ModelLoader.lift(() -> loader.get(duration))::get;
   }
 
+  /**
+   * Returns a blocking {@link Preloader}. Blocks at create time till the model is loaded.
+   */
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload() {
     final Duration duration = Duration.ofDays(Integer.MAX_VALUE);
     return loader -> ModelLoader.lift(() -> loader.get(duration))::get;
   }
 
+  /**
+   * Returns a asynchronous {@link Preloader}.
+   */
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preloadAsync() {
     return loader -> loader::get;
   }

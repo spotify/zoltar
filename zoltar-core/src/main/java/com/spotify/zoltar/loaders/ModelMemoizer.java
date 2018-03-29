@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @param <M> Model instance type.
  */
 @FunctionalInterface
-public interface Memoizer<M extends Model<?>> extends ModelLoader<M> {
+public interface ModelMemoizer<M extends Model<?>> extends ModelLoader<M> {
 
   /**
    * Creates a memoized model loader.
@@ -41,11 +41,15 @@ public interface Memoizer<M extends Model<?>> extends ModelLoader<M> {
    * @param <M> Model instance type.
    * @return Memoized loader.
    */
-  static <M extends Model<?>> Memoizer<M> memoize(final ModelLoader<M> loader) {
+  static <M extends Model<?>> ModelMemoizer<M> memoize(final ModelLoader<M> loader) {
+    // AtomicReference can be updated atomically and offers volatile write/read semantics.
+    // However, in this case it's just being used as a container for the CompletionStage.
     final AtomicReference<CompletionStage<M>> value = new AtomicReference<>();
     return () -> {
       CompletionStage<M> val = value.get();
       if (val == null) {
+        // we want to avoid .get() being called several times from the different threads
+        // because it can be very expensive.
         synchronized (value) {
           val = value.get();
           if (val == null) {

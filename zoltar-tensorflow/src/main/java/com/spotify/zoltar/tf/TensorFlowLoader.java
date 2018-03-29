@@ -21,7 +21,7 @@
 package com.spotify.zoltar.tf;
 
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.loaders.ModelMemoizer;
 import com.spotify.zoltar.loaders.Preloader;
 import java.net.URI;
 
@@ -38,9 +38,8 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
   static TensorFlowLoader create(final String modelUri) {
     final ModelLoader<TensorFlowModel> loader = ModelLoader
         .lift(() -> TensorFlowModel.create(URI.create(modelUri)))
-        .with(Memoizer::memoize)
+        .with(ModelMemoizer::memoize)
         .with(Preloader.preloadAsync());
-
 
     return loader::get;
   }
@@ -57,7 +56,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
                                  final TensorFlowModel.Options options) {
     final ModelLoader<TensorFlowModel> loader = ModelLoader
         .lift(() -> TensorFlowModel.create(URI.create(modelUri), options))
-        .with(Memoizer::memoize)
+        .with(ModelMemoizer::memoize)
         .with(Preloader.preloadAsync());
 
     return loader::get;

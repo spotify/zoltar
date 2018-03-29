@@ -233,6 +233,16 @@
             <property name="allowedAnnotations" value="Override, Test"/>
             <property name="allowThrowsTagsForSubclasses" value="true"/>
         </module>
+        <module name="JavadocType">
+          <property name="scope" value="public"/>
+          <property name="allowMissingParamTags" value="true"/>
+        </module>
+        <module name="JavadocVariable">
+          <property name="scope" value="public"/>
+        </module>
+        <module name="JavadocStyle">
+          <property name="scope" value="public"/>
+        </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
             <message key="name.invalidPattern"

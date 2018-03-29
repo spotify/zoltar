@@ -101,6 +101,9 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
       return new AutoValue_TensorFlowModel_Options.Builder();
     }
 
+    /**
+     * Builder for enclosing Options.
+     */
     @AutoValue.Builder
     public abstract static class Builder {
 

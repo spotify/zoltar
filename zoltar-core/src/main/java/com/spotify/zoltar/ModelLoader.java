@@ -21,14 +21,13 @@
 package com.spotify.zoltar;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Handles the model loading logic.
@@ -80,33 +79,8 @@ public interface ModelLoader<M extends Model<?>> {
         .get(duration.toMillis(), TimeUnit.MILLISECONDS);
   }
 
-  /**
-   * Calls {@link ModelLoader#get()} and return this loader.
-   */
-  default ModelLoader<M> preload() {
-    get();
-    return this;
-  }
-
-  /**
-   * Returns a new {@link ModelLoader} that memoizes the result.
-   */
-  default ModelLoader<M> memoize() {
-    final AtomicReference<CompletionStage<M>> value = new AtomicReference<>();
-    return () -> {
-      CompletionStage<M> val = value.get();
-      if (val == null) {
-        synchronized (value) {
-          val = value.get();
-          if (val == null) {
-            val = Objects.requireNonNull(get());
-            value.set(val);
-          }
-        }
-      }
-
-      return val;
-    };
+  default ModelLoader<M> with(Function<ModelLoader<M>, ModelLoader<M>> fn) {
+    return fn.apply(this);
   }
 
 }

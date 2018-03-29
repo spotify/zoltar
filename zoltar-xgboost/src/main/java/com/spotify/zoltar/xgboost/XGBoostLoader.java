@@ -21,6 +21,8 @@
 package com.spotify.zoltar.xgboost;
 
 import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.loaders.Preloader;
 import java.net.URI;
 
 @FunctionalInterface
@@ -36,8 +38,8 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
   static XGBoostLoader create(final String modelUri) {
     final ModelLoader<XGBoostModel> loader = ModelLoader
         .lift(() -> XGBoostModel.create(URI.create(modelUri)))
-        .memoize()
-        .preload();
+        .with(Memoizer::memoize)
+        .with(Preloader::preload);
 
     return loader::get;
   }

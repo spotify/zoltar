@@ -66,7 +66,8 @@ public class PredictorTest {
     };
 
     try {
-      Predictor.create(new DummyModel(), extractFn, predictFn)
+      final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+      Predictor.create(loader, extractFn, predictFn)
           .predict(predictionTimeout, new Object())
           .toCompletableFuture()
           .get(wait.toMillis(), TimeUnit.MILLISECONDS);
@@ -84,7 +85,8 @@ public class PredictorTest {
     final AsyncPredictFn<DummyModel, Object, Object, Object> predictFn =
         (model, vectors) -> CompletableFuture.completedFuture(Collections.emptyList());
 
-    Predictor.create(new DummyModel(), extractFn, predictFn)
+    final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+    Predictor.create(loader, extractFn, predictFn)
         .predict()
         .toCompletableFuture()
         .get(wait.toMillis(), TimeUnit.MILLISECONDS);
@@ -100,8 +102,9 @@ public class PredictorTest {
           .collect(Collectors.toList());
     };
 
+    final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
     final List<Prediction<Integer, Float>> predictions = Predictor
-        .create(new DummyModel(), extractFn, predictFn)
+        .create(loader, extractFn, predictFn)
         .predict(1)
         .toCompletableFuture()
         .get(wait.toMillis(), TimeUnit.MILLISECONDS);

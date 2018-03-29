@@ -21,6 +21,8 @@
 package com.spotify.zoltar.tf;
 
 import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.loaders.Memoizer;
+import com.spotify.zoltar.loaders.Preloader;
 import java.net.URI;
 import javax.annotation.Nullable;
 import org.tensorflow.Graph;
@@ -42,8 +44,8 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
                                       @Nullable final String prefix) {
     final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
         .lift(() -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix))
-        .memoize()
-        .preload();
+        .with(Memoizer::memoize)
+        .with(Preloader::preload);
 
     return loader::get;
   }
@@ -60,8 +62,8 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
                                       @Nullable final String prefix) {
     final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
         .lift(() -> TensorFlowGraphModel.create(graphDef, config, prefix))
-        .memoize()
-        .preload();
+        .with(Memoizer::memoize)
+        .with(Preloader::preload);
 
     return loader::get;
   }

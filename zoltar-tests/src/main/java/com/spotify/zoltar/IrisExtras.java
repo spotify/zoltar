@@ -20,6 +20,9 @@
 
 package com.spotify.zoltar;
 
+/**
+ * This exists due to https://github.com/spotify/zoltar/issues/57.
+ */
 public final class IrisExtras {
 
 }

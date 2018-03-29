@@ -79,7 +79,7 @@ public interface ModelLoader<M extends Model<?>> {
         .get(duration.toMillis(), TimeUnit.MILLISECONDS);
   }
 
-  default ModelLoader<M> with(Function<ModelLoader<M>, ModelLoader<M>> fn) {
+  default <L extends ModelLoader<M>> L with(Function<ModelLoader<M>, L> fn) {
     return fn.apply(this);
   }
 

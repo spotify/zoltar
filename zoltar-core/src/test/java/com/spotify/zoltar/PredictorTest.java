@@ -60,8 +60,10 @@ public class PredictorTest {
     final Duration predictionTimeout = Duration.ZERO;
 
     final ExtractFn<Object, Object> extractFn = inputs -> Collections.emptyList();
-    final PredictFn<DummyModel, Object, Object, Object> predictFn =
-        (model, vectors) -> Collections.emptyList();
+    final PredictFn<DummyModel, Object, Object, Object> predictFn = (model, vectors) -> {
+      Thread.sleep(wait.toMillis());
+      return Collections.emptyList();
+    };
 
     try {
       Predictor.create(new DummyModel(), extractFn, predictFn)

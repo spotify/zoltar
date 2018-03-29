@@ -22,21 +22,23 @@ package com.spotify.zoltar.loaders;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
+import java.time.Duration;
+import java.util.function.Function;
 
 @FunctionalInterface
 public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
 
-  /**
-   * Creates a non blocking preload model loader that calls {@link ModelLoader#get()}
-   * at creation time.
-   *
-   * @param loader ModelLoader to be preloaded.
-   * @param <M> Model instance type.
-   */
-  static <M extends Model<?>> Preloader<M> preload(final ModelLoader<M> loader) {
-    loader.get();
-
-    return loader::get;
+  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload(
+      final Duration duration) {
+    return loader -> ModelLoader.lift(() -> loader.get(duration))::get;
   }
 
+  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload() {
+    final Duration duration = Duration.ofDays(Integer.MAX_VALUE);
+    return loader -> ModelLoader.lift(() -> loader.get(duration))::get;
+  }
+
+  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preloadAsync() {
+    return loader -> loader::get;
+  }
 }

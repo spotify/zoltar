@@ -39,7 +39,7 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
     final ModelLoader<XGBoostModel> loader = ModelLoader
         .lift(() -> XGBoostModel.create(URI.create(modelUri)))
         .with(Memoizer::memoize)
-        .with(Preloader::preload);
+        .with(Preloader.preload());
 
     return loader::get;
   }

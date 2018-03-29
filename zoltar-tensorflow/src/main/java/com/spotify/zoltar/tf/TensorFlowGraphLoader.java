@@ -45,7 +45,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
     final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
         .lift(() -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix))
         .with(Memoizer::memoize)
-        .with(Preloader::preload);
+        .with(Preloader.preloadAsync());
 
     return loader::get;
   }
@@ -63,7 +63,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
     final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
         .lift(() -> TensorFlowGraphModel.create(graphDef, config, prefix))
         .with(Memoizer::memoize)
-        .with(Preloader::preload);
+        .with(Preloader.preloadAsync());
 
     return loader::get;
   }

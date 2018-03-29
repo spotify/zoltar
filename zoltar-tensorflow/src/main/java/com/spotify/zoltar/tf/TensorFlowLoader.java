@@ -39,7 +39,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
     final ModelLoader<TensorFlowModel> loader = ModelLoader
         .lift(() -> TensorFlowModel.create(URI.create(modelUri)))
         .with(Memoizer::memoize)
-        .with(Preloader::preload);
+        .with(Preloader.preloadAsync());
 
 
     return loader::get;
@@ -58,7 +58,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
     final ModelLoader<TensorFlowModel> loader = ModelLoader
         .lift(() -> TensorFlowModel.create(URI.create(modelUri), options))
         .with(Memoizer::memoize)
-        .with(Preloader::preload);
+        .with(Preloader.preloadAsync());
 
     return loader::get;
   }

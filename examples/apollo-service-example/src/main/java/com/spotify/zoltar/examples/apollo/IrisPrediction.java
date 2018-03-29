@@ -28,6 +28,7 @@ import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
@@ -70,7 +71,8 @@ public class IrisPrediction {
   public static void configure(final URI modelDirUri, final URI settingsUri) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
-    final TensorFlowModel loadedModel = Models.tensorFlow(modelDirUri.toString());
+    final ModelLoader<TensorFlowModel> modelLoader =
+        Models.tensorFlow(modelDirUri.toString());
 
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
@@ -85,7 +87,7 @@ public class IrisPrediction {
       return CompletableFutures.allAsList(predictions);
     };
 
-    predictor = Predictor.create(loadedModel, extractFn, predictFn);
+    predictor = Predictor.create(modelLoader, extractFn, predictFn);
   }
 
   /**

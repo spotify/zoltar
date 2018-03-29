@@ -20,87 +20,87 @@
 
 package com.spotify.zoltar;
 
+import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphModel;
+import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
-import com.spotify.zoltar.xgboost.XGBoostModel;
-import java.io.IOException;
-import java.net.URI;
+import com.spotify.zoltar.xgboost.XGBoostLoader;
 import javax.annotation.Nullable;
 import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
 
 /**
- * This class consists exclusively of static methods that return Models.
+ * This class consists exclusively of static methods that return Model Loaders.
  *
- * <p>This is the public entry point for get get a Model.</p>
+ * <p>This is the public entry point for get a Model.</p>
  */
 public final class Models {
 
-  // Suppresses default constructor, ensuring non-instantiability.
   private Models() {
+
   }
 
   /**
-   * Returns a XGBoost model given the serialized model stored in the model URI.
+   * Returns a XGBoost model loader given the serialized model stored in the model URI.
    *
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *                 filesystem, resource, GCS etc.
    */
-  public static XGBoostModel xgboost(final String modelUri) throws IOException {
-    return XGBoostModel.create(URI.create(modelUri));
+  public static XGBoostLoader xgboost(final String modelUri) {
+    return XGBoostLoader.create(modelUri);
   }
 
   /**
-   * Returns a TensorFlow model based on a saved model.
+   * Returns a TensorFlow model loader based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    */
-  public static TensorFlowModel tensorFlow(final String modelUri) throws IOException {
-    return TensorFlowModel.create(URI.create(modelUri));
+  public static TensorFlowLoader tensorFlow(final String modelUri) {
+    return TensorFlowLoader.create(modelUri);
   }
 
   /**
-   * Returns a TensorFlow model based on a saved model.
+   * Returns a TensorFlow model loader based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
    */
-  public static TensorFlowModel tensorFlow(final String modelUri,
-                                           final TensorFlowModel.Options options)
-      throws IOException {
-    return TensorFlowModel.create(URI.create(modelUri), options);
+  public static TensorFlowLoader tensorFlow(final String modelUri,
+                                            final TensorFlowModel.Options options) {
+    return TensorFlowLoader.create(modelUri, options);
   }
 
   /**
-   * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
    * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph} file on
    *                 local filesystem, resource, GCS etc.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
    */
-  public static TensorFlowGraphModel tensorFlowGraph(final String modelUri,
-                                                     @Nullable final ConfigProto config,
-                                                     @Nullable final String prefix)
-      throws IOException {
-    return TensorFlowGraphModel.create(URI.create(modelUri), config, prefix);
+  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+      final String modelUri,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix) {
+    return TensorFlowGraphLoader.create(modelUri, config, prefix);
   }
 
   /**
-   * Returns a TensorFlow model based on a serialized TensorFlow {@link Graph}.
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
    */
-  public static TensorFlowGraphModel tensorFlowGraph(final byte[] graphDef,
-                                                     @Nullable final ConfigProto config,
-                                                     @Nullable final String prefix)
-      throws IOException {
-    return TensorFlowGraphModel.create(graphDef, config, prefix);
+  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+      final byte[] graphDef,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix) {
+    return TensorFlowGraphLoader.create(graphDef, config, prefix);
   }
+
 }

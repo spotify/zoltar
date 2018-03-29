@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
@@ -134,8 +135,8 @@ public class TensorFlowGraphModelTest {
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
                                        StandardCharsets.UTF_8);
 
-    final TensorFlowGraphModel tfModel =
-        TensorFlowGraphModel.create(graphFile.toUri(), null, null);
+    final ModelLoader<TensorFlowGraphModel> tfModel =
+        TensorFlowGraphLoader.create(graphFile.toString(), null, null);
 
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()

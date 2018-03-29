@@ -26,6 +26,7 @@ import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
@@ -65,7 +66,8 @@ public class TensorFlowModelTest {
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
         StandardCharsets.UTF_8);
 
-    final TensorFlowModel model = TensorFlowModel.create(trainedModelUri);
+    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 

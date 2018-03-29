@@ -83,7 +83,8 @@ public class XGBoostModelTest {
 
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
         StandardCharsets.UTF_8);
-    final XGBoostModel model = XGBoostModel.create(trainedModelUri);
+    final XGBoostLoader model = XGBoostLoader.create(trainedModelUri.toString());
+
     final ExtractFn<Iris, LabeledPoint> extractFn = FeatranExtractFns
         .labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 

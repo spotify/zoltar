@@ -99,7 +99,7 @@ public class XGBoostModelTest {
         2, "Iris-virginica");
 
     final CompletableFuture<Integer> sum = getXGBoostIrisPredictor()
-        .predict(Duration.ofMillis(1000), irisStream)
+        .predict(Duration.ofSeconds(10), irisStream)
         .thenApply(predictions -> {
           return predictions.stream()
               .mapToInt(prediction -> {

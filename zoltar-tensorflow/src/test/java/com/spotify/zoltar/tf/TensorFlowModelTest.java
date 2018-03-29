@@ -81,7 +81,7 @@ public class TensorFlowModelTest {
         "Iris-virginica", 2L);
 
     final CompletableFuture<Integer> sum = getTFIrisPredictor()
-        .predict(Duration.ofMillis(1000), irisStream)
+        .predict(Duration.ofSeconds(10), irisStream)
         .thenApply(predictions -> {
           return predictions.stream()
               .mapToInt(prediction -> {

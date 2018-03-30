@@ -10,8 +10,8 @@
   <artifactId>zoltar-tests</artifactId>
 
   <properties>
-    <grpc.version>1.6.1</grpc.version>
-    <netty.version>4.1.14.Final</netty.version>
+    <grpc.version>1.7.0</grpc.version>
+    <netty.version>4.1.16.Final</netty.version>
     <jackson.version>2.9.2</jackson.version>
   </properties>
 
@@ -127,9 +127,21 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-auth</artifactId>
+      <version>${grpc.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec</artifactId>
       <version>${netty.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-tcnative-boringssl-static</artifactId>
+      <version>2.0.6.Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -139,9 +151,39 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client</artifactId>
-      <version>1.22.0</version>
+      <version>1.23.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+      <version>1.23.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.http-client</groupId>
+      <artifactId>google-http-client</artifactId>
+      <version>1.23.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-credentials</artifactId>
+      <version>0.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-api</artifactId>
+      <version>0.7.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

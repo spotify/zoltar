@@ -27,8 +27,8 @@
     <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
     <scala.version>2.11.12</scala.version>
     <tensorFlow.version>1.6.0</tensorFlow.version>
-    <scio.version>0.5.0</scio.version>
-    <featran.version>0.1.19</featran.version>
+    <scio.version>0.5.1</scio.version>
+    <featran.version>0.1.22</featran.version>
     <proto.version>3.5.1</proto.version>
   </properties>
 
@@ -184,6 +184,17 @@
         <groupId>com.chuusai</groupId>
         <artifactId>shapeless_2.11</artifactId>
         <version>2.3.3</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.typelevel</groupId>
+        <artifactId>cats-kernel_2.11</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.typelevel</groupId>
+        <artifactId>machinist_2.11</artifactId>
+        <version>0.6.2</version>
       </dependency>
 
       <!-- Test dependencies -->

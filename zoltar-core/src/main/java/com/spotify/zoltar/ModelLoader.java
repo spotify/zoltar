@@ -37,6 +37,10 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface ModelLoader<M extends Model<?>> {
 
+  /**
+   * Supplier of {@link Model}. Can throw {@link Exception} when the supplier is invoked.
+   */
+  @FunctionalInterface
   interface ThrowableSupplier<M extends Model<?>> {
 
     M get() throws Exception;

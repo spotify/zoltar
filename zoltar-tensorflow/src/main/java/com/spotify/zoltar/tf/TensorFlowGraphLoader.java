@@ -28,6 +28,10 @@ import javax.annotation.Nullable;
 import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
 
+/**
+ * {@link TensorFlowGraphModel} loader. This loader is composed with {@link ModelMemoizer}
+ * and {@link Preloader}.
+ */
 @FunctionalInterface
 public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel> {
 

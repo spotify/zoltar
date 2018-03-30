@@ -25,6 +25,10 @@ import com.spotify.zoltar.loaders.ModelMemoizer;
 import com.spotify.zoltar.loaders.Preloader;
 import java.net.URI;
 
+/**
+ * {@link TensorFlowModel} loader. This loader is composed with {@link ModelMemoizer}
+ * and {@link Preloader}.
+ */
 @FunctionalInterface
 public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
 

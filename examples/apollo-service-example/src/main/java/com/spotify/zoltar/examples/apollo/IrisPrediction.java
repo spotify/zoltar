@@ -25,6 +25,7 @@ import com.spotify.apollo.Response;
 import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
+import com.spotify.zoltar.DefaultPredictorBuilder;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
@@ -87,7 +88,9 @@ public class IrisPrediction {
       return CompletableFutures.allAsList(predictions);
     };
 
-    predictor = Predictor.create(modelLoader, extractFn, predictFn);
+    predictor = DefaultPredictorBuilder
+        .create(modelLoader, extractFn, predictFn)
+        .predictor();
   }
 
   /**
@@ -131,7 +134,7 @@ public class IrisPrediction {
   private static long predictFn(final TensorFlowModel model, final Example example) {
     final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
-    try (Tensor<String> t = Tensors.create(b)) {
+    try (final Tensor<String> t = Tensors.create(b)) {
       final Session.Runner runner = model.instance().session().runner()
               .feed("input_example_tensor", t);
       final String op = "linear/head/predictions/class_ids";

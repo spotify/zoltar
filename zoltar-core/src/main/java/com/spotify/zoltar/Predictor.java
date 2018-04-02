@@ -45,15 +45,14 @@ public interface Predictor<InputT, ValueT> {
 
   /**
    * Functional interface. You should perform E2E feature extraction and prediction. See {@link
-   * DefaultPredictor#create(ModelLoader, FeatureExtractor, AsyncPredictFn)} for an
-   * example of usage.
+   * DefaultPredictorBuilder#create(ModelLoader, FeatureExtractor, AsyncPredictFn)} for an example
+   * of usage.
    *
-   * @param input a list of inputs to perform feature extraction and prediction on.
-   * @param timeout implementation specific timeout, see {@link Predictor#create(ModelLoader,
-   * FeatureExtractor, AsyncPredictFn)} for an example of usage.
-   * @param scheduler implementation specific scheduler, see {@link Predictor#create(ModelLoader,
-   * FeatureExtractor, AsyncPredictFn)} for an example of usage.
+   * @param input     a list of inputs to perform feature extraction and prediction on.
+   * @param timeout   implementation specific timeout.
+   * @param scheduler implementation specific scheduler.
    */
+  @SuppressWarnings("checkstyle:LineLength")
   CompletionStage<List<Prediction<InputT, ValueT>>> predict(ScheduledExecutorService scheduler,
                                                             Duration timeout,
                                                             InputT... input);

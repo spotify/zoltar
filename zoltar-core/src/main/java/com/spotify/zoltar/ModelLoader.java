@@ -57,7 +57,7 @@ public interface ModelLoader<M extends Model<?>> {
     return () -> CompletableFuture.supplyAsync(() -> {
       try {
         return supplier.get();
-      } catch (Exception e) {
+      } catch (final Exception e) {
         throw new CompletionException(e);
       }
     });
@@ -75,15 +75,15 @@ public interface ModelLoader<M extends Model<?>> {
    *
    * @return Model instance
    */
-  default M get(Duration duration) throws InterruptedException,
-                                          ExecutionException,
-                                          TimeoutException {
+  default M get(final Duration duration) throws InterruptedException,
+                                                ExecutionException,
+                                                TimeoutException {
     return get()
         .toCompletableFuture()
         .get(duration.toMillis(), TimeUnit.MILLISECONDS);
   }
 
-  default <L extends ModelLoader<M>> L with(Function<ModelLoader<M>, L> fn) {
+  default <L extends ModelLoader<M>> L with(final Function<ModelLoader<M>, L> fn) {
     return fn.apply(this);
   }
 

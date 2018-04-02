@@ -67,13 +67,15 @@ public class PredictorTest {
 
     try {
       final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
-      Predictor.create(loader, extractFn, predictFn)
+      DefaultPredictorBuilder
+          .create(loader, extractFn, predictFn)
+          .predictor()
           .predict(predictionTimeout, new Object())
           .toCompletableFuture()
           .get(wait.toMillis(), TimeUnit.MILLISECONDS);
 
       fail("should throw TimeoutException");
-    } catch (Exception e) {
+    } catch (final Exception e) {
       assertTrue(e.getCause() instanceof TimeoutException);
     }
   }
@@ -86,7 +88,9 @@ public class PredictorTest {
         (model, vectors) -> CompletableFuture.completedFuture(Collections.emptyList());
 
     final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
-    Predictor.create(loader, extractFn, predictFn)
+    DefaultPredictorBuilder
+        .create(loader, extractFn, predictFn)
+        .predictor()
         .predict()
         .toCompletableFuture()
         .get(wait.toMillis(), TimeUnit.MILLISECONDS);
@@ -103,11 +107,13 @@ public class PredictorTest {
     };
 
     final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
-    final List<Prediction<Integer, Float>> predictions = Predictor
-        .create(loader, extractFn, predictFn)
-        .predict(1)
-        .toCompletableFuture()
-        .get(wait.toMillis(), TimeUnit.MILLISECONDS);
+    final List<Prediction<Integer, Float>> predictions =
+        DefaultPredictorBuilder
+            .create(loader, extractFn, predictFn)
+            .predictor()
+            .predict(1)
+            .toCompletableFuture()
+            .get(wait.toMillis(), TimeUnit.MILLISECONDS);
 
     assertThat(predictions.size(), is(1));
     assertThat(predictions.get(0), is(Prediction.create(1, 0.2f)));

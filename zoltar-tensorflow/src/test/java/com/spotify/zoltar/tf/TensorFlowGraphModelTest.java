@@ -25,11 +25,11 @@ import static org.junit.Assert.assertEquals;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
+import com.spotify.zoltar.DefaultPredictorBuilder;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
-import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;
 import java.net.URI;
@@ -60,8 +60,8 @@ public class TensorFlowGraphModelTest {
   private Path createADummyTFGraph() throws IOException {
     final Path graphFile;
     try (
-        Graph graph = new Graph();
-        Tensor<Double> t = Tensors.create(2.0D)
+        final Graph graph = new Graph();
+        final Tensor<Double> t = Tensors.create(2.0D)
     ) {
       final Output<Double> input = graph.opBuilder("Placeholder", inputOpName)
           .setAttr("dtype", t.dataType())
@@ -84,10 +84,10 @@ public class TensorFlowGraphModelTest {
   @Test
   public void testDummyLoadOfTensorFlowGraph() throws Exception {
     final Path graphFile = createADummyTFGraph();
-    try (TensorFlowGraphModel model =
+    try (final TensorFlowGraphModel model =
              TensorFlowGraphModel.create(graphFile.toUri(), null, null);
-         Session session = model.instance();
-         Tensor<Double> double3 = Tensors.create(3.0D)) {
+         final Session session = model.instance();
+         final Tensor<Double> double3 = Tensors.create(3.0D)) {
       List<Tensor<?>> result = null;
       try {
         result = session.runner()
@@ -107,10 +107,10 @@ public class TensorFlowGraphModelTest {
   public void testDummyLoadOfTensorFlowGraphWithPrefix() throws Exception {
     final String prefix = "test";
     final Path graphFile = createADummyTFGraph();
-    try (TensorFlowGraphModel model =
+    try (final TensorFlowGraphModel model =
              TensorFlowGraphModel.create(graphFile.toUri(), null, prefix);
-         Session session = model.instance();
-         Tensor<Double> double3 = Tensors.create(3.0D)) {
+         final Session session = model.instance();
+         final Tensor<Double> double3 = Tensors.create(3.0D)) {
       List<Tensor<?>> result = null;
       try {
         result = session.runner()
@@ -162,8 +162,9 @@ public class TensorFlowGraphModelTest {
 
     final Double[] input = new Double[]{0.0D, 1.0D, 7.0D};
     final double[] expected = Arrays.stream(input).mapToDouble(d -> d * 2.0D).toArray();
-    final CompletableFuture<double[]> result = Predictor
+    final CompletableFuture<double[]> result = DefaultPredictorBuilder
         .create(tfModel, extractFn, predictFn)
+        .predictor()
         .predict(input)
         .thenApply(predictions -> {
           return predictions.stream()

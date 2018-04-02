@@ -22,6 +22,7 @@ package com.spotify.zoltar.tf;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.futures.CompletableFutures;
+import com.spotify.zoltar.DefaultPredictorBuilder;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
@@ -71,7 +72,9 @@ public class TensorFlowModelTest {
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
-    return Predictor.create(model, extractFn, predictFn);
+    return DefaultPredictorBuilder
+        .create(model, extractFn, predictFn)
+        .predictor();
   }
 
   @Test
@@ -101,7 +104,7 @@ public class TensorFlowModelTest {
     // rank 1 cause we need to account for batch
     final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
-    try (Tensor<String> t = Tensors.create(b)) {
+    try (final Tensor<String> t = Tensors.create(b)) {
       final Session.Runner runner = model.instance().session().runner()
           .feed("input_example_tensor", t)
           .fetch("linear/head/predictions/class_ids");

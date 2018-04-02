@@ -72,7 +72,7 @@ public class XGBoostModelTest {
                 int idx = IntStream.range(0, score.length)
                     .reduce((i, j) -> score[i] >= score[j] ? i : j)
                     .getAsInt();
-                return Prediction.create(vector.input(), (long)idx);
+                return Prediction.create(vector.input(), (long) idx);
               } catch (Exception e) {
                 throw new RuntimeException(e);
               }
@@ -83,7 +83,7 @@ public class XGBoostModelTest {
     };
 
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
-        StandardCharsets.UTF_8);
+                                       StandardCharsets.UTF_8);
     final XGBoostLoader model = XGBoostLoader.create(trainedModelUri.toString());
 
     final ExtractFn<Iris, LabeledPoint> extractFn = FeatranExtractFns
@@ -99,8 +99,8 @@ public class XGBoostModelTest {
     final Iris[] irisStream = IrisHelper.getIrisTestData();
 
     final Map<Integer, String> classToId = ImmutableMap.of(0, "Iris-setosa",
-        1, "Iris-versicolor",
-        2, "Iris-virginica");
+                                                           1, "Iris-versicolor",
+                                                           2, "Iris-virginica");
 
     final CompletableFuture<Integer> sum = getXGBoostIrisPredictor()
         .predict(Duration.ofSeconds(10), irisStream)

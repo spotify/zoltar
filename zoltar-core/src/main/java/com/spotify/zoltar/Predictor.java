@@ -20,19 +20,12 @@
 
 package com.spotify.zoltar;
 
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Entry point for prediction, it allows to perform E2E prediction given a recipe made of a {@link
@@ -45,105 +38,15 @@ import java.util.concurrent.TimeoutException;
 @FunctionalInterface
 public interface Predictor<InputT, ValueT> {
 
-  /** PreLoader scheduler for predict functions. */
-  ScheduledExecutorService SCHEDULER =
-      Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-
-  /**
-   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
-   *
-   * @param modelLoader model loader that loads the model to perform prediction on.
-   * @param extractFn a feature extract function to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
-   */
-  static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelLoader<ModelT> modelLoader,
-      final ExtractFn<InputT, VectorT> extractFn,
-      final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(modelLoader, FeatureExtractor.create(extractFn), AsyncPredictFn.lift(predictFn));
-  }
-
-  /**
-   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
-   *
-   * @param modelLoader model loader that loads the model to perform prediction on.
-   * @param featureExtractor a feature extractor to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
-   */
-  static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
-      final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(modelLoader, featureExtractor, AsyncPredictFn.lift(predictFn));
-  }
-
-  /**
-   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
-   * AsyncPredictFn}.
-   *
-   * @param modelLoader model loader that loads the model to perform prediction on.
-   * @param extractFn a feature extract function to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
-   */
-  static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelLoader<ModelT> modelLoader,
-      final ExtractFn<InputT, VectorT> extractFn,
-      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(modelLoader, FeatureExtractor.create(extractFn), predictFn);
-  }
-
-  /**
-   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
-   * AsyncPredictFn}.
-   *
-   * @param modelLoader model loader that loads the model to perform prediction on.
-   * @param featureExtractor a feature extractor to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
-   */
-  static <ModelT extends Model<?>, InputT, VectorT, ValueT> Predictor<InputT, ValueT> create(
-      final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
-      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return (scheduler, timeout, inputs) -> {
-      final CompletableFuture<List<Prediction<InputT, ValueT>>> future = modelLoader.get()
-          .thenCompose(model -> {
-            try {
-              return predictFn.apply(model, featureExtractor.extract(inputs));
-            } catch (final Exception e) {
-              throw new CompletionException(e);
-            }
-          })
-          .toCompletableFuture();
-
-      final ScheduledFuture<?> schedule = scheduler.schedule(() -> {
-        future.completeExceptionally(new TimeoutException());
-      }, timeout.toMillis(), TimeUnit.MILLISECONDS);
-
-      future.whenComplete((r, t) -> schedule.cancel(true));
-
-      return future;
-    };
+  /** timeout scheduler for predict functions. */
+  default PredictorTimeoutScheduler timeoutScheduler() {
+    return DefaultPredictorTimeoutScheduler.create();
   }
 
   /**
    * Functional interface. You should perform E2E feature extraction and prediction. See {@link
-   * Predictor#create(ModelLoader, FeatureExtractor, AsyncPredictFn)} for an example of usage.
+   * DefaultPredictor#create(ModelLoader, FeatureExtractor, AsyncPredictFn)} for an
+   * example of usage.
    *
    * @param input a list of inputs to perform feature extraction and prediction on.
    * @param timeout implementation specific timeout, see {@link Predictor#create(ModelLoader,
@@ -158,12 +61,12 @@ public interface Predictor<InputT, ValueT> {
   /** Perform prediction with a default scheduler. */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final Duration timeout,
                                                                     final InputT... input) {
-    return predict(SCHEDULER, timeout, input);
+    return predict(timeoutScheduler().scheduler(), timeout, input);
   }
 
   /** Perform prediction with a default scheduler, and practically infinite timeout. */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input) {
-    return predict(SCHEDULER, Duration.ofDays(Integer.MAX_VALUE), input);
+    return predict(timeoutScheduler().scheduler(), Duration.ofDays(Integer.MAX_VALUE), input);
   }
 
 }

@@ -25,6 +25,9 @@ import com.spotify.apollo.Response;
 import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
+import com.spotify.google.cloud.pubsub.client.Message;
+import com.spotify.google.cloud.pubsub.client.Publisher;
+import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
@@ -32,6 +35,7 @@ import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.example.Metric;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.tf.JTensor;
 import com.spotify.zoltar.tf.TensorFlowExtras;
@@ -41,6 +45,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -56,6 +61,10 @@ import scala.Option;
  */
 public class IrisPrediction {
 
+  private static Pubsub pubsub = Pubsub.builder().build();
+  private static Publisher publisher;
+  private static String topic;
+
   private static Predictor<Iris, Long> predictor;
   private static Map<Integer, String> idToClass = ImmutableMap.of(
       0, "Iris-setosa",
@@ -64,11 +73,15 @@ public class IrisPrediction {
 
   /**
    * Configure Iris prediction, should be called at the service startup/configuration stage.
-   *
    * @param modelDirUri URI to the TensorFlow model directory
    * @param settingsUri URI to the settings files for Featran
+   * @param project todo
+   * @param topic todo
    */
-  public static void configure(final URI modelDirUri, final URI settingsUri) throws IOException {
+  public static void configure(final URI modelDirUri,
+                               final URI settingsUri,
+                               final String project,
+                               final String topic) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
     final ModelLoader<TensorFlowModel> modelLoader =
@@ -86,6 +99,14 @@ public class IrisPrediction {
               .collect(Collectors.toList());
       return CompletableFutures.allAsList(predictions);
     };
+
+    publisher = Publisher.builder()
+        .pubsub(pubsub)
+        .project(project)
+        .build();
+
+    IrisPrediction.topic = topic;
+    pubsub.createTopic(project, topic);
 
     predictor = Predictor.create(modelLoader, extractFn, predictFn);
   }
@@ -124,6 +145,18 @@ public class IrisPrediction {
       e.printStackTrace();
       //TODO: what to return in case of failure here?
     }
+
+    final Metric.IrisPerformance irisPerformance = Metric.IrisPerformance.newBuilder()
+        .setFeatures(requestFeatures)
+        .setClass_(predictions[0])
+        .build();
+    assert topic != null;
+
+    String s = new String(
+        Base64.getEncoder().encode(irisPerformance.getFeaturesBytes().toByteArray()));
+    System.out.println(s);
+    publisher.publish(topic, Message.of(s));
+
     final String predictedClass = idToClass.get(predictions[0]);
     return Response.forPayload(predictedClass);
   }

@@ -56,8 +56,10 @@ public class ServiceRunner {
     final Config config = environment.config();
     final URI modelPath = URI.create(config.getString("iris.model"));
     final URI settingsPath = URI.create(config.getString("iris.settings"));
+    final String project = config.getString("iris.project");
+    final String topic = config.getString("iris.topic");
     try {
-      IrisPrediction.configure(modelPath, settingsPath);
+      IrisPrediction.configure(modelPath, settingsPath, project, topic);
     } catch (final IOException e) {
       throw new RuntimeException(
           String.format("Could not load model! Model path: `%s`, settings path `%s`.",

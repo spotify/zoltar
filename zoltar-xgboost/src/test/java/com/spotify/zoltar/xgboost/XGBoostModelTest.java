@@ -24,13 +24,13 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.futures.CompletableFutures;
-import com.spotify.zoltar.DefaultPredictorBuilder;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -89,8 +89,8 @@ public class XGBoostModelTest {
     final ExtractFn<Iris, LabeledPoint> extractFn = FeatranExtractFns
         .labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
-    return DefaultPredictorBuilder
-        .create(model, extractFn, predictFn)
+    return PredictorsTest
+        .newBuilder(model, extractFn, predictFn)
         .predictor();
   }
 

@@ -25,7 +25,6 @@ import com.spotify.apollo.Response;
 import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
-import com.spotify.zoltar.DefaultPredictorBuilder;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
@@ -33,6 +32,7 @@ import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.tf.JTensor;
 import com.spotify.zoltar.tf.TensorFlowExtras;
@@ -88,8 +88,8 @@ public class IrisPrediction {
       return CompletableFutures.allAsList(predictions);
     };
 
-    predictor = DefaultPredictorBuilder
-        .create(modelLoader, extractFn, predictFn)
+    predictor = Predictors
+        .newBuilder(modelLoader, extractFn, predictFn)
         .predictor();
   }
 

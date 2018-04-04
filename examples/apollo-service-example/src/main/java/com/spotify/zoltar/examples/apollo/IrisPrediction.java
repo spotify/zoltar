@@ -27,8 +27,8 @@ import com.spotify.featran.FeatureSpec;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.tf.JTensor;
-import com.spotify.zoltar.tf.SimpleTensorFlowPredictorBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -58,7 +58,7 @@ public class IrisPrediction {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
 
-    predictor = new SimpleTensorFlowPredictorBuilder<Iris>()
+    predictor = Predictors.<Iris>simpleTensorFlow()
         .withFeatranExtractFns(irisFeatureSpec, settings)
         .withModelUri(modelDirUri.toString())
         .withInputOp("input_example_tensor")

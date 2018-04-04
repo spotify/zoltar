@@ -20,6 +20,8 @@
 
 package com.spotify.zoltar.tf;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns;
@@ -46,12 +48,10 @@ import org.tensorflow.example.Example;
  */
 public class SimpleTensorFlowPredictorBuilder<InputT> {
 
-
   private FeatureExtractFns.ExtractFn<InputT, Example> extractFn;
   private String inputOp;
   private String predictOp;
   private ModelLoader<TensorFlowModel> modelLoader;
-
 
   /**
    * Parameters for FeatranExtractFns.
@@ -97,7 +97,7 @@ public class SimpleTensorFlowPredictorBuilder<InputT> {
                                    final String predictOp) {
     final byte[][] b = new byte[1][];
     b[0] = example.toByteArray();
-    try (Tensor<String> t = Tensors.create(b)) {
+    try (final Tensor<String> t = Tensors.create(b)) {
       final Session.Runner runner = model.instance().session().runner()
           .feed(inputOp, t);
       final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, predictOp);
@@ -109,10 +109,10 @@ public class SimpleTensorFlowPredictorBuilder<InputT> {
    * Builds the Predictor.
    */
   public Predictor<InputT, JTensor> build() {
-    assert extractFn != null;
-    assert inputOp != null;
-    assert predictOp != null;
-    assert modelLoader != null;
+    checkNotNull(extractFn);
+    checkNotNull(inputOp);
+    checkNotNull(predictOp);
+    checkNotNull(modelLoader);
 
     final TensorFlowPredictFn<InputT, JTensor> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<InputT, JTensor>>> predictions =

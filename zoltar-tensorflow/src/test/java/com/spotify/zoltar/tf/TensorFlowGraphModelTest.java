@@ -25,11 +25,11 @@ import static org.junit.Assert.assertEquals;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
-import com.spotify.zoltar.DefaultPredictorBuilder;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;
 import java.net.URI;
@@ -162,8 +162,8 @@ public class TensorFlowGraphModelTest {
 
     final Double[] input = new Double[]{0.0D, 1.0D, 7.0D};
     final double[] expected = Arrays.stream(input).mapToDouble(d -> d * 2.0D).toArray();
-    final CompletableFuture<double[]> result = DefaultPredictorBuilder
-        .create(tfModel, extractFn, predictFn)
+    final CompletableFuture<double[]> result = PredictorsTest
+        .newBuilder(tfModel, extractFn, predictFn)
         .predictor()
         .predict(input)
         .thenApply(predictions -> {

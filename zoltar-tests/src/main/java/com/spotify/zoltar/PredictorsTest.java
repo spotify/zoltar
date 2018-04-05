@@ -1,6 +1,6 @@
 /*-
  * -\-\-
- * zoltar-core
+ * zoltar-api
  * --
  * Copyright (C) 2016 - 2018 Spotify AB
  * --
@@ -20,26 +20,22 @@
 
 package com.spotify.zoltar;
 
-import com.google.auto.value.AutoValue;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 
 /**
- * Entry point for prediction. Default implementation of a PredictorBuilder that holds the necessary
- * info to build a {@link Predictor}.
- *
- * @param <ModelT>  underlying type of the {@link Model}.
- * @param <InputT>  type of the input to the {@link FeatureExtractor}.
- * @param <VectorT> type of the output from {@link FeatureExtractor}.
- * @param <ValueT>  type of the prediction result.
+ * Predictors test helper methods.
  */
-@AutoValue
-abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT>
-    implements PredictorBuilder<ModelT, InputT, VectorT, ValueT> {
+public final class PredictorsTest {
+
+  private PredictorsTest() {
+
+  }
 
   /**
-   * Returns a context given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor}and a {@link
+   * PredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param extractFn   a feature extract function to use to transform input into extracted
@@ -51,15 +47,15 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
    * @param <ValueT>    type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> create(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final ExtractFn<InputT, VectorT> extractFn,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(modelLoader, FeatureExtractor.create(extractFn), AsyncPredictFn.lift(predictFn));
+    return DefaultPredictorBuilder.create(modelLoader, extractFn, predictFn);
   }
 
   /**
-   * Returns a context given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
@@ -72,15 +68,16 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
    * @param <ValueT>    type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> create(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final ExtractFn<InputT, VectorT> extractFn,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(modelLoader, FeatureExtractor.create(extractFn), predictFn);
+    return DefaultPredictorBuilder.create(modelLoader, extractFn, predictFn);
   }
 
   /**
-   * Returns a context given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * PredictFn}.
    *
    * @param modelLoader      model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
@@ -91,15 +88,16 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
    * @param <ValueT>         type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> create(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return create(modelLoader, featureExtractor, AsyncPredictFn.lift(predictFn));
+    return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
   }
 
   /**
-   * Returns a context given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * PredictFn}.
    *
    * @param modelLoader      model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
@@ -111,45 +109,11 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
    * @param <ValueT>         type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> create(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return new AutoValue_DefaultPredictorBuilder.Builder<ModelT, InputT, VectorT, ValueT>()
-        .modelLoader(modelLoader)
-        .featureExtractor(featureExtractor)
-        .predictFn(predictFn)
-        .build();
-  }
-
-  public abstract ModelLoader<ModelT> modelLoader();
-
-  public abstract FeatureExtractor<InputT, VectorT> featureExtractor();
-
-  public abstract AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
-
-  public abstract Builder<ModelT, InputT, VectorT, ValueT> toBuilder();
-
-  public Predictor<InputT, ValueT> predictor() {
-    return DefaultPredictor.create(modelLoader(), featureExtractor(), predictFn());
-  }
-
-  /**
-   * Internal PredictorBuilder builder.
-   */
-  @AutoValue.Builder
-  abstract static class Builder<ModelT extends Model<?>, InputT, VectorT, ValueT> {
-
-    public abstract Builder<ModelT, InputT, VectorT, ValueT> modelLoader(
-        ModelLoader<ModelT> modelLoader);
-
-    public abstract Builder<ModelT, InputT, VectorT, ValueT> featureExtractor(
-        FeatureExtractor<InputT, VectorT> featureExtractor);
-
-    public abstract Builder<ModelT, InputT, VectorT, ValueT> predictFn(
-        AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn);
-
-    public abstract DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> build();
+    return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
   }
 
 }

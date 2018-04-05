@@ -10,8 +10,8 @@
   <artifactId>zoltar-tests</artifactId>
 
   <properties>
-    <grpc.version>1.7.0</grpc.version>
-    <netty.version>4.1.16.Final</netty.version>
+    <grpc.version>1.9.0</grpc.version>
+    <netty.version>4.1.17.Final</netty.version>
     <jackson.version>2.9.2</jackson.version>
   </properties>
 
@@ -24,6 +24,11 @@
   </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>zoltar-core</artifactId>
+      <version>0.1.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
@@ -81,25 +86,25 @@
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-iam-v1</artifactId>
-      <version>0.1.18</version>
+      <version>0.2.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-core</artifactId>
-      <version>1.2.0</version>
+      <version>1.19.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>api-common</artifactId>
-      <version>1.1.0</version>
+      <version>1.3.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-common-protos</artifactId>
-      <version>0.1.18</version>
+      <version>1.1.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -177,13 +182,19 @@
     <dependency>
       <groupId>com.google.auth</groupId>
       <artifactId>google-auth-library-credentials</artifactId>
-      <version>0.7.1</version>
+      <version>0.9.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-oauth2-http</artifactId>
+      <version>0.9.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.opencensus</groupId>
       <artifactId>opencensus-api</artifactId>
-      <version>0.7.0</version>
+      <version>0.11.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

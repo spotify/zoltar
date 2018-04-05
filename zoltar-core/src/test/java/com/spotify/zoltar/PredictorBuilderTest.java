@@ -80,6 +80,13 @@ public class PredictorBuilderTest {
     public Predictor<InputT, ValueT> predictor() {
       return predictorBuilder.predictor();
     }
+
+    @Override
+    public Predictor<InputT, ValueT> predictor(ModelLoader<ModelT> modelLoader,
+                                               FeatureExtractor<InputT, VectorT> featureExtractor,
+                                               AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+      return predictorBuilder.predictor(modelLoader, featureExtractor, predictFn);
+    }
   }
 
   @Test

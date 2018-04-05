@@ -130,8 +130,12 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
 
   public abstract Builder<ModelT, InputT, VectorT, ValueT> toBuilder();
 
-  public Predictor<InputT, ValueT> predictor() {
-    return DefaultPredictor.create(modelLoader(), featureExtractor(), predictFn());
+  @Override
+  public Predictor<InputT, ValueT> predictor(
+      final ModelLoader<ModelT> modelLoader,
+      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+    return DefaultPredictor.create(modelLoader, featureExtractor, predictFn);
   }
 
   /**

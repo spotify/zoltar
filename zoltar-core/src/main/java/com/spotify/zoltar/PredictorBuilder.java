@@ -39,7 +39,13 @@ public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, Valu
 
   AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
 
-  Predictor<InputT, ValueT> predictor();
+  default Predictor<InputT, ValueT> predictor() {
+    return predictor(modelLoader(), featureExtractor(), predictFn());
+  }
+
+  Predictor<InputT, ValueT> predictor(ModelLoader<ModelT> modelLoader,
+                                      FeatureExtractor<InputT, VectorT> featureExtractor,
+                                      AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn);
 
   default <C extends PredictorBuilder<ModelT, InputT, VectorT, ValueT>> C with(
       final Function<PredictorBuilder<ModelT, InputT, VectorT, ValueT>, C> fn) {

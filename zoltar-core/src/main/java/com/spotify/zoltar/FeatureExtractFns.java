@@ -23,6 +23,7 @@ package com.spotify.zoltar;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Feature extraction functions. Functions used to transform raw input into extracted features,
@@ -46,6 +47,11 @@ public interface FeatureExtractFns {
      * Functional interface. Perform feature extraction.
      */
     List<ValueT> apply(InputT... inputs) throws Exception;
+
+    default <C extends ExtractFn<InputT, ValueT>> C with(
+        final Function<ExtractFn<InputT, ValueT>, C> fn) {
+      return fn.apply(this);
+    }
   }
 
   /**

@@ -23,6 +23,7 @@ package com.spotify.zoltar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 /**
  * Prediction function interfaces. Describe how to perform predictions on a model given input
@@ -78,6 +79,11 @@ public interface PredictFns {
      */
     CompletionStage<List<Prediction<InputT, ValueT>>> apply(ModelT model,
                                                             List<Vector<InputT, VectorT>> vectors);
+
+    default <C extends AsyncPredictFn<ModelT, InputT, VectorT, ValueT>> C with(
+        final Function<AsyncPredictFn<ModelT, InputT, VectorT, ValueT>, C> fn) {
+      return fn.apply(this);
+    }
   }
 
   /**
@@ -101,5 +107,9 @@ public interface PredictFns {
     List<Prediction<InputT, ValueT>> apply(ModelT model, List<Vector<InputT, VectorT>> vectors)
         throws Exception;
 
+    default <C extends PredictFn<ModelT, InputT, VectorT, ValueT>> C with(
+        final Function<PredictFn<ModelT, InputT, VectorT, ValueT>, C> fn) {
+      return fn.apply(this);
+    }
   }
 }

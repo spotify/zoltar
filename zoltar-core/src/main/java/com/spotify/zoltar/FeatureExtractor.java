@@ -25,6 +25,7 @@ import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Functional interface for feature extraction. Should be used together with {@link Predictor}. In
@@ -60,4 +61,9 @@ public interface FeatureExtractor<InputT, ValueT> {
 
   /** Functional interface. Perform the feature extraction given the input. */
   List<Vector<InputT, ValueT>> extract(InputT... input) throws Exception;
+
+  default <C extends FeatureExtractor<InputT, ValueT>> C with(
+      final Function<FeatureExtractor<InputT, ValueT>, C> fn) {
+    return fn.apply(this);
+  }
 }

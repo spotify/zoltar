@@ -244,10 +244,11 @@
         <version>3.3.1</version>
         <executions>
           <execution>
-            <id>scala-add-sources</id>
+            <id>scala-compile-first</id>
             <phase>process-resources</phase>
             <goals>
               <goal>add-source</goal>
+              <goal>compile</goal>
             </goals>
           </execution>
           <execution>
@@ -287,17 +288,6 @@
         <configuration>
           <skip>true</skip>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

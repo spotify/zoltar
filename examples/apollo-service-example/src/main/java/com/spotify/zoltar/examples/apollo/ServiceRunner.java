@@ -24,6 +24,8 @@ import com.spotify.apollo.Environment;
 import com.spotify.apollo.core.Service;
 import com.spotify.apollo.httpservice.HttpService;
 import com.spotify.apollo.httpservice.LoadingException;
+import com.spotify.metrics.core.SemanticMetricRegistry;
+import com.spotify.metrics.ffwd.FastForwardReporter;
 import com.typesafe.config.Config;
 import java.io.IOException;
 import java.net.URI;
@@ -56,8 +58,17 @@ public class ServiceRunner {
     final Config config = environment.config();
     final URI modelPath = URI.create(config.getString("iris.model"));
     final URI settingsPath = URI.create(config.getString("iris.settings"));
+    final SemanticMetricRegistry metricRegistry = environment.resolve(SemanticMetricRegistry.class);
+
     try {
-      IrisPrediction.configure(modelPath, settingsPath);
+      final FastForwardReporter reporter = FastForwardReporter.forRegistry(metricRegistry).build();
+      reporter.start();
+    } catch (final IOException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+
+    try {
+      IrisPrediction.configure(modelPath, settingsPath, metricRegistry);
     } catch (final IOException e) {
       throw new RuntimeException(
           String.format("Could not load model! Model path: `%s`, settings path `%s`.",

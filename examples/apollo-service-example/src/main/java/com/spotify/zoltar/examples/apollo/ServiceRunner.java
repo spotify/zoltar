@@ -62,7 +62,9 @@ public class ServiceRunner {
     final URI settingsPath = URI.create(config.getString("iris.settings"));
     final SemanticMetricRegistry metricRegistry = environment.resolve(SemanticMetricRegistry.class);
     final PredictorMetrics metrics = SemanticPredictorMetrics.create(metricRegistry);
+
     try {
+      // Optional: check out https://github.com/spotify/semantic-metrics#provided-plugins
       final FastForwardReporter reporter = FastForwardReporter.forRegistry(metricRegistry).build();
       reporter.start();
     } catch (final IOException e) {

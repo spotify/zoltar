@@ -32,8 +32,11 @@ import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
+import com.spotify.zoltar.metrics.Instrumentations;
+import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.tf.JTensor;
 import com.spotify.zoltar.tf.TensorFlowExtras;
 import com.spotify.zoltar.tf.TensorFlowModel;
@@ -69,7 +72,9 @@ public class IrisPrediction {
    * @param modelDirUri URI to the TensorFlow model directory
    * @param settingsUri URI to the settings files for Featran
    */
-  public static void configure(final URI modelDirUri, final URI settingsUri) throws IOException {
+  public static void configure(final URI modelDirUri,
+                               final URI settingsUri,
+                               final PredictorMetrics metrics) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
     final ModelLoader<TensorFlowModel> modelLoader =
@@ -88,9 +93,12 @@ public class IrisPrediction {
       return CompletableFutures.allAsList(predictions);
     };
 
-    predictor = Predictors
+    final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
+        Predictors
         .newBuilder(modelLoader, extractFn, predictFn)
-        .predictor();
+        .with(Instrumentations.predictor(metrics));
+
+    predictor = predictorBuilder.predictor();
   }
 
   /**

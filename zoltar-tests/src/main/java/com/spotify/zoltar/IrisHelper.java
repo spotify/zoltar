@@ -25,12 +25,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import scala.Option;
 
+/**
+ * Helper class to generate Iris test data.
+ */
 public class IrisHelper {
 
   private IrisHelper() {
   }
 
-  public static IrisFeaturesSpec.Iris fromCSVString(final String features) {
+  private static IrisFeaturesSpec.Iris fromCsvString(final String features) {
     final String[] strs = features.split(",");
     return new IrisFeaturesSpec.Iris(Option.apply(Double.parseDouble(strs[0])),
             Option.apply(Double.parseDouble(strs[1])),
@@ -39,11 +42,14 @@ public class IrisHelper {
             Option.apply(strs[4]));
   }
 
+  /**
+   * Get Iris test data.
+   */
   public static IrisFeaturesSpec.Iris[] getIrisTestData() throws Exception {
     final URI data = IrisHelper.class.getResource("/iris.csv").toURI();
     return Files.readAllLines(Paths.get(data))
         .stream()
-        .map(IrisHelper::fromCSVString)
+        .map(IrisHelper::fromCsvString)
         .toArray(IrisFeaturesSpec.Iris[]::new);
   }
 

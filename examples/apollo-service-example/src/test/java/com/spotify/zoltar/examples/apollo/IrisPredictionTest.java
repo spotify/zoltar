@@ -21,6 +21,8 @@
 package com.spotify.zoltar.examples.apollo;
 
 import com.spotify.metrics.core.SemanticMetricRegistry;
+import com.spotify.zoltar.metrics.PredictorMetrics;
+import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
 import java.io.IOException;
 import java.net.URI;
 import org.junit.Assert;
@@ -35,7 +37,10 @@ public class IrisPredictionTest {
       final URI trainedModelUri = getClass().getResource("/trained_model").toURI();
       final URI settingsUri = getClass().getResource("/settings.json").toURI();
       final SemanticMetricRegistry semanticMetricRegistry = new SemanticMetricRegistry();
-      IrisPrediction.configure(trainedModelUri, settingsUri, semanticMetricRegistry);
+      IrisPrediction.configure(
+          trainedModelUri,
+          settingsUri,
+          SemanticPredictorMetrics.create(semanticMetricRegistry));
     } catch (final Exception e) {
       e.printStackTrace();
     }

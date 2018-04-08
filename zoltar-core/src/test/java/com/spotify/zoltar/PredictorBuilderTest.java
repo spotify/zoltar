@@ -82,10 +82,13 @@ public class PredictorBuilderTest {
     }
 
     @Override
-    public Predictor<InputT, ValueT> predictor(ModelLoader<ModelT> modelLoader,
-                                               FeatureExtractor<InputT, VectorT> featureExtractor,
-                                               AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-      return predictorBuilder.predictor(modelLoader, featureExtractor, predictFn);
+    public IdentityPredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
+        final ModelLoader<ModelT> modelLoader,
+        final FeatureExtractor<InputT, VectorT> featureExtractor,
+        final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+      return IdentityPredictorBuilder
+          .<ModelT, InputT, VectorT, ValueT>decorate()
+          .apply(predictorBuilder.with(modelLoader, featureExtractor, predictFn));
     }
   }
 

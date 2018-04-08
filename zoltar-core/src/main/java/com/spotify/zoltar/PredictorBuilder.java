@@ -39,13 +39,30 @@ public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, Valu
 
   AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
 
-  default Predictor<InputT, ValueT> predictor() {
-    return predictor(modelLoader(), featureExtractor(), predictFn());
+  Predictor<InputT, ValueT> predictor();
+
+  PredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
+      ModelLoader<ModelT> modelLoader,
+      FeatureExtractor<InputT, VectorT> featureExtractor,
+      AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn);
+
+  @SuppressWarnings("unchecked")
+  default <C extends PredictorBuilder<ModelT, InputT, VectorT, ValueT>> C with(
+      final ModelLoader<ModelT> modelLoader) {
+    return (C) with(modelLoader, featureExtractor(), predictFn());
   }
 
-  Predictor<InputT, ValueT> predictor(ModelLoader<ModelT> modelLoader,
-                                      FeatureExtractor<InputT, VectorT> featureExtractor,
-                                      AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn);
+  @SuppressWarnings("unchecked")
+  default <C extends PredictorBuilder<ModelT, InputT, VectorT, ValueT>> C with(
+      final FeatureExtractor<InputT, VectorT> featureExtractor) {
+    return (C) with(modelLoader(), featureExtractor, predictFn());
+  }
+
+  @SuppressWarnings("unchecked")
+  default <C extends PredictorBuilder<ModelT, InputT, VectorT, ValueT>> C with(
+      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
+    return (C) with(modelLoader(), featureExtractor(), predictFn);
+  }
 
   default <C extends PredictorBuilder<ModelT, InputT, VectorT, ValueT>> C with(
       final Function<PredictorBuilder<ModelT, InputT, VectorT, ValueT>, C> fn) {

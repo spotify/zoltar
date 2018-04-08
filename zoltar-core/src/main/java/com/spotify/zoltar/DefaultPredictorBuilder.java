@@ -115,11 +115,11 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
       final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return new AutoValue_DefaultPredictorBuilder.Builder<ModelT, InputT, VectorT, ValueT>()
-        .modelLoader(modelLoader)
-        .featureExtractor(featureExtractor)
-        .predictFn(predictFn)
-        .build();
+    return new AutoValue_DefaultPredictorBuilder<>(
+        modelLoader,
+        featureExtractor,
+        predictFn,
+        DefaultPredictor.create(modelLoader, featureExtractor, predictFn));
   }
 
   public abstract ModelLoader<ModelT> modelLoader();
@@ -128,32 +128,14 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
 
   public abstract AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
 
-  public abstract Builder<ModelT, InputT, VectorT, ValueT> toBuilder();
+  public abstract Predictor<InputT, ValueT> predictor();
 
   @Override
-  public Predictor<InputT, ValueT> predictor(
+  public DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
       final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return DefaultPredictor.create(modelLoader, featureExtractor, predictFn);
-  }
-
-  /**
-   * Internal PredictorBuilder builder.
-   */
-  @AutoValue.Builder
-  abstract static class Builder<ModelT extends Model<?>, InputT, VectorT, ValueT> {
-
-    public abstract Builder<ModelT, InputT, VectorT, ValueT> modelLoader(
-        ModelLoader<ModelT> modelLoader);
-
-    public abstract Builder<ModelT, InputT, VectorT, ValueT> featureExtractor(
-        FeatureExtractor<InputT, VectorT> featureExtractor);
-
-    public abstract Builder<ModelT, InputT, VectorT, ValueT> predictFn(
-        AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn);
-
-    public abstract DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> build();
+    return create(modelLoader, featureExtractor, predictFn);
   }
 
 }

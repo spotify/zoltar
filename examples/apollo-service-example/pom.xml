@@ -44,12 +44,12 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>zoltar-metrics</artifactId>
+      <artifactId>zoltar-tests</artifactId>
       <version>0.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>zoltar-tests</artifactId>
+      <artifactId>zoltar-metrics</artifactId>
       <version>0.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>

@@ -37,33 +37,6 @@
       <artifactId>jsr305</artifactId>
       <scope>provided</scope>
     </dependency>
-
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-tensorflow</artifactId>
-      <version>0.1.1-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-xgboost</artifactId>
-      <version>0.1.1-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-tests</artifactId>
-      <version>0.1.1-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

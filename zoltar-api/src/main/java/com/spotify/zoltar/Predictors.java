@@ -93,7 +93,7 @@ public final class Predictors {
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
   }
@@ -114,7 +114,7 @@ public final class Predictors {
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
   }

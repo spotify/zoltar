@@ -31,11 +31,12 @@ import java.util.function.Function;
  * Functional interface for feature extraction. Should be used together with {@link Predictor}. In
  * most cases you should use the static factory methods.
  *
+ * @param <ModelT>  underlying type of the {@link Model}.
  * @param <InputT> type of the input to feature extraction.
  * @param <ValueT> type of feature extraction result.
  */
 @FunctionalInterface
-public interface FeatureExtractor<InputT, ValueT> {
+public interface FeatureExtractor<ModelT extends Model<?>, InputT, ValueT> {
 
   /**
    * Creates an extractor given a generic {@link ExtractFn}, consider using <a
@@ -46,9 +47,9 @@ public interface FeatureExtractor<InputT, ValueT> {
    * @param <InputT> type of the input to feature extraction.
    * @param <ValueT> type of feature extraction result.
    */
-  static <InputT, ValueT> FeatureExtractor<InputT, ValueT> create(
+  static <ModelT extends Model<?>, InputT, ValueT> FeatureExtractor<ModelT, InputT, ValueT> create(
       final ExtractFn<InputT, ValueT> fn) {
-    return inputs -> {
+    return (model, inputs) -> {
       final List<Vector<InputT, ValueT>> result = Lists.newArrayList();
       final Iterator<InputT> i1 = Arrays.asList(inputs).iterator();
       final Iterator<ValueT> i2 = fn.apply(inputs).iterator();
@@ -60,10 +61,10 @@ public interface FeatureExtractor<InputT, ValueT> {
   }
 
   /** Functional interface. Perform the feature extraction given the input. */
-  List<Vector<InputT, ValueT>> extract(InputT... input) throws Exception;
+  List<Vector<InputT, ValueT>> extract(ModelT model, InputT... input) throws Exception;
 
-  default <C extends FeatureExtractor<InputT, ValueT>> C with(
-      final Function<FeatureExtractor<InputT, ValueT>, C> fn) {
+  default <C extends FeatureExtractor<ModelT, InputT, ValueT>> C with(
+      final Function<FeatureExtractor<ModelT, InputT, ValueT>, C> fn) {
     return fn.apply(this);
   }
 }

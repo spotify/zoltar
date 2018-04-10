@@ -21,6 +21,7 @@
 package com.spotify.zoltar.metrics;
 
 import com.spotify.zoltar.FeatureExtractor;
+import com.spotify.zoltar.Model;
 import com.spotify.zoltar.Vector;
 import java.util.List;
 import java.util.function.Function;
@@ -29,22 +30,23 @@ import java.util.function.Function;
 /**
  * Instrumented Functional interface for feature extraction {@link FeatureExtractor}.
  *
+ * @param <ModelT>  underlying type of the {@link Model}.
  * @param <InputT> type of the input to feature extraction.
  * @param <ValueT> type of feature extraction result.
  */
 @FunctionalInterface
-interface InstrumentedFeatureExtractor<InputT, ValueT>
-    extends FeatureExtractor<InputT, ValueT> {
+interface InstrumentedFeatureExtractor<ModelT extends Model<?>, InputT, ValueT>
+    extends FeatureExtractor<ModelT, InputT, ValueT> {
 
   /**
    * Creates a new instrumented {@link FeatureExtractor}.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  static <InputT, ValueT> Function<FeatureExtractor<InputT, ValueT>, InstrumentedFeatureExtractor<InputT, ValueT>> create(
+  static <ModelT extends Model<?>, InputT, ValueT> Function<FeatureExtractor<ModelT, InputT, ValueT>, InstrumentedFeatureExtractor<ModelT, InputT, ValueT>> create(
       final FeatureExtractorMetrics metrics) {
-    return extractFn -> inputs -> {
-      final VectorMetrics vectorMetrics = metrics.get();
-      final List<Vector<InputT, ValueT>> result = extractFn.extract(inputs);
+    return extractFn -> (model, inputs) -> {
+      final VectorMetrics vectorMetrics = metrics.apply(model.id());
+      final List<Vector<InputT, ValueT>> result = extractFn.extract(model, inputs);
 
       vectorMetrics.extraction(result);
 

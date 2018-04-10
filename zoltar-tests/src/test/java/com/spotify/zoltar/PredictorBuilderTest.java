@@ -72,7 +72,7 @@ public class PredictorBuilderTest {
     }
 
     @Override
-    public FeatureExtractor<InputT, VectorT> featureExtractor() {
+    public FeatureExtractor<ModelT, InputT, VectorT> featureExtractor() {
       return predictorBuilder.featureExtractor();
     }
 
@@ -89,7 +89,7 @@ public class PredictorBuilderTest {
     @Override
     public IdentityPredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
         final ModelLoader<ModelT> modelLoader,
-        final FeatureExtractor<InputT, VectorT> featureExtractor,
+        final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
         final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
       return IdentityPredictorBuilder
           .<ModelT, InputT, VectorT, ValueT>decorate()

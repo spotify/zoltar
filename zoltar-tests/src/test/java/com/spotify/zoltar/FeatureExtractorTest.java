@@ -35,7 +35,7 @@ public class FeatureExtractorTest {
   @Test
   public void emptyExtract() throws Exception {
     final ExtractFn<Object, Object> fn = inputs -> Collections.emptyList();
-    final List<Vector<Object, Object>> vectors = FeatureExtractor.create(fn).extract();
+    final List<Vector<Object, Object>> vectors = FeatureExtractor.create(fn).extract(null);
 
     assertThat(vectors.size(), Is.is(0));
   }
@@ -43,7 +43,7 @@ public class FeatureExtractorTest {
   @Test
   public void nonEmptyExtract() throws Exception {
     final SingleExtractFn<Integer, Float> fn = input -> (float) input / 10;
-    final List<Vector<Integer, Float>> vectors = FeatureExtractor.create(fn).extract(1);
+    final List<Vector<Integer, Float>> vectors = FeatureExtractor.create(fn).extract(null, 1);
 
     assertThat(vectors.size(), is(1));
     assertThat(vectors.get(0), is(Vector.create(1, 0.1f)));

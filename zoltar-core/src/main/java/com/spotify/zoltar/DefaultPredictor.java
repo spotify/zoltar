@@ -53,13 +53,13 @@ interface DefaultPredictor<InputT, ValueT> extends Predictor<InputT, ValueT> {
    */
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictor<InputT, ValueT> create(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return (scheduler, timeout, inputs) -> {
       final CompletableFuture<List<Prediction<InputT, ValueT>>> future = modelLoader.get()
           .thenCompose(model -> {
             try {
-              return predictFn.apply(model, featureExtractor.extract(inputs));
+              return predictFn.apply(model, featureExtractor.extract(model, inputs));
             } catch (final Exception e) {
               throw new CompletionException(e);
             }

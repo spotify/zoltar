@@ -20,12 +20,13 @@
 
 package com.spotify.zoltar.metrics;
 
-import java.util.function.Supplier;
+import com.spotify.zoltar.Model;
+import java.util.function.Function;
 
 /**
  * Supplier of {@link VectorMetrics}.
  */
 @FunctionalInterface
-public interface FeatureExtractorMetrics extends Supplier<VectorMetrics> {
+public interface FeatureExtractorMetrics extends Function<Model.Id, VectorMetrics> {
 
 }

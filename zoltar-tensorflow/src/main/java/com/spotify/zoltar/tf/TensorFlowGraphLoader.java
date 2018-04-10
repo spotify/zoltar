@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar.tf;
 
+import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.loaders.ModelMemoizer;
 import com.spotify.zoltar.loaders.Preloader;
@@ -29,11 +30,12 @@ import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
 
 /**
- * {@link TensorFlowGraphModel} loader. This loader is composed with {@link ModelMemoizer}
- * and {@link Preloader}.
+ * {@link TensorFlowGraphModel} loader. This loader is composed with {@link ModelMemoizer} and
+ * {@link Preloader}.
  */
 @FunctionalInterface
 public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel> {
+
 
   /**
    * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
@@ -46,12 +48,23 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
   static TensorFlowGraphLoader create(final String modelUri,
                                       @Nullable final ConfigProto config,
                                       @Nullable final String prefix) {
-    final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
-        .lift(() -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix))
-        .with(ModelMemoizer::memoize)
-        .with(Preloader.preloadAsync());
+    return create(() -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix));
+  }
 
-    return loader::get;
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph} file on
+   *                 local filesystem, resource, GCS etc.
+   * @param config   optional TensorFlow {@link ConfigProto} config.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
+   */
+  static TensorFlowGraphLoader create(final Model.Id id,
+                                      final String modelUri,
+                                      @Nullable final ConfigProto config,
+                                      @Nullable final String prefix) {
+    return create(() -> TensorFlowGraphModel.create(id, URI.create(modelUri), config, prefix));
   }
 
   /**
@@ -64,8 +77,32 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
   static TensorFlowGraphLoader create(final byte[] graphDef,
                                       @Nullable final ConfigProto config,
                                       @Nullable final String prefix) {
+    return create(() -> TensorFlowGraphModel.create(graphDef, config, prefix));
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param config   optional TensorFlow {@link ConfigProto} config.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
+   */
+  static TensorFlowGraphLoader create(final Model.Id id,
+                                      final byte[] graphDef,
+                                      @Nullable final ConfigProto config,
+                                      @Nullable final String prefix) {
+    return create(() -> TensorFlowGraphModel.create(id, graphDef, config, prefix));
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
+   * @param supplier {@link TensorFlowGraphModel} supplier.
+   */
+  static TensorFlowGraphLoader create(final ThrowableSupplier<TensorFlowGraphModel> supplier) {
     final ModelLoader<TensorFlowGraphModel> loader = ModelLoader
-        .lift(() -> TensorFlowGraphModel.create(graphDef, config, prefix))
+        .lift(supplier)
         .with(ModelMemoizer::memoize)
         .with(Preloader.preloadAsync());
 

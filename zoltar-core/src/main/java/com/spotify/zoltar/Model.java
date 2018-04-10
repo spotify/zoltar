@@ -20,12 +20,28 @@
 
 package com.spotify.zoltar;
 
+import com.google.auto.value.AutoValue;
+
 /**
  * Model interface. In most cases you can just use the prebaked implementations.
  *
  * @param <UnderlyingT> the underlying type of the model.
  */
 public interface Model<UnderlyingT> extends AutoCloseable {
+
+  /**
+   * value class to define model id.
+   */
+  @AutoValue
+  abstract class Id {
+    public abstract String value();
+
+    public static Id create(final String value) {
+      return new AutoValue_Model_Id(value);
+    }
+  }
+
+  Id id();
 
   /**
    * Returns an instance of the underlying model. This could be for example TensorFlow's graph,

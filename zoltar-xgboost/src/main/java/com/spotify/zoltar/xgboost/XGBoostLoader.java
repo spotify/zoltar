@@ -20,14 +20,15 @@
 
 package com.spotify.zoltar.xgboost;
 
+import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.loaders.ModelMemoizer;
 import com.spotify.zoltar.loaders.Preloader;
 import java.net.URI;
 
 /**
- * {@link XGBoostModel} loader. This loader is composed with {@link ModelMemoizer}
- * and {@link Preloader}.
+ * {@link XGBoostModel} loader. This loader is composed with {@link ModelMemoizer} and {@link
+ * Preloader}.
  */
 @FunctionalInterface
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -40,10 +41,31 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    *                 filesystem, resource, GCS etc.
    */
   static XGBoostLoader create(final String modelUri) {
+    return create(() -> XGBoostModel.create(URI.create(modelUri)));
+  }
+
+
+  /**
+   * Returns a XGBoost model loader given the serialized model stored in the model URI.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
+   *                 filesystem, resource, GCS etc.
+   */
+  static XGBoostLoader create(final Model.Id id, final String modelUri) {
+    return create(() -> XGBoostModel.create(id, URI.create(modelUri)));
+  }
+
+  /**
+   * Returns a XGBoost model loader given the serialized model stored in the model URI.
+   *
+   * @param supplier {@link XGBoostModel} supplier.
+   */
+  static XGBoostLoader create(final ThrowableSupplier<XGBoostModel> supplier) {
     final ModelLoader<XGBoostModel> loader = ModelLoader
-        .lift(() -> XGBoostModel.create(URI.create(modelUri)))
+        .lift(supplier)
         .with(ModelMemoizer::memoize)
-        .with(Preloader.preload());
+        .with(Preloader.preloadAsync());
 
     return loader::get;
   }

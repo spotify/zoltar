@@ -51,6 +51,17 @@ public final class Models {
   }
 
   /**
+   * Returns a XGBoost model loader given the serialized model stored in the model URI.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
+   *                 filesystem, resource, GCS etc.
+   */
+  public static XGBoostLoader xgboost(final Model.Id id, final String modelUri) {
+    return XGBoostLoader.create(id, modelUri);
+  }
+
+  /**
    * Returns a TensorFlow model loader based on a saved model.
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
@@ -64,6 +75,18 @@ public final class Models {
   /**
    * Returns a TensorFlow model loader based on a saved model.
    *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
+   */
+  public static TensorFlowLoader tensorFlow(final Model.Id id, final String modelUri) {
+    return TensorFlowLoader.create(id, modelUri);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
@@ -72,6 +95,21 @@ public final class Models {
   public static TensorFlowLoader tensorFlow(final String modelUri,
                                             final TensorFlowModel.Options options) {
     return TensorFlowLoader.create(modelUri, options);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
+   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   */
+  public static TensorFlowLoader tensorFlow(final Model.Id id,
+                                            final String modelUri,
+                                            final TensorFlowModel.Options options) {
+    return TensorFlowLoader.create(id, modelUri, options);
   }
 
   /**
@@ -92,6 +130,23 @@ public final class Models {
   /**
    * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to a serialized TensorFlow {@link org.tensorflow.Graph} file on
+   *                 local filesystem, resource, GCS etc.
+   * @param config   optional TensorFlow {@link ConfigProto} config.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
+   */
+  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+      final Model.Id id,
+      final String modelUri,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix) {
+    return TensorFlowGraphLoader.create(id, modelUri, config, prefix);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
@@ -101,6 +156,22 @@ public final class Models {
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
     return TensorFlowGraphLoader.create(graphDef, config, prefix);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param config   optional TensorFlow {@link ConfigProto} config.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
+   */
+  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+      final Model.Id id,
+      final byte[] graphDef,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix) {
+    return TensorFlowGraphLoader.create(id, graphDef, config, prefix);
   }
 
 }

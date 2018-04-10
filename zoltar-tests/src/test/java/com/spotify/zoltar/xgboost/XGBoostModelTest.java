@@ -20,6 +20,8 @@
 
 package com.spotify.zoltar.xgboost;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
@@ -28,11 +30,13 @@ import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
+import com.spotify.zoltar.Model.Id;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,19 +46,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import ml.dmlc.xgboost4j.LabeledPoint;
 import ml.dmlc.xgboost4j.java.DMatrix;
+import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class XGBoostModelTest {
-
-  @Test
-  public void testLoadingModel() throws Exception {
-    final URI trainedModel = getClass().getResource("/iris.model").toURI();
-    XGBoostModel.create(trainedModel);
-  }
 
   public static Predictor<Iris, Long> getXGBoostIrisPredictor() throws Exception {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
@@ -92,6 +92,32 @@ public class XGBoostModelTest {
     return PredictorsTest
         .newBuilder(model, extractFn, predictFn)
         .predictor();
+  }
+
+  @Test
+  public void testDefaultId() throws URISyntaxException, ExecutionException, InterruptedException {
+    final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
+    final XGBoostLoader model = XGBoostLoader.create(trainedModelUri.toString());
+
+    final XGBoostModel xgBoostModel = model.get().toCompletableFuture().get();
+
+    assertThat(xgBoostModel.id().value(), is("xgboost"));
+  }
+
+  @Test
+  public void testCustomId() throws URISyntaxException, ExecutionException, InterruptedException {
+    final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
+    final XGBoostLoader model = XGBoostLoader.create(Id.create("dummy"), trainedModelUri.toString());
+
+    final XGBoostModel xgBoostModel = model.get().toCompletableFuture().get();
+
+    assertThat(xgBoostModel.id().value(), is("dummy"));
+  }
+
+  @Test
+  public void testLoadingModel() throws Exception {
+    final URI trainedModel = getClass().getResource("/iris.model").toURI();
+    XGBoostModel.create(trainedModel);
   }
 
   @Test

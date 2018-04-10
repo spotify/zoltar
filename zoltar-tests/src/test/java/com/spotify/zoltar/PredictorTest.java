@@ -44,6 +44,11 @@ public class PredictorTest {
   static class DummyModel implements Model<Object> {
 
     @Override
+    public Id id() {
+      return Id.create("dummy");
+    }
+
+    @Override
     public Object instance() {
       return new Object();
     }

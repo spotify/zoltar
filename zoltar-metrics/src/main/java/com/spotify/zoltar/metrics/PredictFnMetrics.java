@@ -20,12 +20,13 @@
 
 package com.spotify.zoltar.metrics;
 
-import java.util.function.Supplier;
+import com.spotify.zoltar.Model.Id;
+import java.util.function.Function;
 
 /**
  * Supplier of {@link PredictMetrics}.
  */
 @FunctionalInterface
-public interface PredictFnMetrics extends Supplier<PredictMetrics> {
+public interface PredictFnMetrics extends Function<Id, PredictMetrics> {
 
 }

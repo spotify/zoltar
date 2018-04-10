@@ -27,9 +27,14 @@ import static com.spotify.zoltar.metrics.semantic.What.PREDICT_RATE;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import com.google.auto.value.AutoValue;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
+import com.spotify.zoltar.Model.Id;
 import com.spotify.zoltar.metrics.FeatureExtractorMetrics;
 import com.spotify.zoltar.metrics.PredictFnMetrics;
 import com.spotify.zoltar.metrics.PredictorMetrics;
@@ -40,40 +45,73 @@ import com.spotify.zoltar.metrics.PredictorMetrics;
 @AutoValue
 public abstract class SemanticPredictorMetrics implements PredictorMetrics {
 
-  abstract Timer predictDurationTimer();
-
-  abstract Meter predictRateCounter();
-
-  abstract Timer extractDurationTimer();
-
-  abstract Meter extractRateCounter();
+  abstract LoadingCache<Id, Metrics> metricsCache();
 
   /** Creates a new @{link SemanticPredictorMetrics}. */
-  public static SemanticPredictorMetrics create(final SemanticMetricRegistry registry) {
-    final MetricId predictDurationId = MetricId.build().tagged("what", PREDICT_DURATION.tag());
-    final MetricId predictRateId = MetricId.build().tagged("what", PREDICT_RATE.tag());
-    final MetricId extractDurationId = MetricId.build()
-        .tagged("what", FEATURE_EXTRACT_DURATION.tag());
-    final MetricId extractRateId = MetricId.build().tagged("what", FEATURE_EXTRACT_RATE.tag());
+  public static SemanticPredictorMetrics create(final SemanticMetricRegistry registry,
+                                                final MetricId metricId) {
+    final LoadingCache<Id, Metrics> metersCache =
+        CacheBuilder.<Id, Metrics>newBuilder()
+            .build(new CacheLoader<Id, Metrics>() {
+              @Override
+              public Metrics load(final Id id) throws Exception {
+                return Metrics.create(registry, metricId.tagged("model", id.value()));
+              }
+            });
 
-    final Timer predictDurationTimer = registry.timer(predictDurationId);
-    final Meter predictRateCounter = registry.meter(predictRateId);
-    final Timer extractDurationTimer = registry.timer(extractDurationId);
-    final Meter extractRateCounter = registry.meter(extractRateId);
-
-    return new AutoValue_SemanticPredictorMetrics(predictDurationTimer,
-                                                  predictRateCounter,
-                                                  extractDurationTimer,
-                                                  extractRateCounter);
+    return new AutoValue_SemanticPredictorMetrics(metersCache);
   }
 
   @Override
   public PredictFnMetrics predictFnMetrics() {
-    return () -> SemanticPredictMetrics.create(predictDurationTimer().time(), predictRateCounter());
+    return id -> {
+      final Metrics metrics = metricsCache().getUnchecked(id);
+      final Context time = metrics.predictDurationTimer().time();
+      final Meter meter = metrics.predictRateCounter();
+
+      return SemanticPredictMetrics.create(time, meter);
+    };
   }
 
   @Override
   public FeatureExtractorMetrics featureExtractorMetrics() {
-    return () -> SemanticVectorMetrics.create(extractDurationTimer().time(), extractRateCounter());
+    return id -> {
+      final Metrics metrics = metricsCache().getUnchecked(id);
+      final Context time = metrics.extractDurationTimer().time();
+      final Meter meter = metrics.extractRateCounter();
+
+      return SemanticVectorMetrics.create(time, meter);
+    };
   }
+
+  @AutoValue
+  abstract static class Metrics {
+
+    abstract Timer predictDurationTimer();
+
+    abstract Meter predictRateCounter();
+
+    abstract Timer extractDurationTimer();
+
+    abstract Meter extractRateCounter();
+
+    static Metrics create(final SemanticMetricRegistry registry, final MetricId metricId) {
+      final MetricId predictDurationId = metricId.tagged("what", PREDICT_DURATION.tag());
+      final MetricId predictRateId = metricId.tagged("what", PREDICT_RATE.tag());
+      final MetricId extractDuration = metricId.tagged("what", FEATURE_EXTRACT_DURATION.tag());
+      final MetricId extractRate = metricId.tagged("what", FEATURE_EXTRACT_RATE.tag());
+
+      final Timer predictTimer = registry.timer(predictDurationId);
+      final Meter predictMeter = registry.meter(predictRateId);
+      final Timer extractTimer = registry.timer(extractDuration);
+      final Meter extractMeter = registry.meter(extractRate);
+
+      return new AutoValue_SemanticPredictorMetrics_Metrics(
+          predictTimer,
+          predictMeter,
+          extractTimer,
+          extractMeter);
+    }
+  }
+
 }

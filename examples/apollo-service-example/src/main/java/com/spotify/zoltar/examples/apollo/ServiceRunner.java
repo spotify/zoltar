@@ -24,6 +24,7 @@ import com.spotify.apollo.Environment;
 import com.spotify.apollo.core.Service;
 import com.spotify.apollo.httpservice.HttpService;
 import com.spotify.apollo.httpservice.LoadingException;
+import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 import com.spotify.metrics.ffwd.FastForwardReporter;
 import com.spotify.zoltar.metrics.PredictorMetrics;
@@ -56,12 +57,14 @@ public class ServiceRunner {
   }
 
   static void configure(final Environment environment) {
-
     final Config config = environment.config();
     final URI modelPath = URI.create(config.getString("iris.model"));
     final URI settingsPath = URI.create(config.getString("iris.settings"));
     final SemanticMetricRegistry metricRegistry = environment.resolve(SemanticMetricRegistry.class);
-    final PredictorMetrics metrics = SemanticPredictorMetrics.create(metricRegistry);
+    final MetricId serviceMetricId = MetricId.build().tagged("service", SERVICE_NAME);
+
+    final PredictorMetrics metrics =
+        SemanticPredictorMetrics.create(metricRegistry, serviceMetricId);
 
     try {
       // Optional: check out https://github.com/spotify/semantic-metrics#provided-plugins

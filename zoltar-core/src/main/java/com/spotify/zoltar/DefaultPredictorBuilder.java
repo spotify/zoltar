@@ -93,7 +93,7 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> create(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return create(modelLoader, featureExtractor, AsyncPredictFn.lift(predictFn));
   }
@@ -113,7 +113,7 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT> DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> create(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return new AutoValue_DefaultPredictorBuilder<>(
         modelLoader,
@@ -124,7 +124,7 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
 
   public abstract ModelLoader<ModelT> modelLoader();
 
-  public abstract FeatureExtractor<InputT, VectorT> featureExtractor();
+  public abstract FeatureExtractor<ModelT, InputT, VectorT> featureExtractor();
 
   public abstract AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
 
@@ -133,7 +133,7 @@ abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT,
   @Override
   public DefaultPredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return create(modelLoader, featureExtractor, predictFn);
   }

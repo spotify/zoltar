@@ -35,7 +35,7 @@ public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, Valu
 
   ModelLoader<ModelT> modelLoader();
 
-  FeatureExtractor<InputT, VectorT> featureExtractor();
+  FeatureExtractor<ModelT, InputT, VectorT> featureExtractor();
 
   AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
 
@@ -43,7 +43,7 @@ public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, Valu
 
   PredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
       ModelLoader<ModelT> modelLoader,
-      FeatureExtractor<InputT, VectorT> featureExtractor,
+      FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn);
 
   @SuppressWarnings("unchecked")
@@ -54,7 +54,7 @@ public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, Valu
 
   @SuppressWarnings("unchecked")
   default <C extends PredictorBuilder<ModelT, InputT, VectorT, ValueT>> C with(
-      final FeatureExtractor<InputT, VectorT> featureExtractor) {
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor) {
     return (C) with(modelLoader(), featureExtractor, predictFn());
   }
 

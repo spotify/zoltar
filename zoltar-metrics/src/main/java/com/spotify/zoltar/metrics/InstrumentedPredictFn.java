@@ -46,7 +46,7 @@ interface InstrumentedPredictFn<ModelT extends Model<?>, InputT, VectorT, ValueT
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> Function<AsyncPredictFn<ModelT, InputT, VectorT, ValueT>, InstrumentedPredictFn<ModelT, InputT, VectorT, ValueT>> create(
       final PredictFnMetrics metrics) {
     return predictfn -> (model, vectors) -> {
-      final PredictMetrics predictMetrics = metrics.get();
+      final PredictMetrics predictMetrics = metrics.apply(model.id());
       final CompletionStage<List<Prediction<InputT, ValueT>>> result = predictfn.apply(model, vectors);
 
       result.whenComplete((r, t) -> predictMetrics.prediction(r));

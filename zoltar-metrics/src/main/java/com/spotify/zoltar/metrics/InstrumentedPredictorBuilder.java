@@ -53,9 +53,10 @@ abstract class InstrumentedPredictorBuilder<ModelT extends Model<?>, InputT, Vec
       final PredictorMetrics metrics) {
     return predictorBuilder -> {
       final FeatureExtractorMetrics featureExtractorMetrics = metrics.featureExtractorMetrics();
-      final InstrumentedFeatureExtractor<InputT, VectorT> featureExtractor = predictorBuilder
-          .featureExtractor()
-          .with(InstrumentedFeatureExtractor.create(featureExtractorMetrics));
+      final InstrumentedFeatureExtractor<ModelT, InputT, VectorT> featureExtractor =
+          predictorBuilder
+              .featureExtractor()
+              .with(InstrumentedFeatureExtractor.create(featureExtractorMetrics));
       final PredictFnMetrics predictFnMetrics = metrics.predictFnMetrics();
       final InstrumentedPredictFn<ModelT, InputT, VectorT, ValueT> predictFn = predictorBuilder
           .predictFn()
@@ -76,7 +77,7 @@ abstract class InstrumentedPredictorBuilder<ModelT extends Model<?>, InputT, Vec
   }
 
   @Override
-  public FeatureExtractor<InputT, VectorT> featureExtractor() {
+  public FeatureExtractor<ModelT, InputT, VectorT> featureExtractor() {
     return predictorBuilder().featureExtractor();
   }
 
@@ -93,7 +94,7 @@ abstract class InstrumentedPredictorBuilder<ModelT extends Model<?>, InputT, Vec
   @Override
   public InstrumentedPredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
       final ModelLoader<ModelT> modelLoader,
-      final FeatureExtractor<InputT, VectorT> featureExtractor,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     final PredictorBuilder<ModelT, InputT, VectorT, ValueT> pb =
         predictorBuilder().with(modelLoader, featureExtractor, predictFn);

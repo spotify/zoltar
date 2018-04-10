@@ -40,6 +40,7 @@ import ml.dmlc.xgboost4j.java.XGBoostError;
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @AutoValue
 public abstract class XGBoostModel implements Model<Booster> {
+  private static final Model.Id DEFAULT_ID = Id.create("xgboost");
 
   /**
    * Note: Please use Models from zoltar-models module.
@@ -47,10 +48,19 @@ public abstract class XGBoostModel implements Model<Booster> {
    * <p>Returns a XGBoost model given a URI to the serialized model file.</p>
    */
   public static XGBoostModel create(final URI modelUri) throws IOException {
+    return create(DEFAULT_ID, modelUri);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Returns a XGBoost model given a URI to the serialized model file.</p>
+   */
+  public static XGBoostModel create(final Model.Id id, final URI modelUri) throws IOException {
     try {
       GompLoader.start();
       final InputStream is = Files.newInputStream(FileSystemExtras.path(modelUri));
-      return new AutoValue_XGBoostModel(XGBoost.loadModel(is));
+      return new AutoValue_XGBoostModel(id, XGBoost.loadModel(is));
     } catch (final XGBoostError xgBoostError) {
       throw new IOException(xgBoostError);
     }

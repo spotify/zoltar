@@ -38,6 +38,7 @@ import org.tensorflow.SavedModelBundle;
 @AutoValue
 public abstract class TensorFlowModel implements Model<SavedModelBundle> {
 
+  private static final Model.Id DEFAULT_ID = Id.create("tensorflow");
   private static final Options DEFAULT_OPTIONS = Options.builder()
       .tags(Collections.singletonList("serve"))
       .build();
@@ -48,7 +49,17 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
    * <p>Returns a TensorFlow model given {@link SavedModelBundle} export directory URI.</p>
    */
   public static TensorFlowModel create(final URI modelResource) throws IOException {
-    return create(modelResource, DEFAULT_OPTIONS);
+    return create(DEFAULT_ID, modelResource, DEFAULT_OPTIONS);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Returns a TensorFlow model given {@link SavedModelBundle} export directory URI.</p>
+   */
+  public static TensorFlowModel create(final Model.Id id, final URI modelResource)
+      throws IOException {
+    return create(id, modelResource, DEFAULT_OPTIONS);
   }
 
   /**
@@ -59,10 +70,22 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
    */
   public static TensorFlowModel create(final URI modelResource,
                                        final Options options) throws IOException {
+    return create(DEFAULT_ID, modelResource, options);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Returns a TensorFlow model given {@link SavedModelBundle} export directory URI and
+   * {@link Options}.</p>
+   */
+  public static TensorFlowModel create(final Model.Id id,
+                                       final URI modelResource,
+                                       final Options options) throws IOException {
     final URI localDir = FileSystemExtras.downloadIfNonLocal(modelResource);
     final SavedModelBundle model = SavedModelBundle.load(localDir.toString(),
                                                          options.tags().toArray(new String[0]));
-    return new AutoValue_TensorFlowModel(model, options);
+    return new AutoValue_TensorFlowModel(id, model, options);
   }
 
   /**

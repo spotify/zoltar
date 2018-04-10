@@ -20,12 +20,15 @@
 
 package com.spotify.zoltar.tf;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.Model.Id;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
@@ -33,6 +36,7 @@ import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +44,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.tensorflow.Graph;
@@ -79,6 +84,28 @@ public class TensorFlowGraphModelTest {
       Files.write(graphFile, graph.toGraphDef());
     }
     return graphFile;
+  }
+
+  @Test
+  public void testDefaultId() throws IOException, ExecutionException, InterruptedException {
+    final Path graphFile = createADummyTFGraph();
+    final ModelLoader<TensorFlowGraphModel> model =
+        TensorFlowGraphLoader.create(graphFile.toString(), null, null);
+
+    final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
+
+    assertThat(tensorFlowModel.id().value(), is("tensorflow-graph"));
+  }
+
+  @Test
+  public void testCustomId() throws IOException, ExecutionException, InterruptedException {
+    final Path graphFile = createADummyTFGraph();
+    final ModelLoader<TensorFlowGraphModel> model =
+        TensorFlowGraphLoader.create(Id.create("dummy"), graphFile.toString(), null, null);
+
+    final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
+
+    assertThat(tensorFlowModel.id().value(), is("dummy"));
   }
 
   @Test

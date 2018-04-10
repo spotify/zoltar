@@ -41,6 +41,11 @@ public class ModelMemoizerTest {
     }
 
     @Override
+    public Id id() {
+      return Id.create("dummy");
+    }
+
+    @Override
     public Object instance() {
       inc.getAndIncrement();
       return null;

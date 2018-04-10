@@ -43,7 +43,8 @@ import org.tensorflow.framework.ConfigProto;
 @AutoValue
 public abstract class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
 
-  private static final Logger logger = LoggerFactory.getLogger(TensorFlowGraphModel.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TensorFlowGraphModel.class);
+  private static final Model.Id DEFAULT_ID = Id.create("tensorflow-graph");
 
   /**
    * Note: Please use Models from zoltar-models module.
@@ -51,15 +52,33 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
    * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.</p>
    *
    * @param graphUri URI to the TensorFlow graph definition.
-   * @param config config for TensorFlow {@link Session}.
-   * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param config   config for TensorFlow {@link Session}.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
    */
   public static TensorFlowGraphModel create(final URI graphUri,
                                             @Nullable final ConfigProto config,
                                             @Nullable final String prefix)
       throws IOException {
+    return create(DEFAULT_ID, graphUri, config, prefix);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.</p>
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param graphUri URI to the TensorFlow graph definition.
+   * @param config   config for TensorFlow {@link Session}.
+   * @param prefix   optional prefix that will be prepended to names in the graph.
+   */
+  public static TensorFlowGraphModel create(final Model.Id id,
+                                            final URI graphUri,
+                                            @Nullable final ConfigProto config,
+                                            @Nullable final String prefix)
+      throws IOException {
     final byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
-    return create(graphBytes, config, prefix);
+    return create(id, graphBytes, config, prefix);
   }
 
   /**
@@ -68,10 +87,28 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
    * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.</p>
    *
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
-   * @param config ConfigProto config for TensorFlow {@link Session}.
-   * @param prefix a prefix that will be prepended to names in graphDef.
+   * @param config   ConfigProto config for TensorFlow {@link Session}.
+   * @param prefix   a prefix that will be prepended to names in graphDef.
    */
   public static TensorFlowGraphModel create(final byte[] graphDef,
+                                            @Nullable final ConfigProto config,
+                                            @Nullable final String prefix)
+      throws IOException {
+    return create(DEFAULT_ID, graphDef, config, prefix);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.</p>
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param config   ConfigProto config for TensorFlow {@link Session}.
+   * @param prefix   a prefix that will be prepended to names in graphDef.
+   */
+  public static TensorFlowGraphModel create(final Model.Id id,
+                                            final byte[] graphDef,
                                             @Nullable final ConfigProto config,
                                             @Nullable final String prefix)
       throws IOException {
@@ -79,14 +116,14 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
     final Session session = new Session(graph, config != null ? config.toByteArray() : null);
     final long loadStart = System.currentTimeMillis();
     if (prefix == null) {
-      logger.debug("Loading graph definition without prefix");
+      LOG.debug("Loading graph definition without prefix");
       graph.importGraphDef(graphDef);
     } else {
-      logger.debug("Loading graph definition with prefix: %s", prefix);
+      LOG.debug("Loading graph definition with prefix: %s", prefix);
       graph.importGraphDef(graphDef, prefix);
     }
-    logger.info("TensorFlow graph loaded in %d ms", System.currentTimeMillis() - loadStart);
-    return new AutoValue_TensorFlowGraphModel(graph, session);
+    LOG.info("TensorFlow graph loaded in %d ms", System.currentTimeMillis() - loadStart);
+    return new AutoValue_TensorFlowGraphModel(id, graph, session);
   }
 
   /**
@@ -95,11 +132,11 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
   @Override
   public void close() {
     if (instance() != null) {
-      logger.debug("Closing TensorFlow session");
+      LOG.debug("Closing TensorFlow session");
       instance().close();
     }
     if (graph() != null) {
-      logger.debug("Closing TensorFlow graph");
+      LOG.debug("Closing TensorFlow graph");
       graph().close();
     }
   }

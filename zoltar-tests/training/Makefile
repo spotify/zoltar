@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 ID := $(shell date +%Y-%m-%d--%H-%M-%S)
 USERNAME ?= $(shell whoami)
-JOB_DIR ?= gs://ml-sketchbook-temp/iris/trained/$(USERNAME)/$(ID)
-TRAINING_SET ?= gs://ml-sketchbook-temp/iris
+JOB_DIR ?= gs://data-integration-test-us/zoltar/iris/trained/$(USERNAME)/$(ID)
+TRAINING_SET ?= gs://data-integration-test-us/zoltar/iris
 EXTRA_FLAGS ?=
 IRIS_PYTHON_PKG := iris/zoltar_model_train.egg-info
 

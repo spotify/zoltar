@@ -30,7 +30,7 @@ import org.tensorflow.example.{Example => TFExample}
 @SuppressFBWarnings
 object IrisFeaturesSpec {
 
-  @BigQueryType.fromTable("ml-sketchbook:zoltar.iris")
+  @BigQueryType.fromTable("data-integration-test:zoltar.iris")
   class Record
 
   case class Iris(sepalLength: Option[Double],

@@ -57,6 +57,12 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>scio-bigquery_2.11</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.api-client</groupId>
+          <artifactId>google-api-client</artifactId>
+        </exclusion>
+      </exclusions>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -170,7 +176,7 @@
     <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
-      <version>1.23.0</version>
+      <version>1.22.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

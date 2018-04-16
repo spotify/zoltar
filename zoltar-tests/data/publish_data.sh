@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-DEST_TABLE=${1:-"ml-sketchbook:zoltar.iris"}
+DEST_TABLE=${1:-"data-integration-test:zoltar.iris"}
 TEMP_DIR=$(mktemp -d)
 
 wget --directory-prefix=$TEMP_DIR https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data 

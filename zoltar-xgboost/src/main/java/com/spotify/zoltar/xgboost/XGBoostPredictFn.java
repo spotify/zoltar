@@ -21,17 +21,17 @@
 package com.spotify.zoltar.xgboost;
 
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import ml.dmlc.xgboost4j.LabeledPoint;
 
 /**
- * XGBoost flavor of {@link AsyncPredictFn}. Uses {@link XGBoostModel} and features are extracted as
- * a {@link LabeledPoint}s.
+ * XGBoost flavor of {@link AsyncPredictFn} using {@link XGBoostModel}.
  *
- * @param <I> type of the raw input to the feature extraction.
- * @param <P> type of the prediction result.
+ * @param <InputT>  type of the raw input to the feature extraction.
+ * @param <VectorT> type of the feature extraction output.
+ * @param <ValueT>  type of the prediction result.
  */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @FunctionalInterface
-public interface XGBoostPredictFn<I, P> extends AsyncPredictFn<XGBoostModel, I, LabeledPoint, P> {
+public interface XGBoostPredictFn<InputT, VectorT, ValueT>
+    extends AsyncPredictFn<XGBoostModel, InputT, VectorT, ValueT> {
 
 }

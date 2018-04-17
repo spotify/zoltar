@@ -60,7 +60,7 @@ public class XGBoostModelTest {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
     final URI settingsUri = XGBoostModelTest.class.getResource("/settings.json").toURI();
 
-    final XGBoostPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+    final XGBoostPredictFn<Iris, LabeledPoint, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
           vectors.stream().map(vector -> {
             return CompletableFuture.supplyAsync(() -> {

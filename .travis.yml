@@ -19,7 +19,7 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - ./deploy.sh
+  - ./scripts/deploy.sh
 
 notifications:
   email:

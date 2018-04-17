@@ -83,7 +83,7 @@ public class IrisPrediction {
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
 
-    final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+    final TensorFlowPredictFn<Iris, Example, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
           vectors.stream()
               .map(vector -> CompletableFuture

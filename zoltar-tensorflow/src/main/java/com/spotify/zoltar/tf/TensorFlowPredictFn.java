@@ -21,16 +21,16 @@
 package com.spotify.zoltar.tf;
 
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import org.tensorflow.example.Example;
 
 /**
- * TensorFlow flavor of {@link AsyncPredictFn}. Uses {@link TensorFlowModel} and features are
- * extracted as a {@link Example}s.
+ * TensorFlow flavor of {@link AsyncPredictFn} using {@link TensorFlowModel}.
  *
- * @param <I> type of the raw input to the feature extraction.
- * @param <P> type of the prediction result.
+ * @param <InputT> type of the raw input to the feature extraction.
+ * @param <VectorT> type of the feature extraction output.
+ * @param <ValueT> type of the prediction result.
  */
 @FunctionalInterface
-public interface TensorFlowPredictFn<I, P> extends AsyncPredictFn<TensorFlowModel, I, Example, P> {
+public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
+    extends AsyncPredictFn<TensorFlowModel, InputT, VectorT, ValueT> {
 
 }

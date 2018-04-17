@@ -35,8 +35,6 @@ import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
-import com.spotify.zoltar.xgboost.XGBoostLoader;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.LongBuffer;
@@ -59,13 +57,12 @@ import org.tensorflow.example.Example;
 public class TensorFlowModelTest {
 
   public static Predictor<Iris, Long> getTFIrisPredictor() throws Exception {
-    final TensorFlowPredictFn<Iris, Long> predictFn = (model, vectors) -> {
+    final TensorFlowPredictFn<Iris, Example, Long> predictFn = (model, vectors) -> {
       final List<CompletableFuture<Prediction<Iris, Long>>> predictions = vectors.stream()
-          .map(vector -> {
-            return CompletableFuture
-                .supplyAsync(() -> predict(model, vector.value()))
-                .thenApply(value -> Prediction.create(vector.input(), value));
-          }).collect(Collectors.toList());
+          .map(vector -> CompletableFuture
+              .supplyAsync(() -> predict(model, vector.value()))
+              .thenApply(value -> Prediction.create(vector.input(), value)))
+          .collect(Collectors.toList());
 
       return CompletableFutures.allAsList(predictions);
     };

@@ -33,6 +33,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 
 public class FileSystemExtrasTest {
@@ -79,20 +86,26 @@ public class FileSystemExtrasTest {
   }
 
   @Test
-  public void copyDirectory() throws IOException {
-    final Path temp = Files.createTempDirectory("original-zoltar");
-    new File(temp.toFile(), "foobar").createNewFile();
+  public void copyDirectory() throws IOException, URISyntaxException {
+    final URI resource = getClass().getResource("/trained_model").toURI();
+    final String abspath = new File(resource).getAbsolutePath();
+    final Path model = Paths.get(abspath);
 
     final Path dest = Files.createTempDirectory("zoltar-");
-    final Path path = FileSystemExtras.copyDir(temp, dest, true);
+    final Path path = FileSystemExtras.copyDir(model, dest, true);
 
-    assertTrue(path.toFile().getName().startsWith("zoltar"));
     assertTrue(path.toFile().exists());
     assertTrue(path.toFile().isDirectory());
-    assertThat(path.toFile().listFiles().length, is(1));
+    assertTrue(path.toFile().getName().startsWith("zoltar"));
 
-    dest.toFile().deleteOnExit();
-    temp.toFile().deleteOnExit();
+    final List<String> dirContents = Arrays.stream(path.toFile().listFiles())
+        .map(File::getName)
+        .collect(Collectors.toList());
+
+    final List<String> expected = Arrays.asList("variables", "saved_model.pb", "trained_model.txt");
+
+    assertThat(dirContents.containsAll(expected), is(true));
+
     path.toFile().deleteOnExit();
   }
 }

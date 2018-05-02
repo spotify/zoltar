@@ -86,18 +86,18 @@ public final class FileSystemExtras {
 
   static Path copyDir(final Path src, final Path dest, final boolean overwrite)
       throws IOException {
-    final List<Path> paths = Files.walk(src)
+    final List<URI> uris = Files.walk(src)
         .filter(path -> !path.equals(src))
+        .map(Path::toUri)
         .collect(Collectors.toList());
 
-    for (final Path path : paths) {
-      final int parentIdx = path.toString().lastIndexOf(src.getFileName().toString());
-      final int idx = parentIdx + src.getFileName().toString().length();
-      final String relative = path.toString().substring(idx);
-      final Path fullDst = Paths.get(dest.toString(), relative);
+    for (final URI uri : uris) {
+      final String relative =
+          uri.toString().substring(src.toUri().toString().length(), uri.toString().length());
+      final Path fullDst = Paths.get(dest.toUri().resolve(relative));
       final CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
           : new CopyOption[]{};
-      Files.copy(path, fullDst, flags);
+      Files.copy(Paths.get(uri), fullDst, flags);
     }
 
     return dest;

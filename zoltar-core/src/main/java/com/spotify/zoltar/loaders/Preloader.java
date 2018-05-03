@@ -39,8 +39,7 @@ public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
    * Returns a blocking {@link Preloader}. Blocks at create time till the model is loaded.
    */
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload() {
-    final Duration duration = Duration.ofDays(Integer.MAX_VALUE);
-    return preload(duration);
+    return preload(Duration.ofDays(Integer.MAX_VALUE));
   }
 
   /**

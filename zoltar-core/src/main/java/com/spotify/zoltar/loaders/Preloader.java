@@ -23,6 +23,8 @@ package com.spotify.zoltar.loaders;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
 /**
@@ -34,28 +36,43 @@ import java.util.function.Function;
 public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
 
   /**
-   * Returns a blocking {@link Preloader}. Blocks till the model is loaded
-   * or a {@link Duration} is met.
+   * Returns a blocking {@link Preloader}. Blocks at create time till the model is loaded.
+   */
+  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload() {
+    return preload(Duration.ofDays(Integer.MAX_VALUE));
+  }
+
+  /**
+   * Returns a blocking {@link Preloader}. Blocks till the model is loaded or a {@link Duration} is
+   * met.
    *
    * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
    */
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload(
       final Duration duration) {
-    return loader -> ModelLoader.lift(() -> loader.get(duration))::get;
-  }
+    return loader -> {
+      CompletionStage<M> model;
+      try {
+        model = CompletableFuture.completedFuture(loader.get(duration));
+      } catch (final Exception e) {
+        final CompletableFuture<M> failed = new CompletableFuture<>();
+        failed.completeExceptionally(e);
 
-  /**
-   * Returns a blocking {@link Preloader}. Blocks at create time till the model is loaded.
-   */
-  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload() {
-    final Duration duration = Duration.ofDays(Integer.MAX_VALUE);
-    return loader -> ModelLoader.lift(() -> loader.get(duration))::get;
+        model = failed;
+      }
+
+      final CompletionStage<M> finalModel = model;
+      return () -> finalModel;
+    };
   }
 
   /**
    * Returns a asynchronous {@link Preloader}.
    */
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preloadAsync() {
-    return loader -> loader::get;
+    return loader -> {
+      final CompletionStage<M> model = loader.get();
+      return () -> model;
+    };
   }
 }

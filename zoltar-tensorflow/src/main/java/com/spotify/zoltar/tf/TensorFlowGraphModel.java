@@ -119,10 +119,10 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
       LOG.debug("Loading graph definition without prefix");
       graph.importGraphDef(graphDef);
     } else {
-      LOG.debug("Loading graph definition with prefix: %s", prefix);
+      LOG.debug("Loading graph definition with prefix: {}", prefix);
       graph.importGraphDef(graphDef, prefix);
     }
-    LOG.info("TensorFlow graph loaded in %d ms", System.currentTimeMillis() - loadStart);
+    LOG.info("TensorFlow graph loaded in {} ms", System.currentTimeMillis() - loadStart);
     return new AutoValue_TensorFlowGraphModel(id, graph, session);
   }
 

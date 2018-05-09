@@ -175,6 +175,12 @@
         <version>0.71-20180420-230cb9b7</version>
       </dependency>
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.25</version>
+      </dependency>
+
+      <dependency>
         <!-- initial reason: breeze 1.0-RC2 from featran 0.1.19 -->
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-math3</artifactId>

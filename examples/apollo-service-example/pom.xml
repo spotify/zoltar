@@ -39,12 +39,17 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
+      <artifactId>zoltar-api</artifactId>
+      <version>0.3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
       <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>zoltar-tests</artifactId>
+      <artifactId>zoltar-featran</artifactId>
       <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -54,7 +59,7 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>zoltar-api</artifactId>
+      <artifactId>zoltar-tests</artifactId>
       <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>

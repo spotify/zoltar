@@ -9,11 +9,22 @@
 
   <artifactId>zoltar-tensorflow</artifactId>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>zoltar-bom</artifactId>
+        <version>0.3.1-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.tensorflow</groupId>

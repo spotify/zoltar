@@ -9,16 +9,26 @@
 
   <artifactId>zoltar-metrics</artifactId>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>zoltar-bom</artifactId>
+        <version>0.3.1-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.spotify.metrics</groupId>
       <artifactId>semantic-metrics-core</artifactId>
-      <version>0.11.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.auto.value</groupId>

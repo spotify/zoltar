@@ -6,7 +6,14 @@
   <version>0.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <parent>
+    <groupId>com.spotify</groupId>
+    <artifactId>foss-root</artifactId>
+    <version>8</version>
+  </parent>
+
   <modules>
+    <module>zoltar-bom</module>
     <module>zoltar-core</module>
     <module>zoltar-tensorflow</module>
     <module>zoltar-xgboost</module>
@@ -17,20 +24,9 @@
     <module>examples/apollo-service-example</module>
   </modules>
 
-  <parent>
-    <groupId>com.spotify</groupId>
-    <artifactId>foss-root</artifactId>
-    <version>8</version>
-  </parent>
-
   <properties>
     <findbugs.excludeFilterFile>findbugsexclude.xml</findbugs.excludeFilterFile>
     <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
-    <scala.version>2.11.12</scala.version>
-    <tensorFlow.version>1.8.0</tensorFlow.version>
-    <scio.version>0.5.3</scio.version>
-    <featran.version>0.1.25</featran.version>
-    <proto.version>3.5.1</proto.version>
   </properties>
 
   <scm>
@@ -50,181 +46,6 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>20.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.auto.value</groupId>
-        <artifactId>auto-value</artifactId>
-        <version>1.5.3</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>3.0.2</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>featran-core_2.11</artifactId>
-        <version>${featran.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>featran-java_2.11</artifactId>
-        <version>${featran.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>featran-scio_2.11</artifactId>
-        <version>${featran.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>featran-tensorflow_2.11</artifactId>
-        <version>${featran.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>google-cloud-nio</artifactId>
-        <version>0.37.0-alpha</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.errorprone</groupId>
-        <artifactId>error_prone_annotations</artifactId>
-        <version>2.2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>${proto.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java-util</artifactId>
-        <version>${proto.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>futures-extra</artifactId>
-        <version>2.6.2</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>completable-futures</artifactId>
-        <version>0.3.2</version>
-      </dependency>
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.9.9</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scala-lang</groupId>
-        <artifactId>scala-library</artifactId>
-        <version>${scala.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scala-lang</groupId>
-        <artifactId>scala-reflect</artifactId>
-        <version>${scala.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.tensorflow</groupId>
-        <artifactId>tensorflow</artifactId>
-        <version>${tensorFlow.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.tensorflow</groupId>
-        <artifactId>proto</artifactId>
-        <version>${tensorFlow.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.6</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>annotations</artifactId>
-        <version>3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-core_2.11</artifactId>
-        <version>${scio.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-bigquery_2.11</artifactId>
-        <version>${scio.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-tensorflow_2.11</artifactId>
-        <version>${scio.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>me.lyh</groupId>
-        <artifactId>xgboost4j</artifactId>
-        <version>0.71-20180420-230cb9b7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.25</version>
-      </dependency>
-
-      <dependency>
-        <!-- initial reason: breeze 1.0-RC2 from featran 0.1.19 -->
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-math3</artifactId>
-        <version>3.6.1</version>
-      </dependency>
-      <dependency>
-        <!-- initial reason: breeze 1.0-RC2 from scio-tensorflow 0.5.0 -->
-        <groupId>com.chuusai</groupId>
-        <artifactId>shapeless_2.11</artifactId>
-        <version>2.3.3</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.typelevel</groupId>
-        <artifactId>cats-kernel_2.11</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.typelevel</groupId>
-        <artifactId>machinist_2.11</artifactId>
-        <version>0.6.2</version>
-      </dependency>
-
-      <!-- Test dependencies -->
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-test_2.11</artifactId>
-        <version>${scio.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>1.7.22</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.12</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <pluginManagement>

@@ -9,22 +9,31 @@
 
   <artifactId>zoltar-api</artifactId>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>zoltar-bom</artifactId>
+        <version>0.3.1-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tensorflow</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-xgboost</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -24,10 +24,8 @@ import com.spotify.featran.transformers._
 import com.spotify.scio._
 import com.spotify.scio.bigquery._
 import com.spotify.scio.tensorflow._
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
 import org.tensorflow.example.{Example => TFExample}
 
-@SuppressFBWarnings
 object IrisFeaturesSpec {
 
   @BigQueryType.fromTable("data-integration-test:zoltar.iris")
@@ -62,7 +60,6 @@ object IrisFeaturesSpec {
   val irisSpec = MultiFeatureSpec(irisFeaturesSpec, irisLabelSpec)
 }
 
-@SuppressFBWarnings
 object IrisFeaturesJob {
   def main(cmdLineArgs: Array[String]): Unit = {
     import IrisFeaturesSpec._

@@ -21,14 +21,6 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <repository>
-      <id>oss.sonatype.org</id>
-      <name>sonatype sapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
@@ -64,10 +56,6 @@
       <artifactId>scio-bigquery_2.11</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>com.google.api-client</groupId>-->
-      <!--<artifactId>google-api-client</artifactId>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>scio-tensorflow_2.11</artifactId>

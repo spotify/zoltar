@@ -57,12 +57,6 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>scio-core_2.11</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.api-client</groupId>
-          <artifactId>google-api-client</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -70,10 +64,10 @@
       <artifactId>scio-bigquery_2.11</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.api-client</groupId>
-      <artifactId>google-api-client</artifactId>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.google.api-client</groupId>-->
+      <!--<artifactId>google-api-client</artifactId>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>scio-tensorflow_2.11</artifactId>

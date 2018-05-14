@@ -35,6 +35,10 @@ import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
+import com.spotify.zoltar.tf.TensorFlowModel.Options;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.LongBuffer;
@@ -42,6 +46,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -125,6 +130,15 @@ public class TensorFlowModelTest {
         }).toCompletableFuture();
 
     Assert.assertTrue("Should be more the 0.8", sum.get() / 150f > .8);
+  }
+
+  @Test
+  public void optionsSerializable() throws IOException {
+    final Options options = Options.builder()
+        .tags(Collections.singletonList("serve"))
+        .build();
+
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(options);
   }
 
   private static long predict(final TensorFlowModel model, final Example example) {

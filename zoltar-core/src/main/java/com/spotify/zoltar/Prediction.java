@@ -21,13 +21,14 @@
 package com.spotify.zoltar;
 
 import com.google.auto.value.AutoValue;
+import java.io.Serializable;
 
 /**
  * Value class for prediction result. Holds both the original input and the result of the prediction
  * for the input.
  */
 @AutoValue
-public abstract class Prediction<InputT, ValueT> {
+public abstract class Prediction<InputT, ValueT> implements Serializable {
 
   /** Input to the prediction. */
   public abstract InputT input();

@@ -24,6 +24,7 @@ import com.google.auto.value.AutoValue;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -113,7 +114,7 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
    * Value class for our TensorFlow options.
    */
   @AutoValue
-  public abstract static class Options {
+  public abstract static class Options implements Serializable {
 
     /**
      * Returns a list of Tags, see <a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py#L26">tags</a>.

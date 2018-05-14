@@ -21,13 +21,14 @@
 package com.spotify.zoltar;
 
 import com.google.auto.value.AutoValue;
+import java.io.Serializable;
 
 /**
  * Value class for feature extraction result. Holds both the original input and the result of the
  * feature extraction for the input.
  */
 @AutoValue
-public abstract class Vector<InputT, ValueT> {
+public abstract class Vector<InputT, ValueT> implements Serializable {
 
   /** Input to the feature extraction. */
   public abstract InputT input();

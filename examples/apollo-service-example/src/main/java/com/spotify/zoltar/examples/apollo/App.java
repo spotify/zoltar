@@ -87,7 +87,7 @@ public class App {
   /**
    * Runs the app locally.
    *
-   * <p>$ curl http://localhost:8080/predict/5.8-2.7-5.1-1.9 Lengths seperated by "-"
+   * <p>$ curl http://localhost:8080/v1/predict/5.8-2.7-5.1-1.9 Lengths seperated by "-"
    */
   public static void main(final String... args) throws LoadingException {
 

@@ -20,9 +20,6 @@
 
 package com.spotify.zoltar.examples.apollo;
 
-import com.google.common.collect.ImmutableMap;
-import com.spotify.apollo.Response;
-import com.spotify.apollo.Status;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -42,7 +39,6 @@ import com.spotify.zoltar.tf.TensorFlowExtras;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -53,32 +49,21 @@ import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
 import org.tensorflow.example.Example;
-import scala.Option;
 
 /**
  * Iris prediction meat and potatoes.
  */
-public class IrisPrediction {
-
-  private static Predictor<Iris, Long> predictor;
-  private static Map<Integer, String> idToClass = ImmutableMap.of(
-      0, "Iris-setosa",
-      1, "Iris-versicolor",
-      2, "Iris-virginica");
+public final class IrisPredictor {
 
   /**
    * Configure Iris prediction, should be called at the service startup/configuration stage.
-   *
-   * @param modelDirUri URI to the TensorFlow model directory
-   * @param settingsUri URI to the settings files for Featran
    */
-  public static void configure(final URI modelDirUri,
-                               final URI settingsUri,
-                               final PredictorMetrics metrics) throws IOException {
+  public static Predictor<Iris, Long> create(final ModelConfig modelConfig,
+                                             final PredictorMetrics metrics) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
-    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)));
+    final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
     final ModelLoader<TensorFlowModel> modelLoader =
-        Models.tensorFlow(modelDirUri.toString());
+        Models.tensorFlow(modelConfig.modelUri().toString());
 
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
@@ -95,48 +80,10 @@ public class IrisPrediction {
 
     final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
         Predictors
-        .newBuilder(modelLoader, extractFn, predictFn)
-        .with(Instrumentations.predictor(metrics));
+            .newBuilder(modelLoader, extractFn, predictFn)
+            .with(Instrumentations.predictor(metrics));
 
-    predictor = predictorBuilder.predictor();
-  }
-
-  /**
-   * Prediction endpoint. Takes a request in a from of a String containing iris features `-`
-   * separated, and returns a response in a form of a predicted iris class.
-   */
-  public static Response<String> predict(final String requestFeatures) {
-
-    if (requestFeatures == null) {
-      return Response.forStatus(Status.BAD_REQUEST);
-    }
-    final String[] features = requestFeatures.split("-");
-
-    if (features.length != 4) {
-      return Response.forStatus(Status.BAD_REQUEST);
-    }
-
-    final Iris featureData = new Iris(
-        Option.apply(Double.parseDouble(features[0])),
-        Option.apply(Double.parseDouble(features[1])),
-        Option.apply(Double.parseDouble(features[2])),
-        Option.apply(Double.parseDouble(features[3])),
-        Option.empty());
-
-    int[] predictions = new int[0];
-    try {
-      predictions = predictor
-          .predict(featureData)
-          .thenApply(p -> p
-              .stream()
-              .mapToInt(prediction -> prediction.value().intValue())
-              .toArray()).toCompletableFuture().get();
-    } catch (final Exception e) {
-      e.printStackTrace();
-      //TODO: what to return in case of failure here?
-    }
-    final String predictedClass = idToClass.get(predictions[0]);
-    return Response.forPayload(predictedClass);
+    return predictorBuilder.predictor();
   }
 
   private static long predictFn(final TensorFlowModel model, final Example example) {
@@ -144,10 +91,11 @@ public class IrisPrediction {
     b[0] = example.toByteArray();
     try (final Tensor<String> t = Tensors.create(b)) {
       final Session.Runner runner = model.instance().session().runner()
-              .feed("input_example_tensor", t);
+          .feed("input_example_tensor", t);
       final String op = "linear/head/predictions/class_ids";
       final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, op);
       return result.get(op).longValue()[0];
     }
   }
+
 }

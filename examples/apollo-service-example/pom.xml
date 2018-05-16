@@ -13,7 +13,7 @@
   <artifactId>apollo-service-example</artifactId>
 
   <properties>
-    <service.mainClass>com.spotify.zoltar.examples.apollo.ServiceRunner</service.mainClass>
+    <service.mainClass>com.spotify.zoltar.examples.apollo.App</service.mainClass>
     <findbugs.excludeFilterFile>findbugsexclude.xml</findbugs.excludeFilterFile>
     <maven.install.skip>true</maven.install.skip>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
@@ -123,6 +123,11 @@
     </dependency>
 
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>apollo-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

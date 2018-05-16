@@ -20,38 +20,42 @@
 
 package com.spotify.zoltar.examples.apollo;
 
+import static org.hamcrest.core.Is.is;
+
+import com.spotify.apollo.Response;
+import com.spotify.apollo.request.RequestContexts;
+import com.spotify.apollo.test.ServiceHelper;
+import com.spotify.apollo.test.StubClient;
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
-import com.spotify.zoltar.metrics.PredictorMetrics;
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.CompletionStage;
+import okio.ByteString;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-public class IrisPredictionTest {
+public class IrisPredictionHandlerTest {
 
-  @Before
-  public void loadModelAndPredictor() {
-    try {
-      final URI trainedModelUri = getClass().getResource("/trained_model").toURI();
-      final URI settingsUri = getClass().getResource("/settings.json").toURI();
-      final SemanticMetricRegistry semanticMetricRegistry = new SemanticMetricRegistry();
-      IrisPrediction.configure(
-          trainedModelUri,
-          settingsUri,
-          SemanticPredictorMetrics.create(semanticMetricRegistry, MetricId.EMPTY));
-    } catch (final Exception e) {
-      e.printStackTrace();
-    }
-  }
+  @Rule
+  public ServiceHelper serviceHelper = ServiceHelper.create(App::configure, "zoltar-example");
 
   @Test
-  public void testPrediction() throws IOException {
-    final String testData = "5.3-2.7-2.0-1.9";
-    final String expectedClass = "Iris-versicolor";
-    final String predictedClass = IrisPrediction.predict(testData).payload().get();
-    Assert.assertEquals(expectedClass, predictedClass);
+  public void shouldPredict() throws Exception {
+    final Response<ByteString> replyFuture = serviceHelper
+        .request("GET", "/v1/predict/5.3-2.7-2.0-1.9")
+        .toCompletableFuture()
+        .get();
+
+    final String reply = replyFuture.payload().get().utf8();
+
+    Assert.assertThat(reply, is("Iris-versicolor"));
   }
+
 }

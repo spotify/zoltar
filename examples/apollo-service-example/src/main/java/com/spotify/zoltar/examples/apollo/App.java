@@ -21,45 +21,37 @@
 package com.spotify.zoltar.examples.apollo;
 
 import com.spotify.apollo.Environment;
+import com.spotify.apollo.Response;
 import com.spotify.apollo.core.Service;
 import com.spotify.apollo.httpservice.HttpService;
 import com.spotify.apollo.httpservice.LoadingException;
+import com.spotify.apollo.route.AsyncHandler;
+import com.spotify.apollo.route.Route;
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 import com.spotify.metrics.ffwd.FastForwardReporter;
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
 import com.typesafe.config.Config;
 import java.io.IOException;
-import java.net.URI;
+import java.util.stream.Stream;
+import okio.ByteString;
 
 /**
  * Application entry point.
  */
-public class ServiceRunner {
+public class App {
 
   private static final String SERVICE_NAME = "zoltar-example";
 
-  private ServiceRunner() {
-  }
-
-  /**
-   * Runs the app locally.
-   *
-   * <p>$ curl http://localhost:8080/predict/5.8-2.7-5.1-1.9 Lengths seperated by "-"
-   */
-  public static void main(final String... args) throws LoadingException {
-
-    final Service service = HttpService.usingAppInit(ServiceRunner::configure, SERVICE_NAME)
-        .build();
-
-    HttpService.boot(service, args);
+  private App() {
   }
 
   static void configure(final Environment environment) {
     final Config config = environment.config();
-    final URI modelPath = URI.create(config.getString("iris.model"));
-    final URI settingsPath = URI.create(config.getString("iris.settings"));
+
     final SemanticMetricRegistry metricRegistry = environment.resolve(SemanticMetricRegistry.class);
     final MetricId serviceMetricId = MetricId.build().tagged("service", SERVICE_NAME);
 
@@ -74,17 +66,36 @@ public class ServiceRunner {
       throw new RuntimeException(e.getMessage());
     }
 
+    final Predictor<Iris, Long> predictor;
     try {
-      IrisPrediction.configure(modelPath, settingsPath, metrics);
-    } catch (final IOException e) {
-      throw new RuntimeException(
-          String.format("Could not load model! Model path: `%s`, settings path `%s`.",
-                        modelPath,
-                        settingsPath));
+      final ModelConfig irisModelConfig = ModelConfig.from(config.getConfig("iris"));
+      predictor = IrisPredictor.create(irisModelConfig, metrics);
+    } catch (final Exception e) {
+      throw new RuntimeException("Could not load model with config");
     }
 
-    final EndPoints endPoints = new EndPoints();
-    environment.routingEngine()
-        .registerRoutes(endPoints.routes().map(r -> r.withPrefix("/predict")));
+    final IrisPredictionHandler irisPredictionHandler = IrisPredictionHandler.create(predictor);
+    final Stream<Route<AsyncHandler<Response<ByteString>>>> routes = irisPredictionHandler
+        .routes()
+        .map(r -> r.withPrefix("/v1"));
+
+    environment
+        .routingEngine()
+        .registerRoutes(routes);
   }
+
+  /**
+   * Runs the app locally.
+   *
+   * <p>$ curl http://localhost:8080/v1/predict/5.8-2.7-5.1-1.9 Lengths seperated by "-"
+   */
+  public static void main(final String... args) throws LoadingException {
+
+    final Service service = HttpService
+        .usingAppInit(App::configure, SERVICE_NAME)
+        .build();
+
+    HttpService.boot(service, args);
+  }
+
 }

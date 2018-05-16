@@ -22,6 +22,7 @@ package com.spotify.zoltar.tf;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
+import java.io.Serializable;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -33,13 +34,13 @@ import org.tensorflow.Tensor;
  * Wrapper for {@link Tensor} that manages memory in JVM heap and closes the underlying Tensor.
  */
 @AutoValue
-public abstract class JTensor {
+public abstract class JTensor implements Serializable {
   /**
    * Create a new {@link JTensor} instance by extracting data from the underlying {@link Tensor}
    * and closing it afterwards.
    */
   public static JTensor create(final Tensor<?> tensor) {
-    final AutoValue_JTensor jt;
+    final JTensor jt;
 
     switch (tensor.dataType()) {
       case STRING:

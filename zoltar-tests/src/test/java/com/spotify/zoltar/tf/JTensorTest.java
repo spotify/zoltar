@@ -23,6 +23,9 @@ package com.spotify.zoltar.tf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.function.Function;
 import org.junit.Test;
 import org.tensorflow.DataType;
@@ -106,6 +109,51 @@ public class JTensorTest {
     testException(jt, JTensor::intValue);
     testException(jt, JTensor::longValue);
     testException(jt, JTensor::floatValue);
+  }
+
+  @Test
+  public void stringTensorSerializable() throws IOException {
+    final String stringValue = "world";
+    final Tensor<String> tensor = Tensors.create(stringValue);
+    final JTensor jt = JTensor.create(tensor);
+
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
+  }
+
+  @Test
+  public void intTensorSerializable() throws IOException {
+    final int[] intValue = {1, 2, 3, 4, 5};
+    final Tensor<Integer> tensor = Tensors.create(intValue);
+    final JTensor jt = JTensor.create(tensor);
+
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
+  }
+
+  @Test
+  public void longTensorSerializable() throws IOException {
+    final long[] longValue = {1, 2, 3, 4, 5};
+    final Tensor<Long> tensor = Tensors.create(longValue);
+    final JTensor jt = JTensor.create(tensor);
+
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
+  }
+
+  @Test
+  public void floatTensorSerializable() throws IOException {
+    final float[] floatValue = {1, 2, 3, 4, 5};
+    final Tensor<Float> tensor = Tensors.create(floatValue);
+    final JTensor jt = JTensor.create(tensor);
+
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
+  }
+
+  @Test
+  public void doubleTensorSerializable() throws IOException {
+    final double[] doubleValue = {1, 2, 3, 4, 5};
+    final Tensor<Double> tensor = Tensors.create(doubleValue);
+    final JTensor jt = JTensor.create(tensor);
+
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
   }
 
   private <T> void testException(final JTensor jt, final Function<JTensor, T> fn) {

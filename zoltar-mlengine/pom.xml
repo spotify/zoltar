@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>zoltar-api</artifactId>
+  <artifactId>zoltar-mlengine</artifactId>
 
   <dependencyManagement>
     <dependencies>
@@ -27,30 +27,31 @@
       <artifactId>zoltar-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-ml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-tensorflow</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-xgboost</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-java_2.11</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-mlengine</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

@@ -14,7 +14,7 @@ Zoltar is a library that helps mount predictive machine learning models in [Apol
 The core functionality of Zoltar. This object loads a model and calls functions to featurize input vectors and submit them for prediction. To these ends, a predictor is composed of a PredictFn, ModelLoader, and FeatureExtractor.
 
 [PredictFn](https://github.com/spotify/zoltar/blob/6390c056d9e3d033bdaf1c2dedd4901e309571ec/zoltar-core/src/main/java/com/spotify/zoltar/PredictFns.java): 
-An abstraction of a function that submits a feature vector to a model for prediction.
+A function abstraction that submits a feature vector to a model for prediction.
 
 [Prediction](https://github.com/spotify/zoltar/blob/6390c056d9e3d033bdaf1c2dedd4901e309571ec/zoltar-core/src/main/java/com/spotify/zoltar/Prediction.java):
 A wrapper around a single feature vector and its predicted output.
@@ -29,7 +29,7 @@ The Java object that houses the predictive model itself.
 Takes an input vector and applies a FeatureExtractFn to it.
 
 [FeatureExtractFn](https://github.com/spotify/zoltar/blob/6390c056d9e3d033bdaf1c2dedd4901e309571ec/zoltar-core/src/main/java/com/spotify/zoltar/FeatureExtractFns.java):
-A function that converts a raw input vector and extracts a feature vector from it.
+A function abstraction that takes a raw input vector and extracts a feature vector from it.
 
 
 For more details, take a look at the source code and follow the documentation in the comments. We've provided model specific implementations of these abstractions for TensorFlow and XGBoost, which can be found in [zoltar-tensorflow](https://github.com/spotify/zoltar/tree/6390c056d9e3d033bdaf1c2dedd4901e309571ec/zoltar-tensorflow/src/main/java/com/spotify/zoltar/tf) and [zoltar-xgboost](https://github.com/spotify/zoltar/tree/6390c056d9e3d033bdaf1c2dedd4901e309571ec/zoltar-xgboost/src/main/java/com/spotify/zoltar/xgboost) respectively. 

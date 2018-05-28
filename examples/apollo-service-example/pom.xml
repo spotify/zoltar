@@ -30,6 +30,8 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
+      <!-- #bom_example -->
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-bom</artifactId>
@@ -37,6 +39,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- #bom_example -->
 
       <dependency>
         <groupId>com.google.guava</groupId>

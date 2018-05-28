@@ -10,6 +10,9 @@ lazy val root = (project in file("."))
   .settings(
     name := "zoltar-docs",
     version := "0.3.2",
+    paradoxProperties in Paradox ++= Map(
+      "javadoc.com.spotify.zoltar.base_url" -> "http://spotify.github.com/zoltar/apidocs"
+    ),
     ParadoxMaterialThemePlugin.paradoxMaterialThemeSettings(Paradox),
     paradoxMaterialTheme in Paradox ~= {
       _.withColor("white", "indigo")

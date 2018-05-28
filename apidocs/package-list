@@ -1,0 +1,10 @@
+com.spotify.zoltar
+com.spotify.zoltar.examples.apollo
+com.spotify.zoltar.featran
+com.spotify.zoltar.fs
+com.spotify.zoltar.loaders
+com.spotify.zoltar.metrics
+com.spotify.zoltar.metrics.semantic
+com.spotify.zoltar.tf
+com.spotify.zoltar.xgboost
+ml.dmlc.xgboost4j.java

@@ -13,10 +13,3 @@ See [Zoltar docs](https://spotify.github.io/zoltar) for details.
 Copyright 2018 Spotify AB.
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
-
-@@@index
-* [Getting Started](getting-started.md)
-* [TensorFlow](tensorflow.md)
-* [XGBoost](xgboost.md)
-* [Featran](featran.md)
-@@@

@@ -11,6 +11,7 @@ lazy val root = (project in file("."))
     name := "zoltar-docs",
     version := "0.3.2",
     paradoxProperties in Paradox ++= Map(
+      "github.base_url" -> "https://github.com/spotify/zoltar/docs",
       "javadoc.com.spotify.zoltar.base_url" -> "http://spotify.github.com/zoltar/apidocs"
     ),
     ParadoxMaterialThemePlugin.paradoxMaterialThemeSettings(Paradox),

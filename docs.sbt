@@ -4,14 +4,13 @@ lazy val noPublishSettings = Seq(
   publishArtifact := false
 )
 
-lazy val root = (project in file("."))
+lazy val docs = (project in file("docs"))
   .enablePlugins(ParadoxSitePlugin, ParadoxMaterialThemePlugin, GhpagesPlugin)
   .settings(noPublishSettings)
   .settings(
     name := "zoltar-docs",
     version := "0.3.2",
     paradoxProperties in Paradox ++= Map(
-      "github.base_url" -> "https://github.com/spotify/zoltar/docs",
       "javadoc.com.spotify.zoltar.base_url" -> "http://spotify.github.com/zoltar/apidocs"
     ),
     ParadoxMaterialThemePlugin.paradoxMaterialThemeSettings(Paradox),

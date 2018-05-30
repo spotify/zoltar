@@ -98,7 +98,7 @@ final class IrisPredictionHandler {
               .findFirst()
               .map(Prediction::value)
               .map(idToClass::get)
-              .orElseThrow(() -> new RuntimeException("we expect a prediction"));
+              .<RuntimeException>orElseThrow(() -> new RuntimeException("we expect a prediction"));
         });
   }
 }

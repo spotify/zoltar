@@ -41,7 +41,7 @@ public final class Instrumentations {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT> Function<PredictorBuilder<ModelT, InputT, VectorT, ValueT>, InstrumentedPredictorBuilder<ModelT, InputT, VectorT, ValueT>> predictor(
-      final PredictorMetrics metrics) {
+      final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
     return InstrumentedPredictorBuilder.create(metrics);
   }
 

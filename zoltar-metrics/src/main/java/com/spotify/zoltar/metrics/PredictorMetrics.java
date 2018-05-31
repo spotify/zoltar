@@ -23,17 +23,17 @@ package com.spotify.zoltar.metrics;
 /**
  * Defines an interface for how to collect predictor statistics.
  */
-public interface PredictorMetrics {
+public interface PredictorMetrics<InputT, VectorT, PredictionT> {
 
   /**
    * Called on each predict function call to get a brand new supplier of metrics for that call.
    */
-  PredictFnMetrics predictFnMetrics();
+  PredictFnMetrics<InputT, PredictionT> predictFnMetrics();
 
   /**
    * Called on each feature extraction function call to get a brand new supplier of metrics for that
    * call.
    */
-  FeatureExtractorMetrics featureExtractorMetrics();
+  FeatureExtractorMetrics<InputT, VectorT> featureExtractorMetrics();
 
 }

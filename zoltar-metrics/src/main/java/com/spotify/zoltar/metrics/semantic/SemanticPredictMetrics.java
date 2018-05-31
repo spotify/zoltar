@@ -38,9 +38,10 @@ public abstract class SemanticPredictMetrics<InputT, ValueT>
 
   abstract Meter predictRateCounter();
 
-  static SemanticPredictMetrics create(final Timer.Context predictDurationTimer,
-                                       final Meter predictRateCounter) {
-    return new AutoValue_SemanticPredictMetrics(predictDurationTimer, predictRateCounter);
+  static <InputT, ValueT> SemanticPredictMetrics<InputT, ValueT> create(
+      final Timer.Context predictDurationTimer,
+      final Meter predictRateCounter) {
+    return new AutoValue_SemanticPredictMetrics<>(predictDurationTimer, predictRateCounter);
   }
 
   @Override

@@ -43,9 +43,9 @@ interface InstrumentedFeatureExtractor<ModelT extends Model<?>, InputT, ValueT>
    */
   @SuppressWarnings("checkstyle:LineLength")
   static <ModelT extends Model<?>, InputT, ValueT> Function<FeatureExtractor<ModelT, InputT, ValueT>, InstrumentedFeatureExtractor<ModelT, InputT, ValueT>> create(
-      final FeatureExtractorMetrics metrics) {
+      final FeatureExtractorMetrics<InputT, ValueT> metrics) {
     return extractFn -> (model, inputs) -> {
-      final VectorMetrics vectorMetrics = metrics.apply(model.id());
+      final VectorMetrics<InputT, ValueT> vectorMetrics = metrics.apply(model.id());
       final List<Vector<InputT, ValueT>> result = extractFn.extract(model, inputs);
 
       vectorMetrics.extraction(result);

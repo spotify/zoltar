@@ -43,13 +43,15 @@ import com.spotify.zoltar.metrics.PredictorMetrics;
  * Semantic metric implementation for the {@link PredictorMetrics}.
  */
 @AutoValue
-public abstract class SemanticPredictorMetrics implements PredictorMetrics {
+public abstract class SemanticPredictorMetrics<InputT, VectorT, ValueT>
+    implements PredictorMetrics<InputT, VectorT, ValueT> {
 
   abstract LoadingCache<Id, Metrics> metricsCache();
 
   /** Creates a new @{link SemanticPredictorMetrics}. */
-  public static SemanticPredictorMetrics create(final SemanticMetricRegistry registry,
-                                                final MetricId metricId) {
+  public static <InputT, VectorT, ValueT> SemanticPredictorMetrics<InputT, VectorT, ValueT> create(
+      final SemanticMetricRegistry registry,
+      final MetricId metricId) {
     final LoadingCache<Id, Metrics> metersCache =
         CacheBuilder.<Id, Metrics>newBuilder()
             .build(new CacheLoader<Id, Metrics>() {
@@ -59,11 +61,11 @@ public abstract class SemanticPredictorMetrics implements PredictorMetrics {
               }
             });
 
-    return new AutoValue_SemanticPredictorMetrics(metersCache);
+    return new AutoValue_SemanticPredictorMetrics<>(metersCache);
   }
 
   @Override
-  public PredictFnMetrics predictFnMetrics() {
+  public PredictFnMetrics<InputT, ValueT> predictFnMetrics() {
     return id -> {
       final Metrics metrics = metricsCache().getUnchecked(id);
       final Context time = metrics.predictDurationTimer().time();
@@ -74,7 +76,7 @@ public abstract class SemanticPredictorMetrics implements PredictorMetrics {
   }
 
   @Override
-  public FeatureExtractorMetrics featureExtractorMetrics() {
+  public FeatureExtractorMetrics<InputT, VectorT> featureExtractorMetrics() {
     return id -> {
       final Metrics metrics = metricsCache().getUnchecked(id);
       final Context time = metrics.extractDurationTimer().time();

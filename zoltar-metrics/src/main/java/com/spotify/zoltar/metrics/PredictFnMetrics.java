@@ -27,6 +27,7 @@ import java.util.function.Function;
  * Supplier of {@link PredictMetrics}.
  */
 @FunctionalInterface
-public interface PredictFnMetrics extends Function<Id, PredictMetrics> {
+public interface PredictFnMetrics<InputT, ValueT>
+    extends Function<Id, PredictMetrics<InputT, ValueT>> {
 
 }

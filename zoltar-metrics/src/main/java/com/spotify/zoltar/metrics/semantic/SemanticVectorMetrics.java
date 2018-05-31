@@ -38,9 +38,10 @@ public abstract class SemanticVectorMetrics<InputT, ValueT>
 
   abstract Meter extractRateCounter();
 
-  static SemanticVectorMetrics create(final Timer.Context extractDurationTime,
-                                      final Meter extractRateCounter) {
-    return new AutoValue_SemanticVectorMetrics(extractDurationTime, extractRateCounter);
+  static <InputT, ValueT> SemanticVectorMetrics<InputT, ValueT> create(
+      final Timer.Context extractDurationTime,
+      final Meter extractRateCounter) {
+    return new AutoValue_SemanticVectorMetrics<>(extractDurationTime, extractRateCounter);
   }
 
   @Override

@@ -43,21 +43,22 @@ public abstract class InstrumentedPredictorBuilder<ModelT extends Model<?>, Inpu
 
   public abstract PredictorBuilder<ModelT, InputT, VectorT, ValueT> predictorBuilder();
 
-  public abstract PredictorMetrics metrics();
+  public abstract PredictorMetrics<InputT, VectorT, ValueT> metrics();
 
   /**
    * Creates a new instrumented {@link PredictorBuilder}.
    */
   @SuppressWarnings("checkstyle:LineLength")
   static <ModelT extends Model<?>, InputT, VectorT, ValueT> Function<PredictorBuilder<ModelT, InputT, VectorT, ValueT>, InstrumentedPredictorBuilder<ModelT, InputT, VectorT, ValueT>> create(
-      final PredictorMetrics metrics) {
+      final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
     return predictorBuilder -> {
-      final FeatureExtractorMetrics featureExtractorMetrics = metrics.featureExtractorMetrics();
+      final FeatureExtractorMetrics<InputT, VectorT> featureExtractorMetrics = metrics
+          .featureExtractorMetrics();
       final InstrumentedFeatureExtractor<ModelT, InputT, VectorT> featureExtractor =
           predictorBuilder
               .featureExtractor()
               .with(InstrumentedFeatureExtractor.create(featureExtractorMetrics));
-      final PredictFnMetrics predictFnMetrics = metrics.predictFnMetrics();
+      final PredictFnMetrics<InputT, ValueT> predictFnMetrics = metrics.predictFnMetrics();
       final InstrumentedPredictFn<ModelT, InputT, VectorT, ValueT> predictFn = predictorBuilder
           .predictFn()
           .with(InstrumentedPredictFn.create(predictFnMetrics));

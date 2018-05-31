@@ -27,6 +27,7 @@ import java.util.function.Function;
  * Supplier of {@link VectorMetrics}.
  */
 @FunctionalInterface
-public interface FeatureExtractorMetrics extends Function<Model.Id, VectorMetrics> {
+public interface FeatureExtractorMetrics<InputT, ValueT>
+    extends Function<Model.Id, VectorMetrics<InputT, ValueT>> {
 
 }

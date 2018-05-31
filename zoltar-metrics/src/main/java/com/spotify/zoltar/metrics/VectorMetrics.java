@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * Defines an interface for how to collect vector statistics.
  */
-public interface VectorMetrics {
+public interface VectorMetrics<InputT, ValueT> {
 
-  <InputT, ValueT> void extraction(List<Vector<InputT, ValueT>> vectors);
+  void extraction(List<Vector<InputT, ValueT>> vectors);
 
 }

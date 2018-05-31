@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * Defines an interface for how to collect prediction statistics.
  */
-public interface PredictMetrics {
+public interface PredictMetrics<InputT, ValueT> {
 
-  <InputT, ValueT> void prediction(List<Prediction<InputT, ValueT>> predictions);
+  void prediction(List<Prediction<InputT, ValueT>> predictions);
 
 }

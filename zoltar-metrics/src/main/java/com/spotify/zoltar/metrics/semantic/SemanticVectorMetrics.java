@@ -31,7 +31,8 @@ import java.util.List;
  * Semantic metric implementation for the {@link VectorMetrics}.
  */
 @AutoValue
-public abstract class SemanticVectorMetrics implements VectorMetrics {
+public abstract class SemanticVectorMetrics<InputT, ValueT>
+    implements VectorMetrics<InputT, ValueT> {
 
   abstract Timer.Context extractDurationTimer();
 
@@ -43,7 +44,7 @@ public abstract class SemanticVectorMetrics implements VectorMetrics {
   }
 
   @Override
-  public <InputT, ValueT> void extraction(final List<Vector<InputT, ValueT>> vectors) {
+  public void extraction(final List<Vector<InputT, ValueT>> vectors) {
     extractDurationTimer().stop();
     extractRateCounter().mark(vectors.size());
   }

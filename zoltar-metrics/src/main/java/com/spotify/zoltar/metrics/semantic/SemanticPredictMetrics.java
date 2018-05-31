@@ -31,7 +31,8 @@ import java.util.List;
  * Semantic metric implementation for the {@link PredictMetrics}.
  */
 @AutoValue
-public abstract class SemanticPredictMetrics implements PredictMetrics {
+public abstract class SemanticPredictMetrics<InputT, ValueT>
+    implements PredictMetrics<InputT, ValueT> {
 
   abstract Timer.Context predictDurationTimer();
 
@@ -43,7 +44,7 @@ public abstract class SemanticPredictMetrics implements PredictMetrics {
   }
 
   @Override
-  public <InputT, ValueT> void prediction(final List<Prediction<InputT, ValueT>> predictions) {
+  public void prediction(final List<Prediction<InputT, ValueT>> predictions) {
     predictDurationTimer().stop();
     predictRateCounter().mark(predictions.size());
   }

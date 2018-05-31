@@ -38,7 +38,7 @@ import java.util.function.Function;
  * @param <ValueT>  type of the prediction result.
  */
 @AutoValue
-abstract class InstrumentedPredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT>
+public abstract class InstrumentedPredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT>
     implements PredictorBuilder<ModelT, InputT, VectorT, ValueT> {
 
   public abstract PredictorBuilder<ModelT, InputT, VectorT, ValueT> predictorBuilder();

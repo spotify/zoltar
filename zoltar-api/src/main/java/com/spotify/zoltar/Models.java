@@ -21,7 +21,6 @@
 package com.spotify.zoltar;
 
 import com.spotify.zoltar.tf.TensorFlowGraphLoader;
-import com.spotify.zoltar.tf.TensorFlowGraphModel;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.xgboost.XGBoostLoader;
@@ -120,7 +119,7 @@ public final class Models {
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
    */
-  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+  public static TensorFlowGraphLoader tensorFlowGraph(
       final String modelUri,
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
@@ -136,7 +135,7 @@ public final class Models {
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
    */
-  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+  public static TensorFlowGraphLoader tensorFlowGraph(
       final Model.Id id,
       final String modelUri,
       @Nullable final ConfigProto config,
@@ -151,7 +150,7 @@ public final class Models {
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
    */
-  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+  public static TensorFlowGraphLoader tensorFlowGraph(
       final byte[] graphDef,
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
@@ -166,7 +165,7 @@ public final class Models {
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
    */
-  public static ModelLoader<TensorFlowGraphModel> tensorFlowGraph(
+  public static TensorFlowGraphLoader tensorFlowGraph(
       final Model.Id id,
       final byte[] graphDef,
       @Nullable final ConfigProto config,

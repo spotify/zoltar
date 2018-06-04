@@ -20,10 +20,8 @@
 
 package com.spotify.zoltar.examples.metrics;
 
-import com.codahale.metrics.Counter;
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
-import java.util.SortedMap;
 import org.junit.Assert;
 import org.junit.Test;
 

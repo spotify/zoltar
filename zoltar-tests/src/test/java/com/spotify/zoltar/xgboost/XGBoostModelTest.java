@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import ml.dmlc.xgboost4j.LabeledPoint;
 import ml.dmlc.xgboost4j.java.DMatrix;
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class XGBoostModelTest {

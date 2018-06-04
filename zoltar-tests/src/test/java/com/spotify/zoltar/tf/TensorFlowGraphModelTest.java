@@ -36,7 +36,6 @@ import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -51,4 +51,5 @@ We've also provided an @github[example](../../examples/apollo-service-example/sr
 * [Modules](modules/index.md)
 * [Release](release.md)
 * [License](license.md)
+* [Javadoc](javadoc.md)
 @@@

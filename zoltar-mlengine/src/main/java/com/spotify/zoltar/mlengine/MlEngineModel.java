@@ -25,6 +25,7 @@ import com.google.api.client.googleapis.util.Utils;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.ml.v1.CloudMachineLearningEngine;
+import com.google.api.services.ml.v1.CloudMachineLearningEngineScopes;
 import com.google.api.services.ml.v1.model.GoogleCloudMlV1PredictRequest;
 import com.google.auto.value.AutoValue;
 import com.google.common.io.BaseEncoding;
@@ -55,7 +56,9 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
   public static MlEngineModel create(final Model.Id id) throws Exception {
     final HttpTransport httpTransport = Utils.getDefaultTransport();
     final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
-    final GoogleCredential credential = GoogleCredential.getApplicationDefault();
+    final GoogleCredential credential = GoogleCredential
+        .getApplicationDefault()
+        .createScoped(CloudMachineLearningEngineScopes.all());
 
     final CloudMachineLearningEngine mlEngine = new CloudMachineLearningEngine
         .Builder(httpTransport, jsonFactory, credential)

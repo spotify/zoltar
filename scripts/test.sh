@@ -4,6 +4,7 @@ GOAL=test
 
 if [ "${TRAVIS_SECURE_ENV_VARS}" = "true" ]; then
     GOAL=verify
+
     openssl aes-256-cbc \
       -K $encrypted_cfd4364d84ec_key \
       -iv $encrypted_cfd4364d84ec_iv \

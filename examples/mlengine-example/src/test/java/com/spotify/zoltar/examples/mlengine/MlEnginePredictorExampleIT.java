@@ -32,7 +32,7 @@ public class MlEnginePredictorExampleIT {
 
   @Test
   public void testPrediction() throws Exception {
-    final String projectId = "ml-sketchbook";
+    final String projectId = "data-integration-test";
     final String modelId = "iristf";
     final String versionId = "v1";
 

@@ -3,6 +3,7 @@ env:
   global:
     - SONATYPE_USERNAME=neville
     - secure: "BFPZHos/aUR2UN9vyJd0sFzFq72NUs/gEhY2IEZCz9lSX/BqIm70zp4zYD8tmHQaQ2XTyLNvBgch2uiO9RRepLwiLRfNA+UXmNZPIrqrwioCwOeT3QGL31iw/V7EtTetVSrleTSrew938XzsRrXjqvjUkwgFnuwB2aucsnM2GdlsxuGKtmJJNchlhHZiQDXR1kPP02K8id8EZv+lOXVBw3J9uXoAaPYq6Awf2JcCJ5/tNbA2BN5sgHPcUNJV/8dFwIxwd6UfSyQZd+k92PoJ4eD1LxR9PSABIJFaiNQmHEBUf0A/p7nU55eRqCogWnp4rfCoD5JKpfDEkIG4nIi+Jh/TZhLf4qNCa87ylKMGyWEulw4HjOZ4jQSC1i+lhmhOi2X0oevp1wjT5P0rcK+3wiBRkfMGBoxKvltjFIdmPSeypiG6pV0wcFGdxAa9Sv3Ooql28BwNEyM+l8EXTU42mGILgDC58ylwdIDuyMM0B03qRQUCO8pr4gEKvIh3m0FT9z1Lw09gyqRkVQpxbGzP2yt1B/sElHH37sja42+UJmU6rEU1rI/Cwcaef8kc/2Co7MmiGzE7RIdyZPRoP6jf17m9Kwtn0WH1hZZZbiQ/K+MiBJ9+qC+QSiIu3atJhfNNzocAl/kohxO2l6EGpQXIyKLJi1CSpy5R1L14aHXZzog="
+    - GOOGLE_APPLICATION_CREDENTIALS=scripts/data-integration-test-a20d1bb2e128.json
 
 cache:
   directories:
@@ -12,7 +13,7 @@ install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dbigquery.project.arg="-Dbigquery.project=dummy-project"
 
 script:
-  - mvn clean test checkstyle:checkstyle findbugs:findbugs -Dbigquery.project.arg="-Dbigquery.project=dummy-project"
+  - ./scripts/test.sh
   # Tricks to avoid unnecessary cache updates
   - rm -rf $HOME/.m2/repository/com/spotify/zoltar-*
   - find $HOME/.m2/repository -name "*.properties" -delete

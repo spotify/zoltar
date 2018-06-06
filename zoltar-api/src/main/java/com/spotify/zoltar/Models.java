@@ -175,7 +175,7 @@ public final class Models {
   }
 
   /**
-   * Returns a Cloud Ml Engine backed model.
+   * Returns a Cloud ML Engine backed model.
    *
    * @param id model id. Id needs to be in the following format:
    *           <code>projects/$projectId/models/$modelId/version/$versionId</code>
@@ -189,7 +189,7 @@ public final class Models {
    *
    * @param projectId Google project id.
    * @param modelId   Model id.
-   * @param versionId Model version id..
+   * @param versionId Model version id.
    */
   public static MlEngineLoader mlEngine(final String projectId,
                                         final String modelId,

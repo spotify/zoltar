@@ -22,6 +22,9 @@ package com.spotify.zoltar.mlengine;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.util.Utils;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -39,10 +42,11 @@ import org.tensorflow.example.Example;
 
 /**
  * This model can be used to allow prediction on models deployed to Google Cloud ML Engine.
- * scikit-lean, XGBoost and TensorFlow models are supported.
+ * scikit-learn, XGBoost and TensorFlow models are supported.
  */
 @AutoValue
 public abstract class MlEngineModel implements Model<CloudMachineLearningEngine> {
+  private static final String APPLICATION_NAME = "zoltar";
 
   /**
    * Creates a Google Cloud ML Engine backed model.
@@ -54,10 +58,12 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    */
   public static MlEngineModel create(final Model.Id id) throws Exception {
     final HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+    final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
     final GoogleCredential credential = GoogleCredential.getApplicationDefault();
+
     final CloudMachineLearningEngine mlEngine = new CloudMachineLearningEngine
-        .Builder(httpTransport, jsonFactory, null)
+        .Builder(httpTransport, jsonFactory, credential)
+        .setApplicationName(APPLICATION_NAME)
         .build();
 
     return new AutoValue_MlEngineModel(id, mlEngine, httpTransport, credential, jsonFactory);
@@ -80,7 +86,6 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
 
     return (List<T>) instance().projects()
         .predict(id().value(), predict)
-        .setAccessToken(credentials().getAccessToken())
         .execute()
         .get("predictions");
   }

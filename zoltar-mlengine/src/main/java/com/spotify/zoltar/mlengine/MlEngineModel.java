@@ -57,7 +57,7 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}/versions/{MODEL_VERSION}"</pre>
    */
   public static MlEngineModel create(final Model.Id id) throws Exception {
-    final HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    final HttpTransport httpTransport = Utils.getDefaultTransport();
     final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
     final GoogleCredential credential = GoogleCredential.getApplicationDefault();
 
@@ -66,12 +66,10 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
         .setApplicationName(APPLICATION_NAME)
         .build();
 
-    return new AutoValue_MlEngineModel(id, mlEngine, httpTransport, credential, jsonFactory);
+    return new AutoValue_MlEngineModel(id, mlEngine, httpTransport, jsonFactory);
   }
 
   abstract HttpTransport httpTransport();
-
-  abstract GoogleCredential credentials();
 
   abstract JsonFactory jsonFactory();
 

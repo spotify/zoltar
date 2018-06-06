@@ -31,6 +31,17 @@ import com.spotify.zoltar.loaders.ModelMemoizer;
 public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
 
   /**
+   * Returns a Google Cloud ML Engine model loader that references the default model.
+   *
+   * @param projectId Google project id.
+   * @param modelId   model id.
+   */
+  static MlEngineLoader create(final String projectId, final String modelId) {
+    final String id = String.format("projects/%s/models/%s", projectId, modelId);
+    return create(Model.Id.create(id));
+  }
+
+  /**
    * Returns a Google Cloud ML Engine model loader.
    *
    * @param projectId Google project id.
@@ -42,7 +53,7 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
                                final String versionId) {
     final String id = String
         .format("projects/%s/models/%s/versions/%s", projectId, modelId, versionId);
-    return create(() -> MlEngineModel.create(Model.Id.create(id)));
+    return create(Model.Id.create(id));
   }
 
   /**

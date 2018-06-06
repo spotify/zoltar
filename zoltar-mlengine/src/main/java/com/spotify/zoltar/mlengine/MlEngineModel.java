@@ -48,6 +48,8 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    * Creates a Google Cloud ML Engine backed model.
    *
    * @param id {@link Model.Id} needs to be created with the following format:
+   *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}"</pre>
+   *           or
    *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}/versions/{MODEL_VERSION}"</pre>
    */
   public static MlEngineModel create(final Model.Id id) throws Exception {

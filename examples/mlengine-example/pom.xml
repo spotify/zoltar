@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <parent>
     <artifactId>zoltar-parent</artifactId>
     <groupId>com.spotify</groupId>
     <version>0.3.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
   </parent>
+
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>zoltar-api</artifactId>
+  <artifactId>mlengine-example</artifactId>
+
+  <properties>
+    <maven.install.skip>true</maven.install.skip>
+    <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
+    <jacoco.skip>true</jacoco.skip>
+    <jackson.version>2.9.2</jackson.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
@@ -24,32 +34,34 @@
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
+      <artifactId>zoltar-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>zoltar-tensorflow</artifactId>
-      <scope>provided</scope>
+      <artifactId>zoltar-featran</artifactId>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>zoltar-xgboost</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-java_2.11</artifactId>
-      <scope>provided</scope>
+      <artifactId>zoltar-tests</artifactId>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-mlengine</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <scope>provided</scope>
+      <groupId>com.spotify</groupId>
+      <artifactId>completable-futures</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

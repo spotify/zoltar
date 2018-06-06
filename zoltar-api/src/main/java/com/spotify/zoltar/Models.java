@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar;
 
+import com.spotify.zoltar.mlengine.MlEngineLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
@@ -173,4 +174,26 @@ public final class Models {
     return TensorFlowGraphLoader.create(id, graphDef, config, prefix);
   }
 
+  /**
+   * Returns a Cloud ML Engine backed model.
+   *
+   * @param id model id. Id needs to be in the following format:
+   *           <code>projects/$projectId/models/$modelId/version/$versionId</code>
+   */
+  public static MlEngineLoader mlEngine(final Model.Id id) {
+    return MlEngineLoader.create(id);
+  }
+
+  /**
+   * Returns a Cloud Ml Engine backed model.
+   *
+   * @param projectId Google project id.
+   * @param modelId   Model id.
+   * @param versionId Model version id.
+   */
+  public static MlEngineLoader mlEngine(final String projectId,
+                                        final String modelId,
+                                        final String versionId) {
+    return MlEngineLoader.create(projectId, modelId, versionId);
+  }
 }

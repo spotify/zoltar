@@ -33,7 +33,9 @@ import com.google.api.services.ml.v1.model.GoogleCloudMlV1PredictRequest;
 import com.google.auto.value.AutoValue;
 import com.google.common.io.BaseEncoding;
 import com.spotify.zoltar.Model;
+import com.spotify.zoltar.mlengine.MlEngineModel.Response.Predictions;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,8 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    *           or
    *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}/versions/{MODEL_VERSION}"</pre>
    */
-  public static MlEngineModel create(final Model.Id id) throws Exception {
+  public static MlEngineModel create(final Model.Id id)
+      throws IOException, GeneralSecurityException {
     final HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
     final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
     final GoogleCredential credential = GoogleCredential
@@ -80,14 +83,17 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    *
    * @param data prediction input data.
    */
-  public Response predict(final List<?> data) throws IOException {
+  public Predictions predict(final List<?> data) throws IOException, MlEnginePredictException {
     final GoogleCloudMlV1PredictRequest predict =
         new GoogleCloudMlV1PredictRequest().set("instances", data);
     final GoogleApiHttpBody httpBody = instance().projects()
         .predict(id().value(), predict)
         .execute();
 
-    return Response.from(httpBody);
+    final Response response = Response.from(httpBody);
+    return response.predictions().orElseThrow(() -> {
+      return response.error().map(MlEnginePredictException::new).get();
+    });
   }
 
   /**
@@ -95,7 +101,8 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    *
    * @param examples TensorFlow {@link Example} input data.
    */
-  public Response predictExamples(final List<Example> examples) throws IOException {
+  public Predictions predictExamples(final List<Example> examples)
+      throws IOException, MlEnginePredictException {
     final List<Map<String, String>> data = examples.stream().map(example -> {
       final byte[] bytes = example.toByteArray();
       final String b64 = BaseEncoding.base64().encode(bytes);
@@ -120,8 +127,6 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
   @AutoValue
   public abstract static class Response {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-
     abstract GoogleApiHttpBody content();
 
     static Response from(final GoogleApiHttpBody content) {
@@ -133,25 +138,50 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
      *
      * @see <a href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
      */
-    public List<Object> predictions() {
-      return (List<Object>) content().getOrDefault("predictions", Collections.emptyList());
-    }
+    public Optional<Predictions> predictions() {
+      final List<Object> predictions = (List<Object>) content()
+          .getOrDefault("predictions", Collections.emptyList());
 
-    /**
-     * List of predictions.
-     *
-     * @param klass class to each returned prediction objects are converted.
-     */
-    public <T> List<T> predictions(final Class<T> klass) {
-      return predictions()
-          .stream()
-          .map(p -> MAPPER.convertValue(p, klass))
-          .collect(Collectors.toList());
+      if (predictions.isEmpty()) {
+        return Optional.empty();
+      }
+
+      return Optional.of(Predictions.create(predictions));
     }
 
     /** Prediction error. */
     public Optional<String> error() {
       return Optional.ofNullable((String) content().get("error"));
+    }
+
+    /** Holds the predictions values. */
+    @AutoValue
+    public abstract static class Predictions {
+
+      private static final ObjectMapper MAPPER = new ObjectMapper();
+
+      /**
+       * List of predictions. Return type depends on the model used.
+       *
+       * @see <a href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
+       */
+      public abstract List<Object> values();
+
+      /**
+       * List of predictions.
+       *
+       * @param klass class to each returned prediction objects are converted.
+       */
+      public <T> List<T> values(final Class<T> klass) {
+        return values()
+            .stream()
+            .map(p -> MAPPER.convertValue(p, klass))
+            .collect(Collectors.toList());
+      }
+
+      static Predictions create(final List<Object> values) {
+        return new AutoValue_MlEngineModel_Response_Predictions(values);
+      }
     }
   }
 

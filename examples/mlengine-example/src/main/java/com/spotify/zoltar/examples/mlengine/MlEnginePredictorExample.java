@@ -34,6 +34,7 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.mlengine.MlEngineLoader;
+import com.spotify.zoltar.mlengine.MlEnginePredictException;
 import com.spotify.zoltar.mlengine.MlEnginePredictFn;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -84,7 +85,7 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
                       final List<Example> input = Collections.singletonList(vector.value());
                       final MlEnginePrediction result = model
                           .predictExamples(input)
-                          .predictions(MlEnginePrediction.class)
+                          .values(MlEnginePrediction.class)
                           .get(0);
 
                       final int max = IntStream.range(0, result.scores().size())
@@ -96,7 +97,7 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
                           .getAsInt();
 
                       return result.classes().get(max);
-                    } catch (IOException e) {
+                    } catch (IOException | MlEnginePredictException e) {
                       throw new RuntimeException(e);
                     }
                   })

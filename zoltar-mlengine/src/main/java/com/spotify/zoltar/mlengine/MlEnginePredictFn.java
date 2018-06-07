@@ -23,11 +23,11 @@ package com.spotify.zoltar.mlengine;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 
 /**
- * MlEngine flavor of {@link AsyncPredictFn} using {@link MlEngineModel}.
+ * Google Cloud ML Engine flavor of {@link AsyncPredictFn} using {@link MlEngineModel}.
  *
- * @param <InputT> type of the raw input to the feature extraction.
+ * @param <InputT>  type of the raw input to the feature extraction.
  * @param <VectorT> type of the feature extraction output.
- * @param <ValueT> type of the prediction result.
+ * @param <ValueT>  type of the prediction result.
  */
 @FunctionalInterface
 public interface MlEnginePredictFn<InputT, VectorT, ValueT>

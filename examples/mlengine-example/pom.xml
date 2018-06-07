@@ -56,6 +56,10 @@
       <groupId>com.spotify</groupId>
       <artifactId>completable-futures</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

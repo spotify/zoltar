@@ -20,6 +20,9 @@
 
 package com.spotify.zoltar.examples.mlengine;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -40,7 +43,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledExecutorService;
@@ -80,16 +82,20 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
                   .supplyAsync(() -> {
                     try {
                       final List<Example> input = Collections.singletonList(vector.value());
-                      final List<Map<String, List<?>>> result = model.predictExamples(input);
+                      final MlEnginePrediction result = model
+                          .predictExamples(input)
+                          .predictions(MlEnginePrediction.class)
+                          .get(0);
 
-                      final List<BigDecimal> scores =
-                          (List<BigDecimal>) result.get(0).get("scores");
-
-                      final int max = IntStream.range(0, scores.size())
-                          .reduce((i, j) -> scores.get(i).compareTo(scores.get(j)) > 0 ? i : j)
+                      final int max = IntStream.range(0, result.scores().size())
+                          .reduce((i, j) -> {
+                            final BigDecimal ci = result.scores().get(i);
+                            final BigDecimal cj = result.scores().get(j);
+                            return ci.compareTo(cj) > 0 ? i : j;
+                          })
                           .getAsInt();
 
-                      return new Integer((String) result.get(0).get("classes").get(max));
+                      return result.classes().get(max);
                     } catch (IOException e) {
                       throw new RuntimeException(e);
                     }
@@ -111,6 +117,20 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
       final Duration timeout,
       final Iris... input) {
     return predictor.predict(scheduler, timeout, input);
+  }
+
+  @AutoValue
+  abstract static class MlEnginePrediction {
+
+    public abstract List<Integer> classes();
+
+    public abstract List<BigDecimal> scores();
+
+    @JsonCreator
+    static MlEnginePrediction create(@JsonProperty("classes") final List<Integer> classes,
+                                     @JsonProperty("scores") final List<BigDecimal> scores) {
+      return new AutoValue_MlEnginePredictorExample_MlEnginePrediction(classes, scores);
+    }
   }
 }
 

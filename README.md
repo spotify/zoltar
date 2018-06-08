@@ -5,7 +5,7 @@
 [![Maven](https://img.shields.io/maven-central/v/com.spotify/zoltar-core.svg)](https://search.maven.org/#search%7Cga%7C1%7Ccom.spotify.zoltar)
 [![GitHub license](https://img.shields.io/github/license/spotify/zoltar.svg)](./LICENSE)
 
-Zoltar is a common library for serving TensorFlow and XGBoost models in production. 
+Zoltar is a common library for serving TensorFlow, XGBoost and scikit-learn models in production. 
 See [Zoltar docs](https://spotify.github.io/zoltar) for details.
 
 # License

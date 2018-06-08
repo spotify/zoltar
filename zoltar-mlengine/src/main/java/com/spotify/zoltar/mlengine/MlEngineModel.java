@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar.mlengine;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -31,6 +32,8 @@ import com.google.api.services.ml.v1.CloudMachineLearningEngineScopes;
 import com.google.api.services.ml.v1.model.GoogleApiHttpBody;
 import com.google.api.services.ml.v1.model.GoogleCloudMlV1PredictRequest;
 import com.google.auto.value.AutoValue;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.io.BaseEncoding;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.mlengine.MlEngineModel.Response.Predictions;
@@ -40,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.tensorflow.example.Example;
 
@@ -159,6 +163,7 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
     public abstract static class Predictions {
 
       private static final ObjectMapper MAPPER = new ObjectMapper();
+      private static final Cache<Class<?>, JavaType> CACHE = CacheBuilder.newBuilder().build();
 
       /**
        * List of predictions. Return type depends on the model used.
@@ -172,10 +177,13 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
        *
        * @param klass class to each returned prediction objects are converted.
        */
-      public <T> List<T> values(final Class<T> klass) {
+      public <T> List<T> values(final Class<T> klass) throws ExecutionException {
+        final JavaType javaType =
+            CACHE.get(klass, () -> MAPPER.getTypeFactory().constructType(klass));
+
         return values()
             .stream()
-            .map(p -> MAPPER.convertValue(p, klass))
+            .map(p -> MAPPER.<T>convertValue(p, javaType))
             .collect(Collectors.toList());
       }
 

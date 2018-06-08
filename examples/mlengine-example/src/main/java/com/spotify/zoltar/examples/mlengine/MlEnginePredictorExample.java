@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -97,7 +98,7 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
                           .getAsInt();
 
                       return result.classes().get(max);
-                    } catch (IOException | MlEnginePredictException e) {
+                    } catch (IOException | MlEnginePredictException | ExecutionException e) {
                       throw new RuntimeException(e);
                     }
                   })

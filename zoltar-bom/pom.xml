@@ -69,6 +69,11 @@
         <artifactId>zoltar-xgboost</artifactId>
         <version>0.3.2-SNAPSHOT</version>
       </dependency>
+      <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>zoltar-mlengine</artifactId>
+        <version>0.3.2-SNAPSHOT</version>
+      </dependency>
 
       <dependency>
         <groupId>com.spotify.metrics</groupId>
@@ -327,6 +332,11 @@
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-storage</artifactId>
         <version>v1-rev129-1.23.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.apis</groupId>
+        <artifactId>google-api-services-ml</artifactId>
+        <version>v1-rev49-1.23.0</version>
       </dependency>
 
       <!-- Test dependencies -->

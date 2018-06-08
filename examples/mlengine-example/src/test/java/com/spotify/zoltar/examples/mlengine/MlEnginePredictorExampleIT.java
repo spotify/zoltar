@@ -46,7 +46,7 @@ public class MlEnginePredictorExampleIT {
                                 Option.apply("Iris-setosa"));
 
     final List<Prediction<Iris, Integer>> predictions = predictor
-        .predict(input, input)
+        .predict(input)
         .toCompletableFuture()
         .get();
 

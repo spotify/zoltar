@@ -63,6 +63,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
    */
   @AutoValue
   abstract static class CustomMetrics {
+
     abstract Counter negativePredictCount();
 
     abstract Counter negativeExtractCount();
@@ -85,6 +86,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
    */
   @AutoValue
   abstract static class CustomPredictorMetrics implements PredictorMetrics<Integer, Float, Float> {
+
     abstract LoadingCache<Model.Id, CustomMetrics> metricsCache();
 
     static CustomPredictorMetrics create(final SemanticMetricRegistry registry,
@@ -125,6 +127,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
    */
   @AutoValue
   abstract static class NegativePredictMetrics implements PredictMetrics<Integer, Float> {
+
     abstract Counter negativePredictCount();
 
     static NegativePredictMetrics create(final Counter negativeCount) {
@@ -145,6 +148,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
    */
   @AutoValue
   abstract static class NegativeExtractMetrics implements VectorMetrics<Integer, Float> {
+
     abstract Counter negativeExtractCount();
 
     static NegativeExtractMetrics create(final Counter negativeCount) {
@@ -167,18 +171,29 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
     final SingleExtractFn<Integer, Float> extractFn = input -> (float) input / 10;
     final PredictFn<DummyModel, Integer, Float, Float> predictFn = (model, vectors) -> {
       return vectors.stream()
-          .map(vector -> Prediction.create(vector.input(),vector.value() * 2))
+          .map(vector -> Prediction.create(vector.input(), vector.value() * 2))
           .collect(Collectors.toList());
     };
+    final FeatureExtractor<DummyModel, Integer, Float> featureExtractor =
+        FeatureExtractor.create(extractFn);
 
     // We build the PredictorBuilder as usual, compose with the built-in metrics, and then compose
     // with our custom metrics.
-    predictorBuilder = Predictors.newBuilder(
-        modelLoader,
-        FeatureExtractor.create(extractFn),
-        predictFn
-    ).with(Instrumentations.predictor(SemanticPredictorMetrics.create(metricRegistry, metricId))
-    ).with(Instrumentations.predictor(CustomPredictorMetrics.create(metricRegistry, metricId)));
+    // #PredictorMetrics
+    final PredictorMetrics<Integer, Float, Float> predictorMetrics =
+        SemanticPredictorMetrics.create(metricRegistry, metricId);
+    // #PredictorMetrics
+
+    final PredictorMetrics<Integer, Float, Float> customMetrics =
+        CustomPredictorMetrics.create(metricRegistry, metricId);
+
+    predictorBuilder =
+        // #PredictorBuilderWithMetrics
+        Predictors
+            .newBuilder(modelLoader, featureExtractor, predictFn)
+            .with(Instrumentations.predictor(predictorMetrics))
+            // #PredictorBuilderWithMetrics
+            .with(Instrumentations.predictor(customMetrics));
   }
 
   @Override

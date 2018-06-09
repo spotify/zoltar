@@ -69,7 +69,10 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
   public static MlEnginePredictorExample create(final String projectId,
                                                 final String modelId,
                                                 final String versionId) throws Exception {
-    final MlEngineLoader mlEngineLoader = Models.mlEngine(projectId, modelId, versionId);
+    // #MlEngineLoader
+    final MlEngineLoader mlEngineLoader =
+        Models.mlEngine(projectId, modelId, versionId);
+    // #MlEngineLoader
 
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final URI settingsUri = MlEnginePredictorExample.class.getResource("/settings.json").toURI();

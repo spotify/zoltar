@@ -29,8 +29,11 @@ public class CustomMetricsExampleTest {
 
   @Test
   public void testCustomMetrics() throws Exception {
+    // #SemanticMetricRegistry
     final SemanticMetricRegistry registry = new SemanticMetricRegistry();
     final MetricId metricId = MetricId.build().tagged("service", "my-application");
+    // #SemanticMetricRegistry
+
     final CustomMetricsExample example = new CustomMetricsExample(registry, metricId);
 
     example.predict(3, 1, -4, -42, 42, -10).toCompletableFuture().join();

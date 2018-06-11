@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar.fs;
 
+import com.google.cloud.storage.contrib.nio.CloudStorageFileSystem;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.CopyOption;
@@ -59,11 +60,22 @@ public final class FileSystemExtras {
    * Creates a {@link Path} given a {@link URI} in a user-friendly and safe way.
    */
   public static Path path(final URI uri) {
+    // uri with no scheme might be a local path
     if (uri.getScheme() == null) {
       return Paths.get(uri.toString());
     }
 
-    return Paths.get(uri);
+    try {
+      return Paths.get(uri);
+    } catch (IllegalArgumentException e) {
+      if (uri.getHost() == null
+          && uri.getScheme().equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
+        // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_hostnames
+        throw new IllegalArgumentException("gcs bucket is not rfc 2396 compliant");
+      }
+
+      throw e;
+    }
   }
 
   /**

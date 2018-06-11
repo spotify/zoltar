@@ -17,8 +17,8 @@ lazy val docs = (project in file("docs"))
     ParadoxMaterialThemePlugin.paradoxMaterialThemeSettings(Paradox),
     paradoxMaterialTheme in Paradox ~= {
       _.withColor("white", "indigo")
-        .withLogoIcon("school")
-        .withCopyright("Copyright (C) 2016 - 2018 Spotify AB")
+        .withLogo("images/logo.png")
+        .withCopyright("Copyright (C) 2018 Spotify AB")
         .withRepository(uri("https://github.com/spotify/zoltar"))
         .withSocial(uri("https://github.com/spotify"),
                     uri("https://twitter.com/spotifyeng"))

@@ -17,13 +17,13 @@
 
 
 <meta name="description" content="zoltar-docs">
-<link rel="shortcut icon" href="assets/images/favicon.png">
-<title>License · Zoltar</title>
-<link rel="stylesheet" href="assets/stylesheets/application.7a4cdee3.css">
-<link rel="stylesheet" href="assets/stylesheets/application-palette.792431c1.css">
-<link rel="stylesheet" href="lib/material__tabs/dist/mdc.tabs.min.css">
-<link rel="stylesheet" href="lib/prettify/prettify.css">
-<script src="lib/modernizr/modernizr.min.js"></script>
+<link rel="shortcut icon" href="../assets/images/favicon.png">
+<title>Google Cloud ML Engine · Zoltar</title>
+<link rel="stylesheet" href="../assets/stylesheets/application.7a4cdee3.css">
+<link rel="stylesheet" href="../assets/stylesheets/application-palette.792431c1.css">
+<link rel="stylesheet" href="../lib/material__tabs/dist/mdc.tabs.min.css">
+<link rel="stylesheet" href="../lib/prettify/prettify.css">
+<script src="../lib/modernizr/modernizr.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
 <style>
 body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}
@@ -31,7 +31,7 @@ code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="assets/stylesheets/paradox-material-theme.css">
+<link rel="stylesheet" href="../assets/stylesheets/paradox-material-theme.css">
 </head>
 <body
 data-md-color-primary="white"
@@ -44,8 +44,8 @@ data-md-color-accent="indigo"
 <nav class="md-header-nav md-grid">
 <div class="md-flex">
 <div class="md-flex__cell md-flex__cell--shrink">
-<a href="index.html" title="Zoltar" class="md-header-nav__button md-logo">
-<img src="images/logo.png" width="24" height="24">
+<a href="../index.html" title="Zoltar" class="md-header-nav__button md-logo">
+<img src="../images/logo.png" width="24" height="24">
 </a>
 </div>
 <div class="md-flex__cell md-flex__cell--shrink">
@@ -57,7 +57,7 @@ data-md-color-accent="indigo"
 Zoltar
 </span>
 <span class="md-header-nav__topic">
-License
+Google Cloud ML Engine
 </span>
 </div>
 </div>
@@ -114,9 +114,9 @@ spotify/zoltar
 <nav class="md-nav md-nav--primary" data-md-level="0" style="visibility: hidden">
 <label class="md-nav__title md-nav__title--site" for="drawer">
 <span class="md-nav__button md-logo">
-<img src="images/logo.png" width="24" height="24">
+<img src="../images/logo.png" width="24" height="24">
 </span>
-<a href="index.html" title="Zoltar">
+<a href="../index.html" title="Zoltar">
 Zoltar
 </a>
 </label>
@@ -135,20 +135,29 @@ spotify/zoltar
 
 </div>
 <ul>
-  <li><a href="getting-started.html" class="page">Getting Started</a></li>
-  <li><a href="modules/index.html" class="page">Modules</a>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../modules/index.html" class="page">Modules</a>
   <ul>
-    <li><a href="modules/tensorflow.html" class="page">TensorFlow</a></li>
-    <li><a href="modules/xgboost.html" class="page">XGBoost</a></li>
-    <li><a href="modules/featran.html" class="page">Featran</a></li>
-    <li><a href="modules/metrics.html" class="page">Metrics</a></li>
-    <li><a href="modules/mlengine.html" class="page">Google Cloud ML Engine</a></li>
+    <li><a href="../modules/tensorflow.html" class="page">TensorFlow</a></li>
+    <li><a href="../modules/xgboost.html" class="page">XGBoost</a></li>
+    <li><a href="../modules/featran.html" class="page">Featran</a></li>
+    <li><a href="../modules/metrics.html" class="page">Metrics</a></li>
+    <li><a href="../modules/mlengine.html" class="active page">Google Cloud ML Engine</a></li>
   </ul></li>
-  <li><a href="release.html" class="page">Release Instructions</a></li>
-  <li><a href="license.html" class="active page">License</a></li>
-  <li><a href="javadoc.html" class="page">Api Documentation</a></li>
+  <li><a href="../release.html" class="page">Release Instructions</a></li>
+  <li><a href="../license.html" class="page">License</a></li>
+  <li><a href="../javadoc.html" class="page">Api Documentation</a></li>
 </ul>
 <nav class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="toc">Table of contents</label>
+<ul>
+  <li><a href="../modules/mlengine.html#google-cloud-ml-engine" class="header">Google Cloud ML Engine</a>
+  <ul>
+    <li><a href="../modules/mlengine.html#getting-started" class="header">Getting started</a></li>
+    <li><a href="../modules/mlengine.html#usage" class="header">Usage</a></li>
+    <li><a href="../modules/mlengine.html#example" class="header">Example</a></li>
+  </ul></li>
+</ul>
 </nav>
 
 <div class="md-nav__title--site md-version" title="Version">
@@ -159,15 +168,50 @@ spotify/zoltar
 </div>
 </div>
 </div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="toc">Table of contents</label>
+<ul>
+  <li><a href="../modules/mlengine.html#google-cloud-ml-engine" class="header">Google Cloud ML Engine</a>
+  <ul>
+    <li><a href="../modules/mlengine.html#getting-started" class="header">Getting started</a></li>
+    <li><a href="../modules/mlengine.html#usage" class="header">Usage</a></li>
+    <li><a href="../modules/mlengine.html#example" class="header">Example</a></li>
+  </ul></li>
+</ul>
+</nav>
+
+</div>
+</div>
+</div>
 <div class="md-content">
 <article class="md-content__inner md-typeset">
 <div class="md-content__searchable">
-<h1><a href="#license" name="license" class="anchor"><span class="anchor-link"></span></a>License</h1>
-<p>Copyright 2018 Spotify AB.</p>
-<p>Licensed under the Apache License, Version 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<h1><a href="#google-cloud-ml-engine" name="google-cloud-ml-engine" class="anchor"><span class="anchor-link"></span></a>Google Cloud ML Engine</h1>
+<h2><a href="#getting-started" name="getting-started" class="anchor"><span class="anchor-link"></span></a>Getting started</h2>
+<p>To use <code>Google Cloud ML Engine</code>, you need to deploy your model first! Deployment might depend on the type of model you are using:</p>
+<ul>
+  <li><a href="https://cloud.google.com/ml-engine/docs/tensorflow/deploying-models">TensorFlow</a>.</li>
+  <li><a href="https://cloud.google.com/ml-engine/docs/scikit/quickstart#deploy_models_and_versions">scikit-learn</a> or <a href="https://cloud.google.com/ml-engine/docs/scikit/quickstart#deploy_models_and_versions">XGBoost</a>.</li>
+</ul>
+<h2><a href="#usage" name="usage" class="anchor"><span class="anchor-link"></span></a>Usage</h2>
+<p>Include the following dependency:</p><dl class="dependency"><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+  &lt;artifactId&gt;zoltar-mlengine&lt;/artifactId&gt;
+  &lt;version&gt;0.3.1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">dependencies {
+  compile group: 'com.spotify', name: 'zoltar-mlengine', version: '0.3.1'
+}</code></pre></dd><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">libraryDependencies += "com.spotify" % "zoltar-mlengine" % "0.3.1"</code></pre></dd></dl>
+<p>Replace your existing <a href="http://spotify.github.com/zoltar/apidocs/?com/spotify/zoltar/ModelLoader.html">ModelLoader</a> with <a href="http://spotify.github.com/zoltar/apidocs/?com/spotify/zoltar/mlengine/MlEngineLoader.html">MlEngineLoader</a></p>
+<pre class="prettyprint"><code class="language-java">final MlEngineLoader mlEngineLoader =
+    Models.mlEngine(projectId, modelId, versionId);</code></pre>
+<h2><a href="#example" name="example" class="anchor"><span class="anchor-link"></span></a>Example</h2>
+<p>Follow this <a href="https://github.com/spotify/zoltar/tree/master/examples/mlengine-example">example</a> to create a <a href="http://spotify.github.com/zoltar/apidocs/?com/spotify/zoltar/Predictor.html">Predictor</a> that uses <code>Google Cloud ML Engine</code> deployed models.</p>
 </div>
 <div>
-<a href="https://github.com/spotify/zoltar/tree/master/docs/src/paradox/license.md" title="Edit this page" class="md-source-file md-edit">
+<a href="https://github.com/spotify/zoltar/tree/master/docs/src/paradox/modules/mlengine.md" title="Edit this page" class="md-source-file md-edit">
 Edit this page
 </a>
 </div>
@@ -183,7 +227,7 @@ Edit this page
 <footer class="md-footer">
 <div class="md-footer-nav">
 <nav class="md-footer-nav__inner md-grid">
-<a href="release.html" title="Release Instructions" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+<a href="../modules/metrics.html" title="Metrics" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
 <div class="md-flex__cell md-flex__cell--shrink">
 <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
 </div>
@@ -192,17 +236,17 @@ Edit this page
 <span class="md-footer-nav__direction">
 Previous
 </span>
-Release Instructions
+Metrics
 </span>
 </div>
 </a>
-<a href="javadoc.html" title="Api Documentation" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+<a href="../release.html" title="Release Instructions" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
 <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
 <span class="md-flex__ellipsis">
 <span class="md-footer-nav__direction">
 Next
 </span>
-Api Documentation
+Release Instructions
 </span>
 </div>
 <div class="md-flex__cell md-flex__cell--shrink">
@@ -232,11 +276,11 @@ and
 </footer>
 
 </div>
-<script src="assets/javascripts/application.5165553b.js"></script>
-<script src="assets/javascripts/paradox-material-theme.js"></script>
-<script>app.initialize({version:"0.17",url:{base:"."}})</script>
-<script type="text/javascript" src="lib/prettify/prettify.js"></script>
-<script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
+<script src="../assets/javascripts/application.5165553b.js"></script>
+<script src="../assets/javascripts/paradox-material-theme.js"></script>
+<script>app.initialize({version:"0.17",url:{base:"../."}})</script>
+<script type="text/javascript" src="../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(event) {
 window.prettyPrint && prettyPrint();

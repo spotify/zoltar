@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +43,18 @@ import org.junit.Test;
 public class FileSystemExtrasTest {
 
   @Test
-  public void getPath() {
+  public void localPath() {
     final Path noSchema = FileSystemExtras.path(URI.create("/tmp"));
     assertNotNull(noSchema);
 
     final Path withSchema = FileSystemExtras.path(URI.create("file:///tmp"));
     assertNotNull(withSchema);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void invalidGcsBucketUri() {
+    FileSystemExtras.path(URI.create("gs://bucket_name"));
+    fail("Should throw exception; bucket name is not rfc 2396 compliant");
   }
 
   @Test

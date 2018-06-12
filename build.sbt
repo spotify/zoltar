@@ -16,7 +16,7 @@ lazy val docs = project
   .settings(noPublishSettings)
   .settings(
     name := "docs",
-    version := "0.3.1",
+    version := "0.4.0",
     paradoxProperties in Paradox ++= Map(
       "javadoc.com.spotify.zoltar.base_url" -> "http://spotify.github.com/zoltar/apidocs"
     ),

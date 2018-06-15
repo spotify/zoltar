@@ -44,7 +44,7 @@ A function that takes a raw input vector and extracts a feature vector from it.
 
 For more details, take a look at the source code and follow the documentation in the comments. If you're using TensorFlow or XGBoost, you can find model specific implementations of these abstractions in @javadoc[zoltar-tensorflow](com.spotify.zoltar.tf.package-summary) and @javadoc[zoltar-xgboost](com.spotify.zoltar.xgboost.package-summary) respectively.
 
-We've also provided an @github[example](../../examples/apollo-service-example/src/main/java/com/spotify/zoltar/examples/apollo) service built on the [Apollo](https://github.com/spotify/apollo) framework. It demonstrates how Zoltar components are implemented and organized. We highly recommend you walk through this example before you try integrating Zoltar into your applications.
+We've also provided an @github[example](../../../examples/apollo-service-example/src/main/java/com/spotify/zoltar/examples/apollo) service built on the [Apollo](https://github.com/spotify/apollo) framework. It demonstrates how Zoltar components are implemented and organized. We highly recommend you walk through this example before you try integrating Zoltar into your applications.
 
 @@@index
 * [Getting Started](getting-started.md)

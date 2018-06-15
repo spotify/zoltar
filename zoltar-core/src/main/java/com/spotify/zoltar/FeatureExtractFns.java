@@ -80,4 +80,31 @@ public interface FeatureExtractFns {
     }
   }
 
+  /**
+   * Generic feature extraction function, takes a batch of raw inputs and should return extracted
+   * features of user defined type for each input.
+   *
+   * @param <InputT> type of the input to feature extraction.
+   * @param <ValueT> type of feature extraction result.
+   */
+  @FunctionalInterface
+  interface BatchExtractFn<InputT, ValueT> extends ExtractFn<List<InputT>, List<ValueT>> {
+
+    /**
+     * Functional interface. Perform feature extraction.
+     */
+    ValueT apply(InputT input) throws Exception;
+
+    default List<List<ValueT>> apply(final List<InputT>... batches) throws Exception {
+      final ImmutableList.Builder<List<ValueT>> output = ImmutableList.builder();
+      for (final List<InputT> batch : batches) {
+        final ImmutableList.Builder<ValueT> outBatch = ImmutableList.builder();
+        for (final InputT input : batch) {
+          outBatch.add(apply(input));
+        }
+        output.add(outBatch.build());
+      }
+      return output.build();
+    }
+  }
 }

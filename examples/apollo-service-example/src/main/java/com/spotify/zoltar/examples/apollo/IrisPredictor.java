@@ -21,34 +21,14 @@
 package com.spotify.zoltar.examples.apollo;
 
 import com.spotify.featran.FeatureSpec;
-import com.spotify.futures.CompletableFutures;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.Models;
-import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
-import com.spotify.zoltar.Predictors;
-import com.spotify.zoltar.featran.FeatranExtractFns;
-import com.spotify.zoltar.metrics.Instrumentations;
+import com.spotify.zoltar.TensorFlowPredictors;
 import com.spotify.zoltar.metrics.PredictorMetrics;
-import com.spotify.zoltar.tf.JTensor;
-import com.spotify.zoltar.tf.TensorFlowExtras;
-import com.spotify.zoltar.tf.TensorFlowModel;
-import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import org.tensorflow.Session;
-import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
-import org.tensorflow.example.Example;
 
 /**
  * Iris prediction meat and potatoes.
@@ -58,44 +38,20 @@ public final class IrisPredictor {
   /**
    * Configure Iris prediction, should be called at the service startup/configuration stage.
    */
+
   public static Predictor<Iris, Long> create(final ModelConfig modelConfig,
                                              final PredictorMetrics metrics) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
-    final ModelLoader<TensorFlowModel> modelLoader =
-        Models.tensorFlow(modelConfig.modelUri().toString());
 
-    final ExtractFn<Iris, Example> extractFn =
-        FeatranExtractFns.example(irisFeatureSpec, settings);
-
-    final TensorFlowPredictFn<Iris, Example, Long> predictFn = (model, vectors) -> {
-      final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
-          vectors.stream()
-              .map(vector -> CompletableFuture
-                  .supplyAsync(() -> predictFn(model, vector.value()))
-                  .thenApply(v -> Prediction.create(vector.input(), v)))
-              .collect(Collectors.toList());
-      return CompletableFutures.allAsList(predictions);
-    };
-
-    final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
-        Predictors
-            .newBuilder(modelLoader, extractFn, predictFn)
-            .with(Instrumentations.predictor(metrics));
-
-    return predictorBuilder.predictor();
-  }
-
-  private static long predictFn(final TensorFlowModel model, final Example example) {
-    final byte[][] b = new byte[1][];
-    b[0] = example.toByteArray();
-    try (final Tensor<String> t = Tensors.create(b)) {
-      final Session.Runner runner = model.instance().session().runner()
-          .feed("input_example_tensor", t);
-      final String op = "linear/head/predictions/class_ids";
-      final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, op);
-      return result.get(op).longValue()[0];
-    }
+    return TensorFlowPredictors.simpleFeatranPredictor(
+        irisFeatureSpec,
+        settings,
+        modelConfig.modelUri().toString(),
+        (tensor) -> tensor.longValue()[0],
+        metrics,
+        "linear/head/predictions/class_ids"
+    );
   }
 
 }

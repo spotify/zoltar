@@ -25,6 +25,7 @@ import com.spotify.featran.java.DoubleSparseArray;
 import com.spotify.featran.java.FloatSparseArray;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.xgboost.SparseLabeledPoint;
+import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
 import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
 import com.spotify.zoltar.FeatureExtractor;
 import ml.dmlc.xgboost4j.LabeledPoint;
@@ -92,6 +93,36 @@ public final class FeatranExtractFns {
    * @return feature extraction result.
    */
   public static <InputT> SingleExtractFn<InputT, Example> example(
+      final JFeatureSpec<InputT> featureSpec,
+      final String settings) {
+    return featureSpec.extractWithSettingsExample(settings)::featureValue;
+  }
+
+  /**
+   * Extract features as a batch of {@link Example}.
+   *
+   * @param featureSpec Featran's {@link FeatureSpec}.
+   * @param settings    JSON settings from a previous session.
+   * @param <InputT>    type of the input to feature extraction.
+   *
+   * @return feature extraction result.
+   */
+  public static <InputT> BatchExtractFn<InputT, Example> exampleBatch(
+      final FeatureSpec<InputT> featureSpec,
+      final String settings) {
+    return exampleBatch(JFeatureSpec.wrap(featureSpec), settings);
+  }
+
+  /**
+   * Extract features as a batch of {@link Example}.
+   *
+   * @param featureSpec Featran's {@link JFeatureSpec}.
+   * @param settings    JSON settings from a previous session.
+   * @param <InputT>    type of the input to feature extraction.
+   *
+   * @return feature extraction result.
+   */
+  public static <InputT> BatchExtractFn<InputT, Example> exampleBatch(
       final JFeatureSpec<InputT> featureSpec,
       final String settings) {
     return featureSpec.extractWithSettingsExample(settings)::featureValue;

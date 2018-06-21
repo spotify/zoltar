@@ -49,9 +49,7 @@ interface InstrumentedPredictFn<ModelT extends Model<?>, InputT, VectorT, ValueT
       final PredictMetrics<InputT, ValueT> predictMetrics = metrics.apply(model.id());
       final CompletionStage<List<Prediction<InputT, ValueT>>> result = predictfn.apply(model, vectors);
 
-      result.whenComplete((r, t) -> predictMetrics.prediction(r));
-
-      return result;
+      return result.whenComplete((r, t) -> predictMetrics.prediction(r));
     };
   }
 

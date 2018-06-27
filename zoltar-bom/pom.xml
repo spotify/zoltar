@@ -206,7 +206,7 @@
       <dependency>
         <groupId>me.lyh</groupId>
         <artifactId>xgboost4j</artifactId>
-        <version>0.71-20180420-230cb9b7</version>
+        <version>0.72-20180627-1214081f</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

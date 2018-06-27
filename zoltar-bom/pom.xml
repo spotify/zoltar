@@ -204,9 +204,9 @@
         <version>${scio.version}</version>
       </dependency>
       <dependency>
-        <groupId>me.lyh</groupId>
+        <groupId>ml.dmlc</groupId>
         <artifactId>xgboost4j</artifactId>
-        <version>0.71-20180420-230cb9b7</version>
+        <version>0.72</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

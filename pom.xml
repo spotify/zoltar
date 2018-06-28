@@ -25,6 +25,7 @@
     <module>examples/apollo-service-example</module>
     <module>examples/custom-metrics</module>
     <module>examples/mlengine-example</module>
+    <module>examples/batch-predictor</module>
   </modules>
 
   <properties>

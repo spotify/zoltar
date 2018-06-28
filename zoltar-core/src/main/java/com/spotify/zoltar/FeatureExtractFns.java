@@ -81,5 +81,9 @@ public interface FeatureExtractFns {
         return output.build();
       };
     }
+
+    static <InputT, ValueT> BatchExtractFn<InputT, ValueT> lift(final Function<InputT, ValueT> fn) {
+      return lift(ExtractFn.lift(fn));
+    }
   }
 }

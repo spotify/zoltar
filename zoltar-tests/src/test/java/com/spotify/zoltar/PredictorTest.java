@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import java.time.Duration;
@@ -104,7 +104,7 @@ public class PredictorTest {
   @Test
   public void nonEmpty() throws InterruptedException, ExecutionException, TimeoutException {
     final Duration wait = Duration.ofSeconds(1);
-    final SingleExtractFn<Integer, Float> extractFn = input -> (float) input / 10;
+    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn = (model, vectors) -> {
       return vectors.stream()
           .map(vector -> Prediction.create(vector.input(), vector.value() * 2))

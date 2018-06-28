@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import java.util.Collections;
 import java.util.List;
 import org.hamcrest.core.Is;
@@ -42,7 +42,7 @@ public class FeatureExtractorTest {
 
   @Test
   public void nonEmptyExtract() throws Exception {
-    final SingleExtractFn<Integer, Float> fn = input -> (float) input / 10;
+    final ExtractFn<Integer, Float> fn = ExtractFn.lift(input -> (float) input / 10);
     final List<Vector<Integer, Float>> vectors = FeatureExtractor.create(fn).extract(null, 1);
 
     assertThat(vectors.size(), is(1));

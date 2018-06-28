@@ -21,9 +21,10 @@
 package com.spotify.zoltar;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Feature extraction functions. Functions used to transform raw input into extracted features,
@@ -43,6 +44,10 @@ public interface FeatureExtractFns {
   @FunctionalInterface
   interface ExtractFn<InputT, ValueT> {
 
+    static <InputT, ValueT> ExtractFn<InputT, ValueT> lift(final Function<InputT, ValueT> fn) {
+      return inputs -> Arrays.stream(inputs).map(fn).collect(Collectors.toList());
+    }
+
     /**
      * Functional interface. Perform feature extraction.
      */
@@ -51,32 +56,6 @@ public interface FeatureExtractFns {
     default <C extends ExtractFn<InputT, ValueT>> C with(
         final Function<ExtractFn<InputT, ValueT>, C> fn) {
       return fn.apply(this);
-    }
-  }
-
-  /**
-   * Generic feature extraction function, takes a single raw input and should return extracted
-   * features of user defined type.
-   *
-   * @param <InputT> type of the input to feature extraction.
-   * @param <ValueT> type of feature extraction result.
-   */
-  @FunctionalInterface
-  interface SingleExtractFn<InputT, ValueT> extends ExtractFn<InputT, ValueT> {
-
-    /**
-     * Functional interface. Perform feature extraction.
-     */
-    ValueT apply(InputT input) throws Exception;
-
-    default List<ValueT> apply(final InputT... inputs) throws Exception {
-      final Builder<ValueT> builder = ImmutableList.builder();
-
-      for (final InputT input: inputs) {
-        builder.add(apply(input));
-      }
-
-      return builder.build();
     }
   }
 
@@ -90,21 +69,17 @@ public interface FeatureExtractFns {
   @FunctionalInterface
   interface BatchExtractFn<InputT, ValueT> extends ExtractFn<List<InputT>, List<ValueT>> {
 
-    /**
-     * Functional interface. Perform feature extraction.
-     */
-    ValueT apply(InputT input) throws Exception;
-
-    default List<List<ValueT>> apply(final List<InputT>... batches) throws Exception {
-      final ImmutableList.Builder<List<ValueT>> output = ImmutableList.builder();
-      for (final List<InputT> batch : batches) {
-        final ImmutableList.Builder<ValueT> outBatch = ImmutableList.builder();
-        for (final InputT input : batch) {
-          outBatch.add(apply(input));
+    static <InputT, ValueT> BatchExtractFn<InputT, ValueT> lift(
+        final ExtractFn<InputT, ValueT> fn) {
+      return inputs -> {
+        final ImmutableList.Builder<List<ValueT>> output = ImmutableList.builder();
+        for (final List<InputT> batch: inputs) {
+          final InputT[] objects = (InputT[]) batch.toArray(new Object[batch.size()]);
+          output.add(fn.apply(objects));
         }
-        output.add(outBatch.build());
-      }
-      return output.build();
+
+        return output.build();
+      };
     }
   }
 }

@@ -24,7 +24,7 @@ package com.spotify.zoltar;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.spotify.zoltar.FeatureExtractFns.SingleExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import java.util.List;
@@ -101,7 +101,7 @@ public class PredictorBuilderTest {
   public void identityDecoration() throws ExecutionException, InterruptedException {
     final ModelLoader<DummyModel> loader =
         ModelLoader.lift(DummyModel::new);
-    final SingleExtractFn<Integer, Float> extractFn = input -> (float) input / 10;
+    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn = (model, vectors) -> {
       return vectors.stream()
           .map(vector -> Prediction.create(vector.input(), vector.value() * 2))

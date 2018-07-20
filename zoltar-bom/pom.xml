@@ -17,7 +17,7 @@
     <scala.version>2.11.12</scala.version>
     <tensorFlow.version>1.8.0</tensorFlow.version>
     <scio.version>0.5.5</scio.version>
-    <featran.version>0.1.27</featran.version>
+    <featran.version>0.2.0</featran.version>
     <proto.version>3.5.1</proto.version>
     <grpc.version>1.12.0</grpc.version>
     <netty.version>4.1.22.Final</netty.version>

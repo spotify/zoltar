@@ -23,7 +23,6 @@ package com.spotify.zoltar.tf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -164,7 +163,6 @@ public abstract class JTensor implements Serializable {
   }
 
   private static int[] toIntExact(final long[] dimensions) {
-    // stream would look nice but this is probably faster
     final int[] intDimensions = new int[dimensions.length];
     for (int i = 0; i < dimensions.length; i++) {
       intDimensions[i] = Math.toIntExact(dimensions[i]);
@@ -172,8 +170,7 @@ public abstract class JTensor implements Serializable {
     return intDimensions;
   }
 
-  @VisibleForTesting
-  static Object toStringArray(
+  private static Object toStringArray(
       final Object byteArray,
       final int numElements,
       final int... dimensions)  {

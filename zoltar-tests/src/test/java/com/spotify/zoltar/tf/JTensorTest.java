@@ -211,42 +211,6 @@ public class JTensorTest {
     new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
   }
 
-  @Test
-  public void testToStringArray1DimensionEmpty() {
-    final String[] stringArray = new String[]{};
-    final byte[][] byteArray = toByteArray(stringArray);
-    assertArrayEquals(stringArray,
-        (String[]) JTensor.toStringArray(byteArray, byteArray.length, new int[]{0}));
-  }
-
-  @Test
-  public void testToStringArray1Dimension() {
-    final byte[][] byteArray = toByteArray(STRING_ARRAY_1DIMENSION);
-    assertArrayEquals(STRING_ARRAY_1DIMENSION,
-        (String[]) JTensor.toStringArray(byteArray, 3, new int[]{3}));
-  }
-
-  @Test
-  public void testToStringArray3Dimensions() {
-    final byte[][][][] byteArray = toByteArray(STRING_ARRAY_3DIMENSIONS);
-    assertArrayEquals(STRING_ARRAY_3DIMENSIONS,
-        (String[][][]) JTensor.toStringArray(byteArray, 27, new int[]{3, 3, 3}));
-  }
-
-  @Test
-  public void testToStringArray3DimensionsAscending() {
-    final byte[][][][] byteArray = toByteArray(STRING_ARRAY_3DIMENSIONS_ASCENDING);
-    assertArrayEquals(STRING_ARRAY_3DIMENSIONS_ASCENDING,
-        (String[][][]) JTensor.toStringArray(byteArray, 6, new int[]{1, 2, 3}));
-  }
-
-  @Test
-  public void testToStringArray3DimensionsDescending() {
-    final byte[][][][] byteArray = toByteArray(STRING_ARRAY_3DIMENSIONS_DESCENDING);
-    assertArrayEquals(STRING_ARRAY_3DIMENSIONS_DESCENDING,
-        (String[][][]) JTensor.toStringArray(byteArray, 6, new int[]{3, 2, 1}));
-  }
-
   private <T> void testException(final JTensor jt, final Function<JTensor, T> fn) {
     try {
       fn.apply(jt);
@@ -256,7 +220,7 @@ public class JTensorTest {
     }
   }
 
-  private void testMultidimensionalStringTensor(final JTensor jt, Object[] expectedValue, final long[] expectedDimensions) {
+  private void testMultidimensionalStringTensor(final JTensor jt, final Object[] expectedValue, final long[] expectedDimensions) {
     assertEquals(DataType.STRING, jt.dataType());
     assertEquals(expectedDimensions.length, jt.numDimensions());
     assertArrayEquals(expectedDimensions, jt.shape());

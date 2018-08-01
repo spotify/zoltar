@@ -20,9 +20,12 @@
 
 package com.spotify.zoltar.tf;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -44,9 +47,20 @@ public abstract class JTensor implements Serializable {
 
     switch (tensor.dataType()) {
       case STRING:
-        final String value = new String(tensor.bytesValue());
-        jt = new AutoValue_JTensor(
+        if (tensor.numDimensions() == 0) {
+          final String value = new String(tensor.bytesValue(), UTF_8);
+          jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), value);
+        } else {
+          final int[] dimensions = toIntExact(tensor.shape());
+          final Object byteArray =
+              tensor.copyTo(Array.newInstance(byte[].class, toIntExact(tensor.shape())));
+          jt = new AutoValue_JTensor(
+              tensor.dataType(),
+              tensor.numDimensions(),
+              tensor.shape(),
+              toStringArray(byteArray, tensor.numElements(), dimensions));
+        }
         break;
       case INT32:
         final IntBuffer intBuf = IntBuffer.allocate(tensor.numElements());
@@ -99,10 +113,20 @@ public abstract class JTensor implements Serializable {
   protected abstract Object data();
 
   /**
-   * String value of the underlying {@link Tensor}, if {@link DataType} is {@code STRING}.
+   * Value of the underlying {@link Tensor}, lets the caller take care of typing.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> T value() {
+    return (T) data();
+  }
+
+  /**
+   * String value of the underlying {@link Tensor}, if {@link DataType} is {@code STRING} and
+   * {@link #numDimensions()} is 0.
    */
   public String stringValue() {
     Preconditions.checkState(dataType() == DataType.STRING);
+    Preconditions.checkState(this.numDimensions() == 0);
     return (String) data();
   }
 
@@ -136,5 +160,51 @@ public abstract class JTensor implements Serializable {
   public double[] doubleValue() {
     Preconditions.checkState(dataType() == DataType.DOUBLE);
     return (double []) data();
+  }
+
+  private static int[] toIntExact(final long[] dimensions) {
+    final int[] intDimensions = new int[dimensions.length];
+    for (int i = 0; i < dimensions.length; i++) {
+      intDimensions[i] = Math.toIntExact(dimensions[i]);
+    }
+    return intDimensions;
+  }
+
+  private static Object toStringArray(
+      final Object byteArray,
+      final int numElements,
+      final int... dimensions)  {
+    final int numDimensions = dimensions.length;
+    final Object stringArray = Array.newInstance(String.class, dimensions);
+    final int[] currentIndexes = new int[numDimensions];
+
+    // iterate all elements
+    for (int n = 0; n < numElements; n++) {
+
+      // make currentIndexes point to the element we are populating in a multidimensional array
+      int quotient = n;
+      for (int d = numDimensions - 1; d >= 0; d--) {
+        currentIndexes[d] = quotient % dimensions[d];
+        quotient = quotient / dimensions[d];
+      }
+
+      // walk down the input array to select the corresponding byte[]
+      Object currentSubByteArray = byteArray;
+      for (int i = 0; i < numDimensions; i++) {
+        currentSubByteArray = Array.get(currentSubByteArray, currentIndexes[i]);
+      }
+
+      // walk down the output array to select parent array of current position so we can set
+      final String value = new String((byte[]) currentSubByteArray, UTF_8);
+      Object currentSubStringArray = stringArray;
+      for (int i = 0; i < numDimensions - 1; i++) {
+        currentSubStringArray = Array.get(currentSubStringArray, currentIndexes[i]);
+      }
+
+      // set the value
+      Array.set(currentSubStringArray, currentIndexes[numDimensions - 1], value);
+    }
+
+    return stringArray;
   }
 }

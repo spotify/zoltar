@@ -44,54 +44,55 @@ public abstract class JTensor implements Serializable {
    */
   public static JTensor create(final Tensor<?> tensor) {
     final JTensor jt;
-
-    switch (tensor.dataType()) {
-      case STRING:
-        if (tensor.numDimensions() == 0) {
-          final String value = new String(tensor.bytesValue(), UTF_8);
-          jt = new AutoValue_JTensor(
+    try {
+      switch (tensor.dataType()) {
+        case STRING:
+          if (tensor.numDimensions() == 0) {
+            final String value = new String(tensor.bytesValue(), UTF_8);
+            jt = new AutoValue_JTensor(
                 tensor.dataType(), tensor.numDimensions(), tensor.shape(), value);
-        } else {
-          final int[] dimensions = toIntExact(tensor.shape());
-          final Object byteArray =
-              tensor.copyTo(Array.newInstance(byte[].class, toIntExact(tensor.shape())));
+          } else {
+            final int[] dimensions = toIntExact(tensor.shape());
+            final Object byteArray =
+                tensor.copyTo(Array.newInstance(byte[].class, toIntExact(tensor.shape())));
+            jt = new AutoValue_JTensor(
+                tensor.dataType(),
+                tensor.numDimensions(),
+                tensor.shape(),
+                toStringArray(byteArray, tensor.numElements(), dimensions));
+          }
+          break;
+        case INT32:
+          final IntBuffer intBuf = IntBuffer.allocate(tensor.numElements());
+          tensor.writeTo(intBuf);
           jt = new AutoValue_JTensor(
-              tensor.dataType(),
-              tensor.numDimensions(),
-              tensor.shape(),
-              toStringArray(byteArray, tensor.numElements(), dimensions));
-        }
-        break;
-      case INT32:
-        final IntBuffer intBuf = IntBuffer.allocate(tensor.numElements());
-        tensor.writeTo(intBuf);
-        jt = new AutoValue_JTensor(
-                tensor.dataType(), tensor.numDimensions(), tensor.shape(), intBuf.array());
-        break;
-      case INT64:
-        final LongBuffer longBuf = LongBuffer.allocate(tensor.numElements());
-        tensor.writeTo(longBuf);
-        jt = new AutoValue_JTensor(
-                tensor.dataType(), tensor.numDimensions(), tensor.shape(), longBuf.array());
-        break;
-      case FLOAT:
-        final FloatBuffer floatBuf = FloatBuffer.allocate(tensor.numElements());
-        tensor.writeTo(floatBuf);
-        jt = new AutoValue_JTensor(
-                tensor.dataType(), tensor.numDimensions(), tensor.shape(), floatBuf.array());
-        break;
-      case DOUBLE:
-        final DoubleBuffer doubleBuf = DoubleBuffer.allocate(tensor.numElements());
-        tensor.writeTo(doubleBuf);
-        jt = new AutoValue_JTensor(
-                tensor.dataType(), tensor.numDimensions(), tensor.shape(), doubleBuf.array());
-        break;
-      default:
-        tensor.close();
-        throw new IllegalStateException("Unsupported data type " + tensor.dataType());
+              tensor.dataType(), tensor.numDimensions(), tensor.shape(), intBuf.array());
+          break;
+        case INT64:
+          final LongBuffer longBuf = LongBuffer.allocate(tensor.numElements());
+          tensor.writeTo(longBuf);
+          jt = new AutoValue_JTensor(
+              tensor.dataType(), tensor.numDimensions(), tensor.shape(), longBuf.array());
+          break;
+        case FLOAT:
+          final FloatBuffer floatBuf = FloatBuffer.allocate(tensor.numElements());
+          tensor.writeTo(floatBuf);
+          jt = new AutoValue_JTensor(
+              tensor.dataType(), tensor.numDimensions(), tensor.shape(), floatBuf.array());
+          break;
+        case DOUBLE:
+          final DoubleBuffer doubleBuf = DoubleBuffer.allocate(tensor.numElements());
+          tensor.writeTo(doubleBuf);
+          jt = new AutoValue_JTensor(
+              tensor.dataType(), tensor.numDimensions(), tensor.shape(), doubleBuf.array());
+          break;
+        default:
+          throw new IllegalStateException("Unsupported data type " + tensor.dataType());
+      }
+    } finally {
+      tensor.close();
     }
 
-    tensor.close();
     return jt;
   }
 

@@ -40,6 +40,14 @@
     <tag>HEAD</tag>
   </scm>
 
+  <developers>
+    <developer>
+      <name>Filipe Regadas</name>
+      <email>filiperegadas@gmail.com</email>
+      <url>https://twitter.com/regadas</url>
+    </developer>
+  </developers>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>

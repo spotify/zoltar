@@ -20,9 +20,14 @@
 
 package com.spotify.zoltar;
 
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.core.DefaultPredictorBuilder;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractor;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.ModelLoader;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
+import com.spotify.zoltar.core.PredictorBuilder;
 
 /**
  * Predictors test helper methods.

@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableList;
-import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.core.Prediction;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

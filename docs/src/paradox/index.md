@@ -21,25 +21,25 @@ Zoltar is a library that helps load predictive machine learning models in a JVM.
 
 ## Abstractions
 
-@javadoc[Predictor](com.spotify.zoltar.Predictor):
+@javadoc[Predictor](com.spotify.zoltar.core.Predictor):
 The core functionality of Zoltar. This object loads a model and calls functions to featurize input vectors and submit them for prediction. To these ends, a predictor is composed of a ModelLoader, FeatureExtractor, and PredictFn.
 
-@javadoc[PredictFn](com.spotify.zoltar.PredictFns):
+@javadoc[PredictFn](com.spotify.zoltar.core.PredictFns):
 A function that submits a feature vector to a model for prediction.
 
-@javadoc[Prediction](com.spotify.zoltar.Prediction):
+@javadoc[Prediction](com.spotify.zoltar.core.Prediction):
 A wrapper around a single feature vector and its predicted output.
 
-@javadoc[ModelLoader](com.spotify.zoltar.ModelLoader):
+@javadoc[ModelLoader](com.spotify.zoltar.core.ModelLoader):
 An object that loads an XGBoost or TensorFlow model from a supported filesystem. 
 
-@javadoc[Model](com.spotify.zoltar.Model):
+@javadoc[Model](com.spotify.zoltar.core.Model):
 The Java object that houses the predictive model itself.
 
-@javadoc[FeatureExtractor](com.spotify.zoltar.FeatureExtractor):
+@javadoc[FeatureExtractor](com.spotify.zoltar.core.FeatureExtractor):
 Takes an input vector and applies a FeatureExtractFn to it.
 
-@javadoc[FeatureExtractFn](com.spotify.zoltar.FeatureExtractFns):
+@javadoc[FeatureExtractFn](com.spotify.zoltar.core.FeatureExtractFns):
 A function that takes a raw input vector and extracts a feature vector from it.
 
 For more details, take a look at the source code and follow the documentation in the comments. If you're using TensorFlow or XGBoost, you can find model specific implementations of these abstractions in @javadoc[zoltar-tensorflow](com.spotify.zoltar.tf.package-summary) and @javadoc[zoltar-xgboost](com.spotify.zoltar.xgboost.package-summary) respectively.

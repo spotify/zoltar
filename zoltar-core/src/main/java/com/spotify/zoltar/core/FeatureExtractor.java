@@ -18,10 +18,10 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
 import com.google.common.collect.Lists;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;

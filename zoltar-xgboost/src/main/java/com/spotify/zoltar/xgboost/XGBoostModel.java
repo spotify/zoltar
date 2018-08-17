@@ -21,8 +21,8 @@
 package com.spotify.zoltar.xgboost;
 
 import com.google.auto.value.AutoValue;
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.fs.FileSystemExtras;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.fs.FileSystemExtras;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

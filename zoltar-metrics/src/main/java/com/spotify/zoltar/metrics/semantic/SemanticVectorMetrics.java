@@ -23,7 +23,7 @@ package com.spotify.zoltar.metrics.semantic;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.google.auto.value.AutoValue;
-import com.spotify.zoltar.Vector;
+import com.spotify.zoltar.core.Vector;
 import com.spotify.zoltar.metrics.VectorMetrics;
 import java.util.List;
 

@@ -18,12 +18,12 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
 import com.google.auto.value.AutoValue;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
 
 /**
  * Entry point for prediction. Default implementation of a PredictorBuilder that holds the necessary
@@ -35,7 +35,7 @@ import com.spotify.zoltar.PredictFns.PredictFn;
  * @param <ValueT>  type of the prediction result.
  */
 @AutoValue
-abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT>
+public abstract class DefaultPredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT>
     implements PredictorBuilder<ModelT, InputT, VectorT, ValueT> {
 
   /**

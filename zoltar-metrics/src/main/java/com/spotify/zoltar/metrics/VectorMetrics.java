@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.metrics;
 
-import com.spotify.zoltar.Vector;
+import com.spotify.zoltar.core.Vector;
 import java.util.List;
 
 /**

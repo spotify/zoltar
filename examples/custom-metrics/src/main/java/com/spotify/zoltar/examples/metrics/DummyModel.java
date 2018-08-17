@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.examples.metrics;
 
-import com.spotify.zoltar.Model;
+import com.spotify.zoltar.core.Model;
 
 class DummyModel implements Model<Object> {
   @Override

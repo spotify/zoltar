@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar;
 
+import com.spotify.zoltar.core.Prediction;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;

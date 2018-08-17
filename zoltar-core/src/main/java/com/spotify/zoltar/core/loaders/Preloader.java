@@ -18,10 +18,10 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.loaders;
+package com.spotify.zoltar.core.loaders;
 
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.ModelLoader;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;

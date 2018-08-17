@@ -20,9 +20,9 @@
 
 package com.spotify.zoltar.metrics;
 
-import com.spotify.zoltar.FeatureExtractor;
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.Vector;
+import com.spotify.zoltar.core.FeatureExtractor;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.Vector;
 import java.util.List;
 import java.util.function.Function;
 

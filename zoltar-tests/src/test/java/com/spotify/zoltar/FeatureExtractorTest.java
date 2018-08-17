@@ -23,8 +23,9 @@ package com.spotify.zoltar;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractor;
+import com.spotify.zoltar.core.Vector;
 import java.util.Collections;
 import java.util.List;
 import org.hamcrest.core.Is;

@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;

@@ -34,7 +34,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
-import com.spotify.zoltar.Model.Id;
+import com.spotify.zoltar.core.Model.Id;
 import com.spotify.zoltar.metrics.FeatureExtractorMetrics;
 import com.spotify.zoltar.metrics.PredictFnMetrics;
 import com.spotify.zoltar.metrics.PredictorMetrics;

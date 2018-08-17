@@ -25,10 +25,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.core.DefaultPredictorBuilder;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.ModelLoader;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
+import com.spotify.zoltar.core.Prediction;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;

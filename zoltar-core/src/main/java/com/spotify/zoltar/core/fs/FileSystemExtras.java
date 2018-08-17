@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.fs;
+package com.spotify.zoltar.core.fs;
 
 import com.google.cloud.storage.contrib.nio.CloudStorageFileSystem;
 import java.io.IOException;

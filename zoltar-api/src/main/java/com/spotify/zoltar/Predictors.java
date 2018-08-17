@@ -20,9 +20,15 @@
 
 package com.spotify.zoltar;
 
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.core.DefaultPredictorBuilder;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractor;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.ModelLoader;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
+import com.spotify.zoltar.core.Predictor;
+import com.spotify.zoltar.core.PredictorBuilder;
 
 /**
  * This class consists exclusively of static methods that return {@link PredictorBuilder} or {@link

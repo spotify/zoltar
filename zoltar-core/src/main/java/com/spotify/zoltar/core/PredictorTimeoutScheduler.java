@@ -18,29 +18,16 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * Default {@link Predictor} {@link ScheduledExecutorService} supplier implementation
- * for timeout scheduling.
+ * {@link Predictor} {@link ScheduledExecutorService} supplier for timeout scheduling.
  */
-final class DefaultPredictorTimeoutScheduler implements PredictorTimeoutScheduler {
+@FunctionalInterface
+interface PredictorTimeoutScheduler {
 
-  private static final ScheduledExecutorService SCHEDULER =
-      Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+  ScheduledExecutorService scheduler();
 
-  private DefaultPredictorTimeoutScheduler() {
-  }
-
-  public static DefaultPredictorTimeoutScheduler create() {
-    return new DefaultPredictorTimeoutScheduler();
-  }
-
-  @Override
-  public ScheduledExecutorService scheduler() {
-    return SCHEDULER;
-  }
 }

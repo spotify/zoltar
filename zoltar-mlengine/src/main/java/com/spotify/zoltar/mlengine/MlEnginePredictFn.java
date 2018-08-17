@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.mlengine;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
 
 /**
  * Google Cloud ML Engine flavor of {@link AsyncPredictFn} using {@link MlEngineModel}.

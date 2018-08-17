@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.xgboost;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
 
 /**
  * XGBoost flavor of {@link AsyncPredictFn} using {@link XGBoostModel}.

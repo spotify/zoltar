@@ -31,7 +31,7 @@ import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 import com.spotify.metrics.ffwd.FastForwardReporter;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.core.Predictor;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
 import com.typesafe.config.Config;

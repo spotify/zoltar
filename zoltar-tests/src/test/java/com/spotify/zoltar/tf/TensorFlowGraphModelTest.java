@@ -27,11 +27,11 @@ import static org.junit.Assert.assertThat;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.Model.Id;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.PredictFns.PredictFn;
-import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.Model.Id;
+import com.spotify.zoltar.core.ModelLoader;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
+import com.spotify.zoltar.core.Prediction;
 import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;

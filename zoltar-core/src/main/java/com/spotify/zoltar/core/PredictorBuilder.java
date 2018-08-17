@@ -18,9 +18,9 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
 import java.util.function.Function;
 
 /**

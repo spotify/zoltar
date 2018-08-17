@@ -21,12 +21,12 @@
 package com.spotify.zoltar.metrics;
 
 import com.google.auto.value.AutoValue;
-import com.spotify.zoltar.FeatureExtractor;
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
+import com.spotify.zoltar.core.FeatureExtractor;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.ModelLoader;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.Predictor;
+import com.spotify.zoltar.core.PredictorBuilder;
 import java.util.function.Function;
 
 /**

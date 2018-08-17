@@ -35,7 +35,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.io.BaseEncoding;
-import com.spotify.zoltar.Model;
+import com.spotify.zoltar.core.Model;
 import com.spotify.zoltar.mlengine.MlEngineModel.Response.Predictions;
 import java.io.IOException;
 import java.security.GeneralSecurityException;

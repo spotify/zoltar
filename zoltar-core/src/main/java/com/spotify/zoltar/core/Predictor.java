@@ -18,10 +18,10 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;

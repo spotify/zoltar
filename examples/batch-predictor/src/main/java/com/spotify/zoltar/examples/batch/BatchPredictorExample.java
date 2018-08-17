@@ -20,14 +20,14 @@
 
 package com.spotify.zoltar.examples.batch;
 
-import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.PredictFns.PredictFn;
-import com.spotify.zoltar.Prediction;
-import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
-import com.spotify.zoltar.loaders.Preloader;
+import com.spotify.zoltar.core.FeatureExtractFns.BatchExtractFn;
+import com.spotify.zoltar.core.ModelLoader;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
+import com.spotify.zoltar.core.Prediction;
+import com.spotify.zoltar.core.Predictor;
+import com.spotify.zoltar.core.PredictorBuilder;
+import com.spotify.zoltar.core.loaders.Preloader;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;

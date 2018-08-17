@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.metrics;
 
-import com.spotify.zoltar.Model;
+import com.spotify.zoltar.core.Model;
 import java.util.function.Function;
 
 /**

@@ -23,6 +23,9 @@ package com.spotify.zoltar;
 import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.Lists;
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.core.Prediction;
+import com.spotify.zoltar.core.Predictor;
 import com.spotify.zoltar.tf.TensorFlowModelTest;
 import com.spotify.zoltar.xgboost.XGBoostModelTest;
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ public class MultiPredictorTest {
   public void testMultiplePredictors() throws Exception {
     final Predictor<IrisFeaturesSpec.Iris, Long> tfPredictor =
         TensorFlowModelTest.getTFIrisPredictor();
-    final Predictor<IrisFeaturesSpec.Iris, Long> xgBoostPredictor =
+    final Predictor<Iris, Long> xgBoostPredictor =
         XGBoostModelTest.getXGBoostIrisPredictor();
     final ArrayList<Predictor<IrisFeaturesSpec.Iris, Long>> predictors =
         Lists.newArrayList(tfPredictor, xgBoostPredictor);

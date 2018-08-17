@@ -23,7 +23,7 @@ package com.spotify.zoltar.examples.mlengine;
 import static org.junit.Assert.assertFalse;
 
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.core.Prediction;
 import java.util.List;
 import org.junit.Test;
 import scala.Option;

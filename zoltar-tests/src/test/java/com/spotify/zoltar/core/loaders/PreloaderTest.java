@@ -18,26 +18,21 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.loaders;
+package com.spotify.zoltar.core.loaders;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.ModelLoader;
 import java.time.Duration;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class ModelMemoizerTest {
+public class PreloaderTest {
 
   static class DummyModel implements Model<Object> {
-    private final AtomicInteger inc;
 
     public DummyModel() {
-      inc = new AtomicInteger();
     }
 
     @Override
@@ -47,7 +42,6 @@ public class ModelMemoizerTest {
 
     @Override
     public Object instance() {
-      inc.getAndIncrement();
       return null;
     }
 
@@ -55,21 +49,38 @@ public class ModelMemoizerTest {
     public void close() throws Exception {
 
     }
-
-    public int getIncrementValue() {
-      return inc.get();
-    }
   }
 
   @Test
-  public void memoize() throws InterruptedException, ExecutionException, TimeoutException {
-    final ModelLoader<DummyModel> loader =
-        ModelLoader.lift(DummyModel::new).with(ModelMemoizer::memoize);
+  public void preload() {
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .lift(DummyModel::new)
+        .with(Preloader.preload());
 
-    final Duration duration = Duration.ofMillis(1000);
-    loader.get(duration).instance();
-    loader.get(duration).instance();
+    assertThat(loader.get().toCompletableFuture().isDone(), is(true));
+  }
 
-    assertThat(loader.get(duration).getIncrementValue(), is(2));
+  @Test
+  public void preloadTimeout() {
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .lift(() -> {
+          Thread.sleep(Duration.ofSeconds(10).toMillis());
+          return new DummyModel();
+        })
+        .with(Preloader.preload(Duration.ZERO));
+
+    assertThat(loader.get().toCompletableFuture().isCompletedExceptionally(), is(true));
+  }
+
+  @Test
+  public void preloadAsync() {
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .lift(() -> {
+          Thread.sleep(Duration.ofSeconds(10).toMillis());
+          return new DummyModel();
+        })
+        .with(Preloader.preloadAsync());
+
+    assertThat(loader.get().toCompletableFuture().isDone(), is(false));
   }
 }

@@ -18,10 +18,10 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.PredictFn;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
  * @param <ValueT> type of the prediction output.
  */
 @FunctionalInterface
-interface DefaultPredictor<InputT, ValueT> extends Predictor<InputT, ValueT> {
+public interface DefaultPredictor<InputT, ValueT> extends Predictor<InputT, ValueT> {
 
   /**
    * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link

@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar;
 
+import com.spotify.zoltar.core.Model;
 import com.spotify.zoltar.mlengine.MlEngineLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowLoader;

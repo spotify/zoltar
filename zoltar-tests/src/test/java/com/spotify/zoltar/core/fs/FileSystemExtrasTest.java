@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.fs;
+package com.spotify.zoltar.core.fs;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;

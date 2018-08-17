@@ -20,9 +20,9 @@
 
 package com.spotify.zoltar.metrics;
 
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
-import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.Prediction;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;

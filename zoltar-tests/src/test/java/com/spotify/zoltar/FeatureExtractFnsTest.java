@@ -24,8 +24,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableList;
-import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractFns.BatchExtractFn;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
 import java.util.List;
 import org.junit.Test;
 

@@ -20,8 +20,9 @@
 
 package com.spotify.zoltar.metrics;
 
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.PredictorBuilder;
+import com.spotify.zoltar.core.Model;
+import com.spotify.zoltar.core.Predictor;
+import com.spotify.zoltar.core.PredictorBuilder;
 import java.util.function.Function;
 
 /**
@@ -37,7 +38,7 @@ public final class Instrumentations {
 
   /**
    * Adds instrumentation support to an existent predictor builder, allowing it to create an
-   * instrumented {@link com.spotify.zoltar.Predictor}.
+   * instrumented {@link Predictor}.
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT> Function<PredictorBuilder<ModelT, InputT, VectorT, ValueT>, InstrumentedPredictorBuilder<ModelT, InputT, VectorT, ValueT>> predictor(

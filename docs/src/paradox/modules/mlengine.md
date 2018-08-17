@@ -18,7 +18,7 @@ Include the following dependency:
   version="$project.version$"
 }
 
-Replace your existing @javadoc[ModelLoader](com.spotify.zoltar.ModelLoader) with 
+Replace your existing @javadoc[ModelLoader](com.spotify.zoltar.core.ModelLoader) with 
 @javadoc[MlEngineLoader](com.spotify.zoltar.mlengine.MlEngineLoader)
 
 @@snip [MlEnginePredictorExample.java](../../../../examples/mlengine-example/src/main/java/com/spotify/zoltar/examples/mlengine/MlEnginePredictorExample.java) { #MlEngineLoader }
@@ -26,4 +26,4 @@ Replace your existing @javadoc[ModelLoader](com.spotify.zoltar.ModelLoader) with
 ## Example
 
 Follow this @github[example](../../../../examples/mlengine-example)
-to create a @javadoc[Predictor](com.spotify.zoltar.Predictor) that uses `Google Cloud ML Engine` deployed models.
+to create a @javadoc[Predictor](com.spotify.zoltar.core.Predictor) that uses `Google Cloud ML Engine` deployed models.

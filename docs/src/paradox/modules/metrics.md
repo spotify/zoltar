@@ -1,6 +1,6 @@
 # Metrics
 
-`Zoltar` provides a way to attach and extend metrics around @javadoc[Predictor](com.spotify.zoltar.Predictor).
+`Zoltar` provides a way to attach and extend metrics around @javadoc[Predictor](com.spotify.zoltar.core.Predictor).
 
 `zoltar-metrics` takes advantage of the [semantic-metrics](https://github.com/spotify/semantic-metrics)
 to be able to capture meaningful metrics.
@@ -19,7 +19,7 @@ Create a semantic registry:
 
 @@snip [SemanticMetricRegistry](../../../../examples/custom-metrics/src/test/java/com/spotify/zoltar/examples/metrics/CustomMetricsExampleTest.java) { #SemanticMetricRegistry }
 
-Attach it to the @javadoc[PredictorBuilder](com.spotify.zoltar.PredictorBuilder):
+Attach it to the @javadoc[PredictorBuilder](com.spotify.zoltar.core.PredictorBuilder):
 
 @@snip [PredictorMetrics](../../../../examples/custom-metrics/src/main/java/com/spotify/zoltar/examples/metrics/CustomMetricsExample.java) { #PredictorMetrics }
 

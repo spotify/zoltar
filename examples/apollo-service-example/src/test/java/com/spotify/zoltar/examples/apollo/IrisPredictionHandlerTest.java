@@ -23,21 +23,9 @@ package com.spotify.zoltar.examples.apollo;
 import static org.hamcrest.core.Is.is;
 
 import com.spotify.apollo.Response;
-import com.spotify.apollo.request.RequestContexts;
 import com.spotify.apollo.test.ServiceHelper;
-import com.spotify.apollo.test.StubClient;
-import com.spotify.metrics.core.MetricId;
-import com.spotify.metrics.core.SemanticMetricRegistry;
-import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.CompletionStage;
 import okio.ByteString;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 

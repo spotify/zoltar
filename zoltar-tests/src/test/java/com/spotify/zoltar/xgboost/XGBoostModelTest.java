@@ -26,13 +26,13 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.spotify.futures.CompletableFutures;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
-import com.spotify.zoltar.Model.Id;
-import com.spotify.zoltar.Prediction;
-import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.core.Model.Id;
+import com.spotify.zoltar.core.Prediction;
+import com.spotify.zoltar.core.Predictor;
 import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.net.URI;

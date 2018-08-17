@@ -25,8 +25,8 @@ import com.spotify.featran.java.DoubleSparseArray;
 import com.spotify.featran.java.FloatSparseArray;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.xgboost.SparseLabeledPoint;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractor;
+import com.spotify.zoltar.core.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.core.FeatureExtractor;
 import ml.dmlc.xgboost4j.LabeledPoint;
 import org.tensorflow.example.Example;
 

@@ -18,7 +18,7 @@
  * -/-/-
  */
 
-package com.spotify.zoltar;
+package com.spotify.zoltar.core;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;

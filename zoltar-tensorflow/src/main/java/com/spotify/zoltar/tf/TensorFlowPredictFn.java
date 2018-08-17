@@ -20,7 +20,7 @@
 
 package com.spotify.zoltar.tf;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
+import com.spotify.zoltar.core.PredictFns.AsyncPredictFn;
 
 /**
  * TensorFlow flavor of {@link AsyncPredictFn} using {@link TensorFlowModel}.

@@ -35,7 +35,7 @@
       <artifactId>completable-futures</artifactId>
     </dependency>
     <dependency>
-      <groupId>me.lyh</groupId>
+      <groupId>ml.dmlc</groupId>
       <artifactId>xgboost4j</artifactId>
     </dependency>
   </dependencies>

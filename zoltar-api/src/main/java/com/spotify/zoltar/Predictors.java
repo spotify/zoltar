@@ -23,6 +23,8 @@ package com.spotify.zoltar;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.metrics.Instrumentations;
+import com.spotify.zoltar.metrics.PredictorMetrics;
 
 /**
  * This class consists exclusively of static methods that return {@link PredictorBuilder} or {@link
@@ -117,6 +119,105 @@ public final class Predictors {
       final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
     return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
+  }
+
+  /**
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor}and a {@link
+   * PredictFn}.
+   *
+   * @param modelLoader model loader that loads the model to perform prediction on.
+   * @param extractFn   a feature extract function to use to transform input into extracted
+   *                    features.
+   * @param predictFn   a prediction function to perform prediction with {@link PredictFn}.
+   * @param metrics     a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>    underlying type of the {@link Model}.
+   * @param <InputT>    type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>   type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>    type of the prediction result.
+   */
+  @SuppressWarnings("checkstyle:LineLength")
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+      final ModelLoader<ModelT> modelLoader,
+      final ExtractFn<InputT, VectorT> extractFn,
+      final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
+      final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
+    return DefaultPredictorBuilder
+        .create(modelLoader, extractFn, predictFn)
+        .with(Instrumentations.predictor(metrics));
+  }
+
+  /**
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * AsyncPredictFn}.
+   *
+   * @param modelLoader model loader that loads the model to perform prediction on.
+   * @param extractFn   a feature extract function to use to transform input into extracted
+   *                    features.
+   * @param predictFn   a prediction function to perform prediction with {@link AsyncPredictFn}.
+   * @param metrics     a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>    underlying type of the {@link Model}.
+   * @param <InputT>    type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>   type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>    type of the prediction result.
+   */
+  @SuppressWarnings("checkstyle:LineLength")
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+      final ModelLoader<ModelT> modelLoader,
+      final ExtractFn<InputT, VectorT> extractFn,
+      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
+      final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
+    return DefaultPredictorBuilder
+        .create(modelLoader, extractFn, predictFn)
+        .with(Instrumentations.predictor(metrics));
+  }
+
+  /**
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * PredictFn}.
+   *
+   * @param modelLoader      model loader that loads the model to perform prediction on.
+   * @param featureExtractor a feature extractor to use to transform input into extracted features.
+   * @param predictFn        a prediction function to perform prediction with {@link PredictFn}.
+   * @param metrics          a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>         underlying type of the {@link Model}.
+   * @param <InputT>         type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>        type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>         type of the prediction result.
+   */
+  @SuppressWarnings("checkstyle:LineLength")
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+      final ModelLoader<ModelT> modelLoader,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
+      final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
+      final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
+    return DefaultPredictorBuilder
+        .create(modelLoader, featureExtractor, predictFn)
+        .with(Instrumentations.predictor(metrics));
+  }
+
+  /**
+   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * PredictFn}.
+   *
+   * @param modelLoader      model loader that loads the model to perform prediction on.
+   * @param featureExtractor a feature extractor to use to transform input into extracted features.
+   * @param predictFn        a prediction function to perform prediction with {@link
+   *                         AsyncPredictFn}.
+   * @param metrics          a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>         underlying type of the {@link Model}.
+   * @param <InputT>         type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>        type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>         type of the prediction result.
+   */
+  @SuppressWarnings("checkstyle:LineLength")
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+      final ModelLoader<ModelT> modelLoader,
+      final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
+      final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
+      final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
+    return DefaultPredictorBuilder
+        .create(modelLoader, featureExtractor, predictFn)
+        .with(Instrumentations.predictor(metrics));
   }
 
 }

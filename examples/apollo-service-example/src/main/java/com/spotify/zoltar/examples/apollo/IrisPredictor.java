@@ -24,15 +24,10 @@ import com.spotify.featran.FeatureSpec;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.metrics.PredictorMetrics;
-import com.spotify.zoltar.tf.TensorFlowModel;
-import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -51,9 +46,6 @@ public final class IrisPredictor {
                                              final PredictorMetrics metrics) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
-    final ModelLoader<TensorFlowModel> modelLoader =
-        Models.tensorFlow(modelConfig.modelUri().toString());
-
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
 

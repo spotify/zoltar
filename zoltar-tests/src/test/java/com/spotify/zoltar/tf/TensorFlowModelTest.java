@@ -24,16 +24,14 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableMap;
-import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.IrisHelper;
 import com.spotify.zoltar.Model.Id;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorsTest;
+import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.tf.TensorFlowModel.Options;
 import java.io.ByteArrayOutputStream;
@@ -41,44 +39,35 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
-import org.tensorflow.Session;
-import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
 import org.tensorflow.example.Example;
 
 public class TensorFlowModelTest {
 
   public static Predictor<Iris, Long> getTFIrisPredictor() throws Exception {
-    final String op = "linear/head/predictions/class_ids";
-    final TensorFlowPredictFn<Iris, Example, Long> predictFn =
-        TensorFlowPredictFn.example(tensors -> tensors.get(op).longValue()[0], op);
-
-    final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
+    final String modelUri = TensorFlowModelTest.class
+        .getResource("/trained_model")
+        .toURI()
+        .toString();
     final URI settingsUri = TensorFlowModelTest.class.getResource("/settings.json").toURI();
     final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
         StandardCharsets.UTF_8);
-
-    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
-
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
-    return PredictorsTest
-        .newBuilder(model, extractFn, predictFn)
-        .predictor();
+    return Predictors.tensorFlow(modelUri,
+                                 extractFn,
+                                 tensor -> tensor.longValue()[0],
+                                 "linear/head/predictions/class_ids");
   }
 
   @Test

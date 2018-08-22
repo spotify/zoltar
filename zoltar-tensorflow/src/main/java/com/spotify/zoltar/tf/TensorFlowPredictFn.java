@@ -39,9 +39,9 @@ import org.tensorflow.example.Example;
 /**
  * TensorFlow flavor of {@link AsyncPredictFn} using {@link TensorFlowModel}.
  *
- * @param <InputT> type of the raw input to the feature extraction.
+ * @param <InputT>  type of the raw input to the feature extraction.
  * @param <VectorT> type of the feature extraction output.
- * @param <ValueT> type of the prediction result.
+ * @param <ValueT>  type of the prediction result.
  */
 @FunctionalInterface
 public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
@@ -50,12 +50,12 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
   /**
    * TensorFlow Example prediction function.
    *
-   * @param outTensorExtractor Function to extract the output value from a JTensor
-   * @param fetchOp            operation to fetch.
+   * @param outTensorExtractor Function to extract the output value from JTensor's
+   * @param fetchOps           operations to fetch.
    */
   static <InputT, ValueT> TensorFlowPredictFn<InputT, Example, ValueT> example(
-      final Function<JTensor, ValueT> outTensorExtractor,
-      final String fetchOp) {
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
+      final String... fetchOps) {
     return (model, vectors) -> {
       final List<Vector<InputT, List<Example>>> bulk = vectors.stream()
           .map(vector -> {
@@ -64,7 +64,7 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
           }).collect(Collectors.toList());
 
       return TensorFlowPredictFn
-          .<InputT, ValueT>exampleBatch(outTensorExtractor, fetchOp)
+          .<InputT, ValueT>exampleBatch(outTensorExtractor, fetchOps)
           .apply(model, bulk);
     };
   }
@@ -72,13 +72,12 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
   /**
    * TensorFlow Example prediction function.
    *
-   * @param outTensorExtractor Function to extract the output value from a JTensor
-   * @param fetchOp           operation to fetch.
+   * @param outTensorExtractor Function to extract the output value from JTensor's
+   * @param fetchOps           operations to fetch.
    */
   static <InputT, ValueT> TensorFlowPredictFn<InputT, List<Example>, ValueT> exampleBatch(
-      final Function<JTensor, ValueT> outTensorExtractor,
-      final String fetchOp) {
-
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
+      final String... fetchOps) {
     final BiFunction<TensorFlowModel, List<Example>, ValueT> predictFn = (model, examples) -> {
       final byte[][] bytes = examples.stream()
           .map(Example::toByteArray)
@@ -89,9 +88,9 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
             .session()
             .runner()
             .feed("input_example_tensor", t);
-        final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, fetchOp);
+        final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, fetchOps);
 
-        return outTensorExtractor.apply(result.get(fetchOp));
+        return outTensorExtractor.apply(result);
       }
     };
 

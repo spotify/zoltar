@@ -30,7 +30,6 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
-import com.spotify.zoltar.metrics.Instrumentations;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
@@ -62,9 +61,7 @@ public final class IrisPredictor {
         TensorFlowPredictFn.example(tensors -> tensors.get(op).longValue()[0], op);
 
     final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
-        Predictors
-            .newBuilder(modelLoader, extractFn, predictFn)
-            .with(Instrumentations.predictor(metrics));
+        Predictors.newBuilder(modelLoader, extractFn, predictFn, metrics);
 
     return predictorBuilder.predictor();
   }

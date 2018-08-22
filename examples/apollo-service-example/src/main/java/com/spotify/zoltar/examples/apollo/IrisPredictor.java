@@ -49,12 +49,12 @@ public final class IrisPredictor {
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
 
-    final String op = "linear/head/predictions/class_ids";
+    final String[] ops = new String[]{"linear/head/predictions/class_ids"};
     return Predictors.tensorFlow(
         modelConfig.modelUri().toString(),
         extractFn,
-        tensors -> tensors.get(op).longValue()[0],
-        op,
+        tensors -> tensors.get(ops[0]).longValue()[0],
+        ops,
         metrics);
   }
 

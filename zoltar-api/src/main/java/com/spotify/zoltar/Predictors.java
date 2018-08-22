@@ -239,7 +239,7 @@ public final class Predictors {
    * @param extractFn          a feature extract function to use to transform input into extracted
    *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOp            operations to fetch.
+   * @param fetchOps            operations to fetch.
    * @param <InputT>           type of the input to the {@link FeatureExtractor}.
    * @param <ValueT>           type of the prediction result.
    */
@@ -247,8 +247,8 @@ public final class Predictors {
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
-      final String fetchOp) {
-    return tensorFlow(modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOp);
+      final String... fetchOps) {
+    return tensorFlow(modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps);
   }
 
   /**
@@ -260,7 +260,7 @@ public final class Predictors {
    * @param extractFn          a feature extract function to use to transform input into extracted
    *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOp            operations to fetch.
+   * @param fetchOps            operations to fetch.
    * @param metrics            a predictor metrics implementation
    *                           {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
    * @param <InputT>           type of the input to the {@link FeatureExtractor}.
@@ -270,12 +270,12 @@ public final class Predictors {
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
-      final String fetchOp,
+      final String[] fetchOps,
       final PredictorMetrics metrics) {
     return tensorFlow(modelUri,
                       FeatureExtractor.create(extractFn),
                       outTensorExtractor,
-                      fetchOp,
+                      fetchOps,
                       metrics);
   }
 
@@ -288,7 +288,7 @@ public final class Predictors {
    * @param featureExtractor   a feature extractor to use to transform input into extracted
    *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOp            operations to fetch.
+   * @param fetchOps            operations to fetch.
    * @param <InputT>           type of the input to the {@link FeatureExtractor}.
    * @param <ValueT>           type of the prediction result.
    */
@@ -296,11 +296,11 @@ public final class Predictors {
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
-      final String fetchOp) {
+      final String... fetchOps) {
     final ModelLoader<TensorFlowModel> modelLoader =
         TensorFlowLoader.create(modelUri);
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
-        TensorFlowPredictFn.example(outTensorExtractor, fetchOp);
+        TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
 
     return newBuilder(modelLoader, featureExtractor, predictFn).predictor();
   }
@@ -314,7 +314,7 @@ public final class Predictors {
    * @param featureExtractor   a feature extractor to use to transform input into extracted
    *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOp            operations to fetch.
+   * @param fetchOps            operations to fetch.
    * @param metrics            a predictor metrics implementation
    *                           {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
    * @param <InputT>           type of the input to the {@link FeatureExtractor}.
@@ -324,14 +324,14 @@ public final class Predictors {
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
-      final String fetchOp,
+      final String[] fetchOps,
       final PredictorMetrics metrics) {
     final ModelLoader<TensorFlowModel> modelLoader =
         TensorFlowLoader.create(modelUri);
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
-        TensorFlowPredictFn.example(outTensorExtractor, fetchOp);
+        TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
 
-    return newBuilderWithMetrics(modelLoader, featureExtractor, predictFn, metrics).predictor();
+    return newBuilder(modelLoader, featureExtractor, predictFn, metrics).predictor();
   }
 
 }

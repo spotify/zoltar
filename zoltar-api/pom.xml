@@ -28,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
+      <artifactId>zoltar-metrics</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
       <artifactId>zoltar-tensorflow</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -39,11 +43,6 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-java_2.11</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>zoltar-metrics</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -190,7 +190,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
     predictorBuilder =
         // #PredictorBuilderWithMetrics
         Predictors
-            .newBuilderWithMetrics(modelLoader, featureExtractor, predictFn, predictorMetrics)
+            .newBuilder(modelLoader, featureExtractor, predictFn, predictorMetrics)
             // #PredictorBuilderWithMetrics
             .with(Instrumentations.predictor(customMetrics));
   }

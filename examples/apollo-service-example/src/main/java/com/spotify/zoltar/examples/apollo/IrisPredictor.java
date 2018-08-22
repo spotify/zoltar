@@ -61,7 +61,7 @@ public final class IrisPredictor {
         TensorFlowPredictFn.example(tensors -> tensors.get(op).longValue()[0], op);
 
     final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
-        Predictors.newBuilderWithMetrics(modelLoader, extractFn, predictFn, metrics);
+        Predictors.newBuilder(modelLoader, extractFn, predictFn, metrics);
 
     return predictorBuilder.predictor();
   }

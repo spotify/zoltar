@@ -136,7 +136,7 @@ public final class Predictors {
    * @param <ValueT>    type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final ExtractFn<InputT, VectorT> extractFn,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
@@ -161,7 +161,7 @@ public final class Predictors {
    * @param <ValueT>    type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final ExtractFn<InputT, VectorT> extractFn,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
@@ -185,7 +185,7 @@ public final class Predictors {
    * @param <ValueT>         type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
@@ -210,7 +210,7 @@ public final class Predictors {
    * @param <ValueT>         type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
-  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilderWithMetrics(
+  public static <ModelT extends Model<?>, InputT, VectorT, ValueT> PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
       final ModelLoader<ModelT> modelLoader,
       final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
       final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,

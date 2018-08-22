@@ -62,15 +62,9 @@ import org.tensorflow.example.Example;
 public class TensorFlowModelTest {
 
   public static Predictor<Iris, Long> getTFIrisPredictor() throws Exception {
-    final TensorFlowPredictFn<Iris, Example, Long> predictFn = (model, vectors) -> {
-      final List<CompletableFuture<Prediction<Iris, Long>>> predictions = vectors.stream()
-          .map(vector -> CompletableFuture
-              .supplyAsync(() -> predict(model, vector.value()))
-              .thenApply(value -> Prediction.create(vector.input(), value)))
-          .collect(Collectors.toList());
-
-      return CompletableFutures.allAsList(predictions);
-    };
+    final String op = "linear/head/predictions/class_ids";
+    final TensorFlowPredictFn<Iris, Example, Long> predictFn =
+        TensorFlowPredictFn.example(tensors -> tensors.get(op).longValue()[0], op);
 
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
     final URI settingsUri = TensorFlowModelTest.class.getResource("/settings.json").toURI();
@@ -141,23 +135,4 @@ public class TensorFlowModelTest {
     new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(options);
   }
 
-  private static long predict(final TensorFlowModel model, final Example example) {
-    // rank 1 cause we need to account for batch
-    final byte[][] b = new byte[1][];
-    b[0] = example.toByteArray();
-    try (final Tensor<String> t = Tensors.create(b)) {
-      final Session.Runner runner = model.instance().session().runner()
-          .feed("input_example_tensor", t)
-          .fetch("linear/head/predictions/class_ids");
-      final List<Tensor<?>> output = runner.run();
-      final LongBuffer incomingClassId = LongBuffer.allocate(1);
-
-      try {
-        output.get(0).writeTo(incomingClassId);
-      } finally {
-        output.forEach(Tensor::close);
-      }
-      return incomingClassId.get(0);
-    }
-  }
 }

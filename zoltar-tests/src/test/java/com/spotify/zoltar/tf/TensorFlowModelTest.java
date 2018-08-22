@@ -64,10 +64,11 @@ public class TensorFlowModelTest {
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
+    final String op = "linear/head/predictions/class_ids";
     return Predictors.tensorFlow(modelUri,
                                  extractFn,
-                                 tensor -> tensor.longValue()[0],
-                                 "linear/head/predictions/class_ids");
+                                 tensors -> tensors.get(op).longValue()[0],
+                                 op);
   }
 
   @Test

@@ -50,13 +50,12 @@ public final class IrisPredictor {
         FeatranExtractFns.example(irisFeatureSpec, settings);
 
     final String op = "linear/head/predictions/class_ids";
-    final TensorFlowPredictFn<Iris, Example, Long> predictFn =
-        TensorFlowPredictFn.example(tensors -> tensors.get(op).longValue()[0], op);
-
-    final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
-        Predictors.newBuilder(modelLoader, extractFn, predictFn, metrics);
-
-    return predictorBuilder.predictor();
+    return Predictors.tensorFlow(
+        modelConfig.modelUri().toString(),
+        extractFn,
+        tensors -> tensors.get(op).longValue()[0],
+        op,
+        metrics);
   }
 
 }

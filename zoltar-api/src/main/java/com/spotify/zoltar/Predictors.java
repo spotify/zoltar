@@ -29,6 +29,7 @@ import com.spotify.zoltar.tf.JTensor;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
+import java.util.Map;
 import java.util.function.Function;
 import org.tensorflow.example.Example;
 
@@ -245,7 +246,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
-      final Function<JTensor, ValueT> outTensorExtractor,
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String fetchOp) {
     return tensorFlow(modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOp);
   }
@@ -268,7 +269,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
-      final Function<JTensor, ValueT> outTensorExtractor,
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String fetchOp,
       final PredictorMetrics metrics) {
     return tensorFlow(modelUri,
@@ -294,7 +295,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
-      final Function<JTensor, ValueT> outTensorExtractor,
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String fetchOp) {
     final ModelLoader<TensorFlowModel> modelLoader =
         TensorFlowLoader.create(modelUri);
@@ -322,7 +323,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
-      final Function<JTensor, ValueT> outTensorExtractor,
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String fetchOp,
       final PredictorMetrics metrics) {
     final ModelLoader<TensorFlowModel> modelLoader =

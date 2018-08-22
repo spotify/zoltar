@@ -16,11 +16,11 @@
   <properties>
     <scala.version>2.11.12</scala.version>
     <tensorFlow.version>1.8.0</tensorFlow.version>
-    <scio.version>0.5.6</scio.version>
-    <featran.version>0.2.0</featran.version>
-    <proto.version>3.5.1</proto.version>
-    <grpc.version>1.12.0</grpc.version>
-    <netty.version>4.1.22.Final</netty.version>
+    <scio.version>0.5.7</scio.version>
+    <featran.version>0.2.1</featran.version>
+    <proto.version>3.6.0</proto.version>
+    <grpc.version>1.13.1</grpc.version>
+    <netty.version>4.1.25.Final</netty.version>
     <jackson.version>2.9.5</jackson.version>
   </properties>
 
@@ -29,7 +29,7 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-bom</artifactId>
-        <version>0.47.0-alpha</version>
+        <version>0.58.0-alpha</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -78,7 +78,7 @@
       <dependency>
         <groupId>com.spotify.metrics</groupId>
         <artifactId>semantic-metrics-core</artifactId>
-        <version>0.11.2</version>
+        <version>0.11.5</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -128,7 +128,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>futures-extra</artifactId>
-        <version>2.6.2</version>
+        <version>3.1.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
@@ -180,9 +180,18 @@
         <version>${scio.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.google.cloud.bigtable</groupId>
+        <artifactId>bigtable-protos</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>scio-bigquery_2.11</artifactId>
         <exclusions>
+          <exclusion>
+            <groupId>com.google.cloud.bigtable</groupId>
+            <artifactId>bigtable-protos</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
@@ -245,6 +254,11 @@
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
+        <artifactId>grpc-context</artifactId>
+        <version>${grpc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
         <artifactId>grpc-core</artifactId>
         <version>${grpc.version}</version>
       </dependency>
@@ -281,17 +295,17 @@
       <dependency>
         <groupId>com.google.auth</groupId>
         <artifactId>google-auth-library-credentials</artifactId>
-        <version>0.9.1</version>
+        <version>0.10.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.auth</groupId>
         <artifactId>google-auth-library-oauth2-http</artifactId>
-        <version>0.9.1</version>
+        <version>0.10.0</version>
       </dependency>
       <dependency>
         <groupId>io.opencensus</groupId>
         <artifactId>opencensus-api</artifactId>
-        <version>0.11.1</version>
+        <version>0.15.0</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -321,22 +335,22 @@
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client-jackson2</artifactId>
-        <version>1.23.0</version>
+        <version>1.24.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client-jackson</artifactId>
-        <version>1.23.0</version>
+        <version>1.24.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-storage</artifactId>
-        <version>v1-rev129-1.23.0</version>
+        <version>v1-rev135-1.24.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-ml</artifactId>
-        <version>v1-rev49-1.23.0</version>
+        <version>v1-rev56-1.24.1</version>
       </dependency>
 
       <!-- Test dependencies -->

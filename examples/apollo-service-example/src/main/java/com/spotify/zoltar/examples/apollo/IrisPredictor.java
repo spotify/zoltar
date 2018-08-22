@@ -24,15 +24,10 @@ import com.spotify.featran.FeatureSpec;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.Models;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.metrics.PredictorMetrics;
-import com.spotify.zoltar.tf.TensorFlowModel;
-import com.spotify.zoltar.tf.TensorFlowPredictFn;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -46,24 +41,21 @@ public final class IrisPredictor {
   /**
    * Configure Iris prediction, should be called at the service startup/configuration stage.
    */
+
   public static Predictor<Iris, Long> create(final ModelConfig modelConfig,
                                              final PredictorMetrics metrics) throws IOException {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
-    final ModelLoader<TensorFlowModel> modelLoader =
-        Models.tensorFlow(modelConfig.modelUri().toString());
-
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
 
-    final String op = "linear/head/predictions/class_ids";
-    final TensorFlowPredictFn<Iris, Example, Long> predictFn =
-        TensorFlowPredictFn.example(tensors -> tensors.get(op).longValue()[0], op);
-
-    final PredictorBuilder<TensorFlowModel, Iris, Example, Long> predictorBuilder =
-        Predictors.newBuilder(modelLoader, extractFn, predictFn, metrics);
-
-    return predictorBuilder.predictor();
+    final String[] ops = new String[]{"linear/head/predictions/class_ids"};
+    return Predictors.tensorFlow(
+        modelConfig.modelUri().toString(),
+        extractFn,
+        tensors -> tensors.get(ops[0]).longValue()[0],
+        ops,
+        metrics);
   }
 
 }

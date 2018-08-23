@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/spotify/zoltar.svg?branch=master)](https://travis-ci.org/spotify/zoltar)
 [![codecov.io](https://codecov.io/github/spotify/zoltar/coverage.svg?branch=master)](https://codecov.io/github/spotify/zoltar?branch=master)
-[![Maven](https://img.shields.io/maven-central/v/com.spotify/zoltar-core.svg)](https://search.maven.org/#search%7Cga%7C1%7Ccom.spotify.zoltar)
+[![Maven](https://img.shields.io/maven-central/v/com.spotify/zoltar-core.svg)](https://search.maven.org/search?q=com.spotify.zoltar)
 [![GitHub license](https://img.shields.io/github/license/spotify/zoltar.svg)](./LICENSE)
 
 Zoltar is a common library for serving TensorFlow, XGBoost and scikit-learn models in production. 

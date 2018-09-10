@@ -205,8 +205,7 @@ final MetricId metricId = MetricId.build().tagged(&quot;service&quot;, &quot;my-
 <pre class="prettyprint"><code class="language-java">final PredictorMetrics&lt;Integer, Float, Float&gt; predictorMetrics =
     SemanticPredictorMetrics.create(metricRegistry, metricId);</code></pre>
 <pre class="prettyprint"><code class="language-java">Predictors
-    .newBuilder(modelLoader, featureExtractor, predictFn)
-    .with(Instrumentations.predictor(predictorMetrics))</code></pre>
+    .newBuilder(modelLoader, featureExtractor, predictFn, predictorMetrics)</code></pre>
 <h2><a href="#example" name="example" class="anchor"><span class="anchor-link"></span></a>Example</h2>
 <p>Follow this <a href="https://github.com/spotify/zoltar/tree/master/examples/custom-metrics">example</a> to see how you can create new set of metrics and attach them. </p>
 </div>

@@ -7,7 +7,7 @@
 
 Common library for serving TensorFlow and XGBoost models in production.
 
-Zoltar is a library that helps load predictive machine learning models in a JVM. It provides several key abstractions which you can implement to help your service load a serialized model, featurize input data, submit feature vectors to the model, and serve the model's predictions. Below is a quick overview of these abstractions which can be found in @github[zoltar-core](../../zoltar-core/src/main/java/com/spotify/zoltar).
+Zoltar is a library that helps load predictive machine learning models in a JVM. It provides several key abstractions which you can implement to help your service load a serialized model, featurize input data, submit feature vectors to the model, and serve the model's predictions. Below is a quick overview of these abstractions which can be found in @github[zoltar-core](../../../zoltar-core/src/main/java/com/spotify/zoltar).
 
 ## Features
 

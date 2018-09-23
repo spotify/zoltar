@@ -18,6 +18,7 @@ Zoltar is a library that helps load predictive machine learning models in a JVM.
     * Google Cloud Storage
 * [Featran](https://github.com/spotify/featran) featurization library integration.
 * Easy integration with [Apollo](https://github.com/spotify/apollo) services.
+* Easy integration with [Semantic Metrics](https://github.com/spotify/semantic-metrics)
 
 ## Abstractions
 

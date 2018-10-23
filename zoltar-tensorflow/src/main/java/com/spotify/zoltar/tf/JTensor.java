@@ -99,7 +99,7 @@ public abstract class JTensor implements Serializable {
   /**
    * {@link DataType} of the underlying {@link Tensor}.
    */
-  abstract DataType dataType();
+  public abstract DataType dataType();
 
   /**
    * Number of dimensions of the underlying {@link Tensor}.

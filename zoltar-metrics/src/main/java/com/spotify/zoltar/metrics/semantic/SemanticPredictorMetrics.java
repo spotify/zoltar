@@ -53,7 +53,7 @@ public abstract class SemanticPredictorMetrics<InputT, VectorT, ValueT>
       final SemanticMetricRegistry registry,
       final MetricId metricId) {
     final LoadingCache<Id, Metrics> metersCache =
-        CacheBuilder.<Id, Metrics>newBuilder()
+        CacheBuilder.newBuilder()
             .build(new CacheLoader<Id, Metrics>() {
               @Override
               public Metrics load(final Id id) throws Exception {

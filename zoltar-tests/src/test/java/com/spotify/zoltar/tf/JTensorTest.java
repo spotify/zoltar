@@ -211,6 +211,7 @@ public class JTensorTest {
     new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(jt);
   }
 
+  @SuppressWarnings("ReturnValueIgnored")
   private <T> void testException(final JTensor jt, final Function<JTensor, T> fn) {
     try {
       fn.apply(jt);

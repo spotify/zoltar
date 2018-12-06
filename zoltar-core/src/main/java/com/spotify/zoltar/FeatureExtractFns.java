@@ -39,22 +39,22 @@ public interface FeatureExtractFns {
    * features of user defined type.
    *
    * @param <InputT> type of the input to feature extraction.
-   * @param <ValueT> type of feature extraction result.
+   * @param <VectorT> type of feature extraction result.
    */
   @FunctionalInterface
-  interface ExtractFn<InputT, ValueT> {
+  interface ExtractFn<InputT, VectorT> {
 
-    static <InputT, ValueT> ExtractFn<InputT, ValueT> lift(final Function<InputT, ValueT> fn) {
+    static <InputT, VectorT> ExtractFn<InputT, VectorT> lift(final Function<InputT, VectorT> fn) {
       return inputs -> Arrays.stream(inputs).map(fn).collect(Collectors.toList());
     }
 
     /**
      * Functional interface. Perform feature extraction.
      */
-    List<ValueT> apply(InputT... inputs) throws Exception;
+    List<VectorT> apply(InputT... inputs) throws Exception;
 
-    default <C extends ExtractFn<InputT, ValueT>> C with(
-        final Function<ExtractFn<InputT, ValueT>, C> fn) {
+    default <C extends ExtractFn<InputT, VectorT>> C with(
+        final Function<ExtractFn<InputT, VectorT>, C> fn) {
       return fn.apply(this);
     }
   }
@@ -64,15 +64,15 @@ public interface FeatureExtractFns {
    * features of user defined type for each input.
    *
    * @param <InputT> type of the input to feature extraction.
-   * @param <ValueT> type of feature extraction result.
+   * @param <VectorT> type of feature extraction result.
    */
   @FunctionalInterface
-  interface BatchExtractFn<InputT, ValueT> extends ExtractFn<List<InputT>, List<ValueT>> {
+  interface BatchExtractFn<InputT, VectorT> extends ExtractFn<List<InputT>, List<VectorT>> {
 
-    static <InputT, ValueT> BatchExtractFn<InputT, ValueT> lift(
-        final ExtractFn<InputT, ValueT> fn) {
+    static <InputT, VectorT> BatchExtractFn<InputT, VectorT> lift(
+        final ExtractFn<InputT, VectorT> fn) {
       return inputs -> {
-        final ImmutableList.Builder<List<ValueT>> output = ImmutableList.builder();
+        final ImmutableList.Builder<List<VectorT>> output = ImmutableList.builder();
         for (final List<InputT> batch: inputs) {
           final InputT[] objects = (InputT[]) batch.toArray(new Object[batch.size()]);
           output.add(fn.apply(objects));
@@ -82,7 +82,8 @@ public interface FeatureExtractFns {
       };
     }
 
-    static <InputT, ValueT> BatchExtractFn<InputT, ValueT> lift(final Function<InputT, ValueT> fn) {
+    static <InputT, VectorT> BatchExtractFn<InputT, VectorT> lift(
+        final Function<InputT, VectorT> fn) {
       return lift(ExtractFn.lift(fn));
     }
   }

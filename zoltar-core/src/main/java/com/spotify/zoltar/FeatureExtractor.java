@@ -33,10 +33,10 @@ import java.util.function.Function;
  *
  * @param <ModelT>  underlying type of the {@link Model}.
  * @param <InputT> type of the input to feature extraction.
- * @param <ValueT> type of feature extraction result.
+ * @param <VectorT> type of feature extraction result.
  */
 @FunctionalInterface
-public interface FeatureExtractor<ModelT extends Model<?>, InputT, ValueT> {
+public interface FeatureExtractor<ModelT extends Model<?>, InputT, VectorT> {
 
   /**
    * Creates an extractor given a generic {@link ExtractFn}, consider using <a
@@ -45,14 +45,15 @@ public interface FeatureExtractor<ModelT extends Model<?>, InputT, ValueT> {
    *
    * @param fn {@link ExtractFn} extraction function
    * @param <InputT> type of the input to feature extraction.
-   * @param <ValueT> type of feature extraction result.
+   * @param <VectorT> type of feature extraction result.
    */
-  static <ModelT extends Model<?>, InputT, ValueT> FeatureExtractor<ModelT, InputT, ValueT> create(
-      final ExtractFn<InputT, ValueT> fn) {
+  @SuppressWarnings("checkstyle:LineLength")
+  static <ModelT extends Model<?>, InputT, VectorT> FeatureExtractor<ModelT, InputT, VectorT> create(
+      final ExtractFn<InputT, VectorT> fn) {
     return (model, inputs) -> {
-      final List<Vector<InputT, ValueT>> result = Lists.newArrayList();
+      final List<Vector<InputT, VectorT>> result = Lists.newArrayList();
       final Iterator<InputT> i1 = Arrays.asList(inputs).iterator();
-      final Iterator<ValueT> i2 = fn.apply(inputs).iterator();
+      final Iterator<VectorT> i2 = fn.apply(inputs).iterator();
       while (i1.hasNext() && i2.hasNext()) {
         result.add(Vector.create(i1.next(), i2.next()));
       }
@@ -61,10 +62,10 @@ public interface FeatureExtractor<ModelT extends Model<?>, InputT, ValueT> {
   }
 
   /** Functional interface. Perform the feature extraction given the input. */
-  List<Vector<InputT, ValueT>> extract(ModelT model, InputT... input) throws Exception;
+  List<Vector<InputT, VectorT>> extract(ModelT model, InputT... input) throws Exception;
 
-  default <C extends FeatureExtractor<ModelT, InputT, ValueT>> C with(
-      final Function<FeatureExtractor<ModelT, InputT, ValueT>, C> fn) {
+  default <C extends FeatureExtractor<ModelT, InputT, VectorT>> C with(
+      final Function<FeatureExtractor<ModelT, InputT, VectorT>, C> fn) {
     return fn.apply(this);
   }
 }

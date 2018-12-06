@@ -334,4 +334,24 @@ public final class Predictors {
     return newBuilder(modelLoader, featureExtractor, predictFn, metrics).predictor();
   }
 
+  /**
+   * Returns a TensorFlow Predictor. Assumes feature extraction is embedded in the model via
+   * Tensorflow Transform, so no extractFn is needed and the input type must be Example.
+   *
+   * @param modelUri           should point to a directory of the saved TensorFlow {@link
+   *                           org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                           resource, GCS etc.
+   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param fetchOps            operations to fetch.
+   * @param metrics            a predictor metrics implementation
+   *                           {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ValueT>           type of the prediction result.
+   */
+  public static <ValueT> Predictor<Example, ValueT> tensorFlow(
+      final String modelUri,
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
+      final String[] fetchOps,
+      final PredictorMetrics metrics) {
+    return tensorFlow(modelUri, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);
+  }
 }

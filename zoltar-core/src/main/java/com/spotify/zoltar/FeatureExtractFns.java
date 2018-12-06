@@ -48,6 +48,10 @@ public interface FeatureExtractFns {
       return inputs -> Arrays.stream(inputs).map(fn).collect(Collectors.toList());
     }
 
+    static <InputT> ExtractFn<InputT, InputT> identity() {
+      return lift(Function.identity());
+    }
+
     /**
      * Functional interface. Perform feature extraction.
      */

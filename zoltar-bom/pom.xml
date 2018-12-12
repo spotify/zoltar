@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.spotify</groupId>
     <artifactId>zoltar-parent</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1</version>
   </parent>
 
   <name>Zoltar Bill of Materials</name>
@@ -37,42 +37,42 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-api</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-core</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-featran</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-metrics</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-tensorflow</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-tests</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-xgboost</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-mlengine</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.1</version>
       </dependency>
 
       <dependency>

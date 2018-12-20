@@ -27,3 +27,6 @@ created_job_ids
 
 ## Python virtualenv
 .venv
+
+## Do not ignore jars used by unit tests
+!zoltar-tests/src/test/resources/model.jar

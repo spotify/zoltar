@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,10 +60,19 @@ public final class FileSystemExtras {
   /**
    * Creates a {@link Path} given a {@link URI} in a user-friendly and safe way.
    */
-  public static Path path(final URI uri) {
+  public static Path path(final URI uri) throws IOException {
+    final String scheme = uri.getScheme();
+
     // uri with no scheme might be a local path
-    if (uri.getScheme() == null) {
+    if (scheme == null) {
       return Paths.get(uri.toString());
+    }
+
+    // If the URI is a jar file, register it as a file system so Paths.get is able to access the
+    // files in it. Otherwise we get FileSystemNotFoundException. See Oracle doc for more details:
+    // https://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+    if (scheme.equals("jar")) {
+      FileSystems.newFileSystem(uri, Collections.emptyMap());
     }
 
     try {

@@ -20,6 +20,7 @@
 
 package com.spotify.zoltar.fs;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,7 +44,7 @@ import org.junit.Test;
 public class FileSystemExtrasTest {
 
   @Test
-  public void localPath() {
+  public void localPath() throws IOException {
     final Path noSchema = FileSystemExtras.path(URI.create("/tmp"));
     assertNotNull(noSchema);
 
@@ -51,8 +52,16 @@ public class FileSystemExtrasTest {
     assertNotNull(withSchema);
   }
 
+  @Test
+  public void jarPath() throws IOException {
+    final String file = getClass().getResource("/model.jar").getFile();
+    final URI uri = URI.create(String.format("jar:file:%s!/tensorflow/", file));
+    final Path path = FileSystemExtras.path(uri);
+    assertThat(path, notNullValue());
+  }
+
   @Test(expected = IllegalArgumentException.class)
-  public void invalidGcsBucketUri() {
+  public void invalidGcsBucketUri() throws IOException {
     FileSystemExtras.path(URI.create("gs://bucket_name"));
     fail("Should throw exception; bucket name is not rfc 2396 compliant");
   }

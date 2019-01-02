@@ -24,6 +24,7 @@ import com.google.cloud.storage.contrib.nio.CloudStorageFileSystem;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.CopyOption;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,14 +69,14 @@ public final class FileSystemExtras {
       return Paths.get(uri.toString());
     }
 
-    // If the URI is a jar file, register it as a file system so Paths.get is able to access the
-    // files in it. Otherwise we get FileSystemNotFoundException. See Oracle doc for more details:
-    // https://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-    if (scheme.equals("jar")) {
-      FileSystems.newFileSystem(uri, Collections.emptyMap());
-    }
-
     try {
+      return Paths.get(uri);
+    } catch (FileSystemNotFoundException e) {
+      // If the URI is a jar/zip file, register it as a file system so Paths.get is able to access
+      // the files in it. See Oracle doc for more details:
+      // https://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+      FileSystems.newFileSystem(uri, Collections.emptyMap());
+
       return Paths.get(uri);
     } catch (IllegalArgumentException e) {
       if (uri.getHost() == null

@@ -37,8 +37,7 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
    * @param modelId   model id.
    */
   static MlEngineLoader create(final String projectId, final String modelId) {
-    final String id = String.format("projects/%s/models/%s", projectId, modelId);
-    return create(Model.Id.create(id));
+    return create(() -> MlEngineModel.create(projectId, modelId));
   }
 
   /**
@@ -51,9 +50,7 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
   static MlEngineLoader create(final String projectId,
                                final String modelId,
                                final String versionId) {
-    final String id = String
-        .format("projects/%s/models/%s/versions/%s", projectId, modelId, versionId);
-    return create(Model.Id.create(id));
+    return create(() -> MlEngineModel.create(projectId, modelId, versionId));
   }
 
   /**

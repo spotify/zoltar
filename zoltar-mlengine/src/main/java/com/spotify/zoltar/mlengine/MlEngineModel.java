@@ -59,6 +59,34 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
   /**
    * Creates a Google Cloud ML Engine backed model.
    *
+   * @param projectId Google project id.
+   * @param modelId   model id.
+   */
+  static MlEngineModel create(final String projectId, final String modelId)
+      throws IOException, GeneralSecurityException {
+    final String id = String.format("projects/%s/models/%s", projectId, modelId);
+    return create(Model.Id.create(id));
+  }
+
+  /**
+   * Creates a Google Cloud ML Engine backed model.
+   *
+   * @param projectId Google project id.
+   * @param modelId   model id.
+   * @param versionId model version id.
+   */
+  static MlEngineModel create(final String projectId,
+                              final String modelId,
+                              final String versionId)
+      throws IOException, GeneralSecurityException {
+    final String id = String
+        .format("projects/%s/models/%s/versions/%s", projectId, modelId, versionId);
+    return create(Model.Id.create(id));
+  }
+
+  /**
+   * Creates a Google Cloud ML Engine backed model.
+   *
    * @param id {@link Model.Id} needs to be created with the following format:
    *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}"</pre>
    *           or

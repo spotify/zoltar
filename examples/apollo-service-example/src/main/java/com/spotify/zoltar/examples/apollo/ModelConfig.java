@@ -41,7 +41,7 @@ public abstract class ModelConfig {
 
   public Executor modelExecutor() {
     final int threads = Runtime.getRuntime().availableProcessors();
-    return Executors.newScheduledThreadPool(threads);
+    return Executors.newFixedThreadPool(threads);
   }
 
   /**

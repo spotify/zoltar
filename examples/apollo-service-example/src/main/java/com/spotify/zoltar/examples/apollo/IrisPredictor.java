@@ -28,9 +28,11 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.metrics.PredictorMetrics;
+import com.spotify.zoltar.tf.TensorFlowLoader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.ForkJoinPool;
 import org.tensorflow.example.Example;
 
 /**
@@ -44,14 +46,17 @@ public final class IrisPredictor {
 
   public static Predictor<Iris, Long> create(final ModelConfig modelConfig,
                                              final PredictorMetrics metrics) throws IOException {
+
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
+    final TensorFlowLoader modelLoader = TensorFlowLoader
+        .create(modelConfig.modelUri().toString(), ForkJoinPool.commonPool());
 
     final String[] ops = new String[]{"linear/head/predictions/class_ids"};
     return Predictors.tensorFlow(
-        modelConfig.modelUri().toString(),
+        modelLoader,
         extractFn,
         tensors -> tensors.get(ops[0]).longValue()[0],
         ops,

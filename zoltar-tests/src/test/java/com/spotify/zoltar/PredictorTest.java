@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import java.time.Duration;
@@ -71,7 +70,7 @@ public class PredictorTest {
     };
 
     try {
-      final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+      final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
       DefaultPredictorBuilder
           .create(loader, extractFn, predictFn)
           .predictor()
@@ -92,7 +91,7 @@ public class PredictorTest {
     final AsyncPredictFn<DummyModel, Object, Object, Object> predictFn =
         (model, vectors) -> CompletableFuture.completedFuture(Collections.emptyList());
 
-    final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+    final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
     DefaultPredictorBuilder
         .create(loader, extractFn, predictFn)
         .predictor()
@@ -111,7 +110,7 @@ public class PredictorTest {
           .collect(Collectors.toList());
     };
 
-    final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+    final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
     final List<Prediction<Integer, Float>> predictions =
         DefaultPredictorBuilder
             .create(loader, extractFn, predictFn)

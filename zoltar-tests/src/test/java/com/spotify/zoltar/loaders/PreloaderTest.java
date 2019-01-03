@@ -26,6 +26,7 @@ import static org.junit.Assert.assertThat;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
 import java.time.Duration;
+import java.util.concurrent.ForkJoinPool;
 import org.junit.Test;
 
 public class PreloaderTest {
@@ -54,8 +55,11 @@ public class PreloaderTest {
   @Test
   public void preload() {
     final ModelLoader<DummyModel> loader = ModelLoader
-        .lift(DummyModel::new)
-        .with(Preloader.preload());
+        .load(() -> {
+          Thread.sleep(Duration.ofMillis(500).toMillis());
+          return new DummyModel();
+        }, ForkJoinPool.commonPool())
+        .with(Preloader.preload(Duration.ofSeconds(1)));
 
     assertThat(loader.get().toCompletableFuture().isDone(), is(true));
   }
@@ -63,24 +67,13 @@ public class PreloaderTest {
   @Test
   public void preloadTimeout() {
     final ModelLoader<DummyModel> loader = ModelLoader
-        .lift(() -> {
+        .load(() -> {
           Thread.sleep(Duration.ofSeconds(10).toMillis());
           return new DummyModel();
-        })
+        }, ForkJoinPool.commonPool())
         .with(Preloader.preload(Duration.ZERO));
 
     assertThat(loader.get().toCompletableFuture().isCompletedExceptionally(), is(true));
   }
 
-  @Test
-  public void preloadAsync() {
-    final ModelLoader<DummyModel> loader = ModelLoader
-        .lift(() -> {
-          Thread.sleep(Duration.ofSeconds(10).toMillis());
-          return new DummyModel();
-        })
-        .with(Preloader.preloadAsync());
-
-    assertThat(loader.get().toCompletableFuture().isDone(), is(false));
-  }
 }

@@ -22,10 +22,11 @@ package com.spotify.zoltar.mlengine;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
- * {@link MlEngineLoader} loader. This loader is composed with {@link ModelMemoizer}.
+ * {@link MlEngineLoader} loader.
  */
 @FunctionalInterface
 public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
@@ -36,8 +37,9 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
    * @param projectId Google project id.
    * @param modelId   model id.
    */
-  static MlEngineLoader create(final String projectId, final String modelId) {
-    return create(() -> MlEngineModel.create(projectId, modelId));
+  static MlEngineLoader create(final String projectId, final String modelId)
+      throws IOException, GeneralSecurityException {
+    return ModelLoader.loaded(MlEngineModel.create(projectId, modelId))::get;
   }
 
   /**
@@ -49,8 +51,9 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
    */
   static MlEngineLoader create(final String projectId,
                                final String modelId,
-                               final String versionId) {
-    return create(() -> MlEngineModel.create(projectId, modelId, versionId));
+                               final String versionId)
+      throws IOException, GeneralSecurityException {
+    return ModelLoader.loaded(MlEngineModel.create(projectId, modelId, versionId))::get;
   }
 
   /**
@@ -61,21 +64,8 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
    *           "projects/{PROJECT_ID}/models/{MODEL_ID}/versions/{MODEL_VERSION}"
    *           </pre>
    */
-  static MlEngineLoader create(final Model.Id id) {
-    return create(() -> MlEngineModel.create(id));
-  }
-
-  /**
-   * Returns a Google Cloud ML Engine model loader.
-   *
-   * @param supplier {@link MlEngineModel} supplier.
-   */
-  static MlEngineLoader create(final ThrowableSupplier<MlEngineModel> supplier) {
-    final ModelLoader<MlEngineModel> loader = ModelLoader
-        .lift(supplier)
-        .with(ModelMemoizer::memoize);
-
-    return loader::get;
+  static MlEngineLoader create(final Model.Id id) throws IOException, GeneralSecurityException {
+    return ModelLoader.loaded(MlEngineModel.create(id))::get;
   }
 
 }

@@ -24,7 +24,9 @@ import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 /**
@@ -36,10 +38,28 @@ import java.util.function.Function;
 public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
 
   /**
-   * Returns a blocking {@link Preloader}. Blocks at create time till the model is loaded.
+   * Lifts a supplier into a {@link ModelLoader}.
+   *
+   * @param supplier model supplier.
+   * @param <M>      Underlying model instance.
    */
-  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload() {
-    return preload(Duration.ofDays(Integer.MAX_VALUE));
+  static <M extends Model<?>> ModelLoader<M> preload(final ThrowableSupplier<M> supplier,
+                                                     final Duration duration,
+                                                     final Executor executor)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    return preload(ModelLoader.load(supplier, executor), duration);
+  }
+
+  /**
+   * Lifts a supplier into a {@link ModelLoader}.
+   *
+   * @param loader model loader.
+   * @param <M>    Underlying model instance.
+   */
+  static <M extends Model<?>> Preloader<M> preload(final ModelLoader<M> loader,
+                                                  final Duration duration)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    return ModelLoader.loaded(loader.get(duration))::get;
   }
 
   /**
@@ -51,28 +71,15 @@ public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
   static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload(
       final Duration duration) {
     return loader -> {
-      CompletionStage<M> model;
       try {
-        model = CompletableFuture.completedFuture(loader.get(duration));
+        return preload(loader, duration);
       } catch (final Exception e) {
         final CompletableFuture<M> failed = new CompletableFuture<>();
         failed.completeExceptionally(e);
 
-        model = failed;
+        return () -> failed;
       }
-
-      final CompletionStage<M> finalModel = model;
-      return () -> finalModel;
     };
   }
 
-  /**
-   * Returns a asynchronous {@link Preloader}.
-   */
-  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preloadAsync() {
-    return loader -> {
-      final CompletionStage<M> model = loader.get();
-      return () -> model;
-    };
-  }
 }

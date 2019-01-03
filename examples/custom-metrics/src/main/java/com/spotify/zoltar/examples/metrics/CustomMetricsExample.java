@@ -37,7 +37,6 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.Vector;
-import com.spotify.zoltar.loaders.Preloader;
 import com.spotify.zoltar.metrics.FeatureExtractorMetrics;
 import com.spotify.zoltar.metrics.Instrumentations;
 import com.spotify.zoltar.metrics.PredictFnMetrics;
@@ -165,9 +164,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
   }
 
   CustomMetricsExample(final SemanticMetricRegistry metricRegistry, final MetricId metricId) {
-    final ModelLoader<DummyModel> modelLoader = ModelLoader
-        .lift(DummyModel::new)
-        .with(Preloader.preload(Duration.ofMinutes(1)));
+    final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
     final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn = (model, vectors) -> {
       return vectors.stream()

@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
@@ -50,17 +51,30 @@ public interface ModelLoader<M extends Model<?>> {
   /**
    * Lifts a supplier into a {@link ModelLoader}.
    *
-   * @param supplier model supplier.
-   * @param <M> Underlying model instance.
+   * @param model Underlying model instance.
    */
-  static <M extends Model<?>> ModelLoader<M> lift(final ThrowableSupplier<M> supplier) {
-    return () -> CompletableFuture.supplyAsync(() -> {
+  static <M extends Model<?>> ModelLoader<M> loaded(final M model) {
+    final CompletableFuture<M> m = CompletableFuture.completedFuture(model);
+    return () -> m;
+  }
+
+  /**
+   * Lifts a supplier into a {@link ModelLoader}.
+   *
+   * @param supplier model supplier.
+   * @param <M>      Underlying model instance.
+   */
+  static <M extends Model<?>> ModelLoader<M> load(final ThrowableSupplier<M> supplier,
+                                                  final Executor executor) {
+    final CompletableFuture<M> future = CompletableFuture.supplyAsync(() -> {
       try {
         return supplier.get();
       } catch (final Exception e) {
         throw new CompletionException(e);
       }
-    });
+    }, executor);
+
+    return () -> future;
   }
 
   /**

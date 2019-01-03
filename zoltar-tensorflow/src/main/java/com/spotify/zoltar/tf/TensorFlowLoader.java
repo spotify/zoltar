@@ -22,13 +22,11 @@ package com.spotify.zoltar.tf;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
-import com.spotify.zoltar.loaders.Preloader;
 import java.net.URI;
+import java.util.concurrent.Executor;
 
 /**
- * {@link TensorFlowModel} loader. This loader is composed with {@link ModelMemoizer} and {@link
- * Preloader}.
+ * {@link TensorFlowModel} loader.
  */
 @FunctionalInterface
 public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
@@ -40,8 +38,8 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    */
-  static TensorFlowLoader create(final String modelUri) {
-    return create(() -> TensorFlowModel.create(URI.create(modelUri)));
+  static TensorFlowLoader create(final String modelUri, final Executor executor) {
+    return create(() -> TensorFlowModel.create(URI.create(modelUri)), executor);
   }
 
   /**
@@ -52,8 +50,10 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    */
-  static TensorFlowLoader create(final Model.Id id, final String modelUri) {
-    return create(() -> TensorFlowModel.create(id, URI.create(modelUri)));
+  static TensorFlowLoader create(final Model.Id id,
+                                 final String modelUri,
+                                 final Executor executor) {
+    return create(() -> TensorFlowModel.create(id, URI.create(modelUri)), executor);
   }
 
   /**
@@ -65,8 +65,9 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
    */
   static TensorFlowLoader create(final String modelUri,
-                                 final TensorFlowModel.Options options) {
-    return create(() -> TensorFlowModel.create(URI.create(modelUri), options));
+                                 final TensorFlowModel.Options options,
+                                 final Executor executor) {
+    return create(() -> TensorFlowModel.create(URI.create(modelUri), options), executor);
   }
 
   /**
@@ -80,8 +81,9 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    */
   static TensorFlowLoader create(final Model.Id id,
                                  final String modelUri,
-                                 final TensorFlowModel.Options options) {
-    return create(() -> TensorFlowModel.create(id, URI.create(modelUri), options));
+                                 final TensorFlowModel.Options options,
+                                 final Executor executor) {
+    return create(() -> TensorFlowModel.create(id, URI.create(modelUri), options), executor);
   }
 
   /**
@@ -89,13 +91,9 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *
    * @param supplier {@link TensorFlowModel} supplier.
    */
-  static TensorFlowLoader create(final ThrowableSupplier<TensorFlowModel> supplier) {
-    final ModelLoader<TensorFlowModel> loader = ModelLoader
-        .lift(supplier)
-        .with(ModelMemoizer::memoize)
-        .with(Preloader.preloadAsync());
-
-    return loader::get;
+  static TensorFlowLoader create(final ThrowableSupplier<TensorFlowModel> supplier,
+                                 final Executor executor) {
+    return ModelLoader.load(supplier, executor)::get;
   }
 
 }

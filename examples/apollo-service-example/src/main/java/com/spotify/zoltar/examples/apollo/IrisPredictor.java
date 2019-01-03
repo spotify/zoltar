@@ -32,7 +32,6 @@ import com.spotify.zoltar.tf.TensorFlowLoader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.ForkJoinPool;
 import org.tensorflow.example.Example;
 
 /**
@@ -52,7 +51,7 @@ public final class IrisPredictor {
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
     final TensorFlowLoader modelLoader = TensorFlowLoader
-        .create(modelConfig.modelUri().toString(), ForkJoinPool.commonPool());
+        .create(modelConfig.modelUri().toString(), modelConfig.modelExecutor());
 
     final String[] ops = new String[]{"linear/head/predictions/class_ids"};
     return Predictors.tensorFlow(

@@ -24,6 +24,8 @@ import com.google.auto.value.AutoValue;
 import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Immutable object that contains model / feature extraction configuration properties.
@@ -36,6 +38,11 @@ public abstract class ModelConfig {
 
   /** settings URI path. */
   public abstract URI settingsUri();
+
+  public Executor modelExecutor() {
+    final int threads = Runtime.getRuntime().availableProcessors();
+    return Executors.newScheduledThreadPool(threads);
+  }
 
   /**
    * Creates a {@link ModelConfig} create a {@link Config}.

@@ -57,7 +57,7 @@ public class ModelLoaderTest {
   public void preload() throws InterruptedException, ExecutionException, TimeoutException {
     final ModelLoader<DummyModel> loader = ModelLoader
         .load(() -> {
-          Thread.sleep(Duration.ofMillis(500).toMillis());
+          Thread.sleep(Duration.ofMillis(5).toMillis());
           return new DummyModel();
         }, ForkJoinPool.commonPool());
 

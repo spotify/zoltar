@@ -30,15 +30,15 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 /**
- * Preloader is model loader that calls {@link ModelLoader#get()} allowing model preloading.
+ * PreLoader is model loader that calls {@link ModelLoader#get()} allowing model preloading.
  *
  * @param <M> Model instance type.
  */
 @FunctionalInterface
-public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
+public interface PreLoader<M extends Model<?>> extends ModelLoader<M> {
 
   /**
-   * Returns a blocking {@link Preloader}. Blocks till the model is loaded or a {@link Duration} is
+   * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration} is
    * met.
    *
    * @param supplier model supplier.
@@ -54,26 +54,26 @@ public interface Preloader<M extends Model<?>> extends ModelLoader<M> {
   }
 
   /**
-   * Returns a blocking {@link Preloader}. Blocks till the model is loaded or a {@link Duration} is
+   * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration} is
    * met.
    *
    * @param loader model loader.
    * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
    * @param <M>    Underlying model instance.
    */
-  static <M extends Model<?>> Preloader<M> preload(final ModelLoader<M> loader,
+  static <M extends Model<?>> PreLoader<M> preload(final ModelLoader<M> loader,
                                                    final Duration duration)
       throws InterruptedException, ExecutionException, TimeoutException {
     return ModelLoader.loaded(loader.get(duration))::get;
   }
 
   /**
-   * Returns a blocking {@link Preloader}. Blocks till the model is loaded or a {@link Duration} is
+   * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration} is
    * met.
    *
    * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
    */
-  static <M extends Model<?>> Function<ModelLoader<M>, Preloader<M>> preload(
+  static <M extends Model<?>> Function<ModelLoader<M>, PreLoader<M>> preload(
       final Duration duration) {
     return loader -> {
       try {

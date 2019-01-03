@@ -29,7 +29,7 @@ import java.time.Duration;
 import java.util.concurrent.ForkJoinPool;
 import org.junit.Test;
 
-public class PreloaderTest {
+public class PreLoaderTest {
 
   static class DummyModel implements Model<Object> {
 
@@ -59,7 +59,7 @@ public class PreloaderTest {
           Thread.sleep(Duration.ofMillis(500).toMillis());
           return new DummyModel();
         }, ForkJoinPool.commonPool())
-        .with(Preloader.preload(Duration.ofSeconds(1)));
+        .with(PreLoader.preload(Duration.ofSeconds(1)));
 
     assertThat(loader.get().toCompletableFuture().isDone(), is(true));
   }
@@ -71,7 +71,7 @@ public class PreloaderTest {
           Thread.sleep(Duration.ofSeconds(10).toMillis());
           return new DummyModel();
         }, ForkJoinPool.commonPool())
-        .with(Preloader.preload(Duration.ZERO));
+        .with(PreLoader.preload(Duration.ZERO));
 
     assertThat(loader.get().toCompletableFuture().isCompletedExceptionally(), is(true));
   }

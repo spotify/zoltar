@@ -18,6 +18,18 @@ package com.spotify.zoltar.tf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.IrisFeaturesSpec;
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.IrisHelper;
+import com.spotify.zoltar.Model.Id;
+import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.Predictors;
+import com.spotify.zoltar.featran.FeatranExtractFns;
+import com.spotify.zoltar.tf.TensorFlowModel.Options;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -58,23 +70,25 @@ public class TensorFlowModelTest {
     final String modelUri =
         TensorFlowModelTest.class.getResource("/trained_model").toURI().toString();
     final URI settingsUri = TensorFlowModelTest.class.getResource("/settings.json").toURI();
-    final String settings =
-        new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
-    final ExtractFn<Iris, Example> extractFn =
-        FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
-    final TensorFlowLoader modelLoader =
-        TensorFlowLoader.create(modelUri, MoreExecutors.directExecutor());
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+        StandardCharsets.UTF_8);
+    final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
+        .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
+    final TensorFlowLoader modelLoader = TensorFlowLoader
+        .create(modelUri, MoreExecutors.directExecutor());
 
     final String op = "linear/head/predictions/class_ids";
-    return Predictors.tensorFlow(
-        modelLoader, extractFn, tensors -> tensors.get(op).longValue()[0], op);
+    return Predictors.tensorFlow(modelLoader,
+                                 extractFn,
+                                 tensors -> tensors.get(op).longValue()[0],
+                                 op);
   }
 
   @Test
   public void testDefaultId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
     final ModelLoader<TensorFlowModel> model =
-        TensorFlowLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
+        TensorFlowLoader.create(trainedModelUri.toString(),  MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -166,9 +180,10 @@ public class TensorFlowModelTest {
   @Test
   public void testCustomId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
-    final ModelLoader<TensorFlowModel> model =
-        TensorFlowLoader.create(
-            Id.create("dummy"), trainedModelUri.toString(), MoreExecutors.directExecutor());
+    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(
+        Id.create("dummy"),
+        trainedModelUri.toString(),
+        MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 

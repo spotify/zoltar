@@ -149,14 +149,14 @@ public final class Predictors {
    * AsyncPredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
-   * @param extractFn a feature extract function to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param extractFn   a feature extract function to use to transform input into extracted
+   *                    features.
+   * @param predictFn   a prediction function to perform prediction with {@link AsyncPredictFn}.
+   * @param metrics     a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>    underlying type of the {@link Model}.
+   * @param <InputT>    type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>   type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>    type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
@@ -173,13 +173,12 @@ public final class Predictors {
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link PredictFn}.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param predictFn        a prediction function to perform prediction with {@link PredictFn}.
+   * @param metrics          a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>         underlying type of the {@link Model}.
+   * @param <InputT>         type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>        type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>         type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
@@ -197,13 +196,13 @@ public final class Predictors {
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
-   * @param predictFn a prediction function to perform prediction with {@link AsyncPredictFn}.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <ModelT> underlying type of the {@link Model}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <VectorT> type of the output from {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param predictFn        a prediction function to perform prediction with {@link
+   *                         AsyncPredictFn}.
+   * @param metrics          a predictor metrics implementation {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ModelT>         underlying type of the {@link Model}.
+   * @param <InputT>         type of the input to the {@link FeatureExtractor}.
+   * @param <VectorT>        type of the output from {@link FeatureExtractor}.
+   * @param <ValueT>         type of the prediction result.
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
@@ -219,58 +218,67 @@ public final class Predictors {
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelLoader should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param extractFn a feature extract function to use to transform input into extracted features.
+   * @param modelLoader        should point to a directory of the saved TensorFlow {@link
+   *                           org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                           resource, GCS etc.
+   * @param extractFn          a feature extract function to use to transform input into extracted
+   *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOps operations to fetch.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param fetchOps           operations to fetch.
+   * @param <InputT>           type of the input to the {@link FeatureExtractor}.
+   * @param <ValueT>           type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String... fetchOps) {
-    return tensorFlow(
-        modelLoader, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps);
+    return tensorFlow(modelLoader, FeatureExtractor.create(extractFn), outTensorExtractor,
+                      fetchOps);
   }
 
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelLoader should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param extractFn a feature extract function to use to transform input into extracted features.
+   * @param modelLoader        should point to a directory of the saved TensorFlow {@link
+   *                           org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                           resource, GCS etc.
+   * @param extractFn          a feature extract function to use to transform input into extracted
+   *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOps operations to fetch.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param fetchOps           operations to fetch.
+   * @param metrics            a predictor metrics implementation
+   *                           {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <InputT>           type of the input to the {@link FeatureExtractor}.
+   * @param <ValueT>           type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics metrics) {
-    return tensorFlow(
-        modelLoader, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps, metrics);
+    return tensorFlow(modelLoader,
+                      FeatureExtractor.create(extractFn),
+                      outTensorExtractor,
+                      fetchOps,
+                      metrics);
   }
 
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelLoader should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param featureExtractor a feature extractor to use to transform input into extracted features.
+   * @param modelLoader        should point to a directory of the saved TensorFlow {@link
+   *                           org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                           resource, GCS etc.
+   * @param featureExtractor   a feature extractor to use to transform input into extracted
+   *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOps operations to fetch.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param fetchOps           operations to fetch.
+   * @param <InputT>           type of the input to the {@link FeatureExtractor}.
+   * @param <ValueT>           type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
@@ -285,44 +293,47 @@ public final class Predictors {
    * Returns a TensorFlow Predictor. Assumes feature extraction is embedded in the model via
    * Tensorflow Transform, so no extractFn is needed and the input type must be Example.
    *
-   * @param modelLoader should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
+   * @param modelLoader        should point to a directory of the saved TensorFlow {@link
+   *                           org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                           resource, GCS etc.
+   * @param featureExtractor   a feature extractor to use to transform input into extracted
+   *                           features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOps operations to fetch.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <ValueT> type of the prediction result.
+   * @param fetchOps           operations to fetch.
+   * @param metrics            a predictor metrics implementation
+   *                           {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <InputT>           type of the input to the {@link FeatureExtractor}.
+   * @param <ValueT>           type of the prediction result.
    */
-  public static <ValueT> Predictor<TensorFlowModel, Example, Example, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
+      final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics metrics) {
-    return tensorFlow(modelLoader, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);
+    final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
+        TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
+
+    return newBuilder(modelLoader, featureExtractor, predictFn, metrics).predictor();
   }
 
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelLoader should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param featureExtractor a feature extractor to use to transform input into extracted features.
+   * @param modelLoader        should point to a directory of the saved TensorFlow {@link
+   *                           org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem,
+   *                           resource, GCS etc.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOps operations to fetch.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <InputT> type of the input to the {@link FeatureExtractor}.
-   * @param <ValueT> type of the prediction result.
+   * @param fetchOps           operations to fetch.
+   * @param metrics            a predictor metrics implementation
+   *                           {@link com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ValueT>           type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
+  public static <ValueT> Predictor<Example, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
-      final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String[] fetchOps,
-      final PredictorMetrics<InputT, Example, ValueT> metrics) {
-    final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
-        TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
-
-    return create(modelLoader, featureExtractor, predictFn, metrics);
+      final PredictorMetrics metrics) {
+    return tensorFlow(modelLoader, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);
   }
 }

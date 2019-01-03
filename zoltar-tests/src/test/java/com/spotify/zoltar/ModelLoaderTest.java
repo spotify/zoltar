@@ -22,7 +22,6 @@ import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeoutException;
-
 import org.junit.Test;
 
 public class ModelLoaderTest {
@@ -47,13 +46,11 @@ public class ModelLoaderTest {
 
   @Test
   public void preload() throws InterruptedException, ExecutionException, TimeoutException {
-    final ModelLoader<DummyModel> loader =
-        ModelLoader.load(
-            () -> {
-              Thread.sleep(Duration.ofMillis(5).toMillis());
-              return new DummyModel();
-            },
-            ForkJoinPool.commonPool());
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .load(() -> {
+          Thread.sleep(Duration.ofMillis(5).toMillis());
+          return new DummyModel();
+        }, ForkJoinPool.commonPool());
 
     final ModelLoader<DummyModel> preloaded = ModelLoader.preload(loader, Duration.ofSeconds(1));
 
@@ -62,14 +59,13 @@ public class ModelLoaderTest {
 
   @Test(expected = TimeoutException.class)
   public void preloadTimeout() throws InterruptedException, ExecutionException, TimeoutException {
-    final ModelLoader<DummyModel> loader =
-        ModelLoader.load(
-            () -> {
-              Thread.sleep(Duration.ofSeconds(10).toMillis());
-              return new DummyModel();
-            },
-            ForkJoinPool.commonPool());
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .load(() -> {
+          Thread.sleep(Duration.ofSeconds(10).toMillis());
+          return new DummyModel();
+        }, ForkJoinPool.commonPool());
 
     ModelLoader.preload(loader, Duration.ZERO);
   }
+
 }

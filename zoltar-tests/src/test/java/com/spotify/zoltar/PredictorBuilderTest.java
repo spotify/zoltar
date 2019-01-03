@@ -82,7 +82,8 @@ public class PredictorBuilderTest {
 
   @Test
   public void identityDecoration() throws ExecutionException, InterruptedException {
-    final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
+    final ModelLoader<DummyModel> loader =
+        ModelLoader.loaded(new DummyModel());
     final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {

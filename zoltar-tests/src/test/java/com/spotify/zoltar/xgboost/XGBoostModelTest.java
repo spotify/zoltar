@@ -19,6 +19,18 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.spotify.futures.CompletableFutures;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.IrisFeaturesSpec;
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.IrisHelper;
+import com.spotify.zoltar.Model.Id;
+import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.PredictorsTest;
+import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -60,37 +72,30 @@ public class XGBoostModelTest {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
     final URI settingsUri = XGBoostModelTest.class.getResource("/settings.json").toURI();
 
-    final XGBoostPredictFn<Iris, LabeledPoint, Long> predictFn =
-        (model, vectors) -> {
-          final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
-              vectors
-                  .stream()
-                  .map(
-                      vector -> {
-                        return CompletableFuture.supplyAsync(
-                            () -> {
-                              try {
-                                final Iterator<LabeledPoint> iterator =
-                                    Collections.singletonList(vector.value()).iterator();
-                                final DMatrix dMatrix = new DMatrix(iterator, null);
-                                final float[] score = model.instance().predict(dMatrix)[0];
-                                int idx =
-                                    IntStream.range(0, score.length)
-                                        .reduce((i, j) -> score[i] >= score[j] ? i : j)
-                                        .getAsInt();
-                                return Prediction.create(vector.input(), (long) idx);
-                              } catch (Exception e) {
-                                throw new RuntimeException(e);
-                              }
-                            });
-                      })
-                  .collect(Collectors.toList());
+    final XGBoostPredictFn<Iris, LabeledPoint, Long> predictFn = (model, vectors) -> {
+      final List<CompletableFuture<Prediction<Iris, Long>>> predictions =
+          vectors.stream().map(vector -> {
+            return CompletableFuture.supplyAsync(() -> {
+              try {
+                final Iterator<LabeledPoint> iterator =
+                    Collections.singletonList(vector.value()).iterator();
+                final DMatrix dMatrix = new DMatrix(iterator, null);
+                final float[] score = model.instance().predict(dMatrix)[0];
+                int idx = IntStream.range(0, score.length)
+                    .reduce((i, j) -> score[i] >= score[j] ? i : j)
+                    .getAsInt();
+                return Prediction.create(vector.input(), (long) idx);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            });
+          }).collect(Collectors.toList());
 
-          return CompletableFutures.allAsList(predictions);
-        };
+      return CompletableFutures.allAsList(predictions);
+    };
 
-    final String settings =
-        new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
+    final String settings = new String(Files.readAllBytes(Paths.get(settingsUri)),
+                                       StandardCharsets.UTF_8);
     final XGBoostLoader model =
         XGBoostLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
 
@@ -114,9 +119,10 @@ public class XGBoostModelTest {
   @Test
   public void testCustomId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
-    final XGBoostLoader model =
-        XGBoostLoader.create(
-            Id.create("dummy"), trainedModelUri.toString(), MoreExecutors.directExecutor());
+    final XGBoostLoader model = XGBoostLoader.create(
+        Id.create("dummy"),
+        trainedModelUri.toString(),
+        MoreExecutors.directExecutor());
 
     final XGBoostModel xgBoostModel = model.get().toCompletableFuture().get();
 

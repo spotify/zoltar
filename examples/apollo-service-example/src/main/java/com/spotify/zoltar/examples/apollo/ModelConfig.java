@@ -17,6 +17,8 @@ package com.spotify.zoltar.examples.apollo;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.google.auto.value.AutoValue;
 import com.typesafe.config.Config;
@@ -30,6 +32,11 @@ public abstract class ModelConfig {
 
   /** settings URI path. */
   public abstract URI settingsUri();
+
+  public Executor modelLoaderExecutor() {
+    final int threads = Runtime.getRuntime().availableProcessors();
+    return Executors.newFixedThreadPool(threads);
+  }
 
   /** Creates a {@link ModelConfig} create a {@link Config}. */
   public static ModelConfig from(final Config config) throws URISyntaxException {

@@ -40,6 +40,7 @@ import ml.dmlc.xgboost4j.java.DMatrix;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -90,7 +91,8 @@ public class XGBoostModelTest {
 
     final String settings =
         new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
-    final XGBoostLoader model = XGBoostLoader.create(trainedModelUri.toString());
+    final XGBoostLoader model =
+        XGBoostLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final ExtractFn<Iris, LabeledPoint> extractFn =
         FeatranExtractFns.labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
@@ -101,7 +103,8 @@ public class XGBoostModelTest {
   @Test
   public void testDefaultId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
-    final XGBoostLoader model = XGBoostLoader.create(trainedModelUri.toString());
+    final XGBoostLoader model =
+        XGBoostLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final XGBoostModel xgBoostModel = model.get().toCompletableFuture().get();
 
@@ -112,7 +115,8 @@ public class XGBoostModelTest {
   public void testCustomId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
     final XGBoostLoader model =
-        XGBoostLoader.create(Id.create("dummy"), trainedModelUri.toString());
+        XGBoostLoader.create(
+            Id.create("dummy"), trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final XGBoostModel xgBoostModel = model.get().toCompletableFuture().get();
 

@@ -104,7 +104,7 @@ public class PredictorTest {
               .collect(Collectors.toList());
         };
 
-    final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+    final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
     final List<Prediction<Integer, Float>> predictions =
         Predictors.create(loader, extractFn, predictFn)
             .predict(1)

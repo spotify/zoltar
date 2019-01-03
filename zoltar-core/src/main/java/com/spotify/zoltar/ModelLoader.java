@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
@@ -40,13 +41,129 @@ public interface ModelLoader<M extends Model<?>> {
   }
 
   /**
-   * Lifts a supplier into a {@link ModelLoader}.
+   * PreLoader is model loader that calls {@link ModelLoader#get()} allowing model preloading.
+   *
+   * @param <M> Model instance type.
+   */
+  @FunctionalInterface
+  interface PreLoader<M extends Model<?>> extends ModelLoader<M> {
+
+    /**
+     * Returns a blocking {@link ModelLoader}. Blocks till the model is loaded or a {@link Duration}
+     * is met.
+     *
+     * @param supplier model supplier.
+     * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
+     * @param executor the executor to use for asynchronous execution.
+     * @param <M> Underlying model instance.
+     */
+    static <M extends Model<?>> PreLoader<M> preload(
+        final ThrowableSupplier<M> supplier, final Duration duration, final Executor executor)
+        throws InterruptedException, ExecutionException, TimeoutException {
+      return preload(ModelLoader.load(supplier, executor), duration)::get;
+    }
+
+    /**
+     * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration}
+     * is met.
+     *
+     * @param loader model loader.
+     * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
+     * @param <M> Underlying model instance.
+     */
+    static <M extends Model<?>> PreLoader<M> preload(
+        final ModelLoader<M> loader, final Duration duration)
+        throws InterruptedException, ExecutionException, TimeoutException {
+      return ModelLoader.loaded(loader.get(duration))::get;
+    }
+
+    /**
+     * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration}
+     * is met.
+     *
+     * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
+     */
+    static <M extends Model<?>> Function<ModelLoader<M>, PreLoader<M>> preload(
+        final Duration duration) {
+      return loader -> {
+        try {
+          return preload(loader, duration);
+        } catch (final Exception e) {
+          final CompletableFuture<M> failed = new CompletableFuture<>();
+          failed.completeExceptionally(e);
+
+          return () -> failed;
+        }
+      };
+    }
+  }
+
+  /**
+   * ConsLoader is a constant {@link ModelLoader}.
+   *
+   * @param <M> Model instance type.
+   */
+  @FunctionalInterface
+  interface ConsLoader<M extends Model<?>> extends ModelLoader<M> {
+
+    /**
+     * Creates a {@link ModelLoader} with an already loaded model.
+     *
+     * @param model Underlying model instance.
+     */
+    static <M extends Model<?>> ConsLoader<M> cons(final M model) {
+      final CompletableFuture<M> m = CompletableFuture.completedFuture(model);
+      return () -> m;
+    }
+  }
+
+  /**
+   * Creates a {@link ModelLoader} with an already loaded model.
+   *
+   * @param model Underlying model instance.
+   */
+  static <M extends Model<?>> ModelLoader<M> loaded(final M model) {
+    return ConsLoader.cons(model);
+  }
+
+  /**
+   * Returns a blocking {@link ModelLoader}. Blocks till the model is loaded or a {@link Duration}
+   * is met.
+   *
+   * @param supplier model supplier.
+   * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
+   * @param executor the executor to use for asynchronous execution.
+   * @param <M> Underlying model instance.
+   */
+  static <M extends Model<?>> PreLoader<M> preload(
+      final ThrowableSupplier<M> supplier, final Duration duration, final Executor executor)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    return PreLoader.preload(supplier, duration, executor);
+  }
+
+  /**
+   * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration} is
+   * met.
+   *
+   * @param loader model loader.
+   * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
+   * @param <M> Underlying model instance.
+   */
+  static <M extends Model<?>> ModelLoader<M> preload(
+      final ModelLoader<M> loader, final Duration duration)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    return PreLoader.preload(loader, duration);
+  }
+
+  /**
+   * Create a {@link ModelLoader} that loads the supplied model asynchronously.
    *
    * @param supplier model supplier.
    * @param <M> Underlying model instance.
    */
-  static <M extends Model<?>> ModelLoader<M> lift(final ThrowableSupplier<M> supplier) {
-    return () ->
+  static <M extends Model<?>> ModelLoader<M> load(
+      final ThrowableSupplier<M> supplier, final Executor executor) {
+    final CompletableFuture<M> future =
         CompletableFuture.supplyAsync(
             () -> {
               try {
@@ -54,7 +171,10 @@ public interface ModelLoader<M extends Model<?>> {
               } catch (final Exception e) {
                 throw new CompletionException(e);
               }
-            });
+            },
+            executor);
+
+    return () -> future;
   }
 
   /**

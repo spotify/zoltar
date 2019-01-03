@@ -16,16 +16,12 @@
 package com.spotify.zoltar.xgboost;
 
 import java.net.URI;
+import java.util.concurrent.Executor;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
-import com.spotify.zoltar.loaders.Preloader;
 
-/**
- * {@link XGBoostModel} loader. This loader is composed with {@link ModelMemoizer} and {@link
- * Preloader}.
- */
+/** {@link XGBoostModel} loader. */
 @FunctionalInterface
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
@@ -36,8 +32,8 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *     filesystem, resource, GCS etc.
    */
-  static XGBoostLoader create(final String modelUri) {
-    return create(() -> XGBoostModel.create(URI.create(modelUri)));
+  static XGBoostLoader create(final String modelUri, final Executor executor) {
+    return create(() -> XGBoostModel.create(URI.create(modelUri)), executor);
   }
 
   /**
@@ -47,8 +43,8 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *     filesystem, resource, GCS etc.
    */
-  static XGBoostLoader create(final Model.Id id, final String modelUri) {
-    return create(() -> XGBoostModel.create(id, URI.create(modelUri)));
+  static XGBoostLoader create(final Model.Id id, final String modelUri, final Executor executor) {
+    return create(() -> XGBoostModel.create(id, URI.create(modelUri)), executor);
   }
 
   /**
@@ -56,10 +52,8 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    *
    * @param supplier {@link XGBoostModel} supplier.
    */
-  static XGBoostLoader create(final ThrowableSupplier<XGBoostModel> supplier) {
-    final ModelLoader<XGBoostModel> loader =
-        ModelLoader.lift(supplier).with(ModelMemoizer::memoize).with(Preloader.preloadAsync());
-
-    return loader::get;
+  static XGBoostLoader create(
+      final ThrowableSupplier<XGBoostModel> supplier, final Executor executor) {
+    return ModelLoader.load(supplier, executor)::get;
   }
 }

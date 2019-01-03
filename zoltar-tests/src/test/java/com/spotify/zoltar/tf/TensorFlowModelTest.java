@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.tensorflow.example.Example;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
@@ -61,7 +62,8 @@ public class TensorFlowModelTest {
         new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
-    final TensorFlowLoader modelLoader = TensorFlowLoader.create(modelUri);
+    final TensorFlowLoader modelLoader =
+        TensorFlowLoader.create(modelUri, MoreExecutors.directExecutor());
 
     final String op = "linear/head/predictions/class_ids";
     return Predictors.tensorFlow(
@@ -71,7 +73,8 @@ public class TensorFlowModelTest {
   @Test
   public void testDefaultId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
-    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+    final ModelLoader<TensorFlowModel> model =
+        TensorFlowLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -158,7 +161,8 @@ public class TensorFlowModelTest {
   public void testCustomId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
     final ModelLoader<TensorFlowModel> model =
-        TensorFlowLoader.create(Id.create("dummy"), trainedModelUri.toString());
+        TensorFlowLoader.create(
+            Id.create("dummy"), trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 

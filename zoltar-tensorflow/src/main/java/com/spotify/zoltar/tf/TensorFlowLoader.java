@@ -16,16 +16,12 @@
 package com.spotify.zoltar.tf;
 
 import java.net.URI;
+import java.util.concurrent.Executor;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
-import com.spotify.zoltar.loaders.Preloader;
 
-/**
- * {@link TensorFlowModel} loader. This loader is composed with {@link ModelMemoizer} and {@link
- * Preloader}.
- */
+/** {@link TensorFlowModel} loader. */
 @FunctionalInterface
 public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
 
@@ -34,9 +30,10 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
+   * @param executor the executor to use for asynchronous execution.
    */
-  static TensorFlowLoader create(final String modelUri) {
-    return create(() -> TensorFlowModel.create(URI.create(modelUri)));
+  static TensorFlowLoader create(final String modelUri, final Executor executor) {
+    return create(() -> TensorFlowModel.create(URI.create(modelUri)), executor);
   }
 
   /**
@@ -45,33 +42,41 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    * @param id model id @{link Model.Id}.
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   */
-  static TensorFlowLoader create(final Model.Id id, final String modelUri) {
-    return create(() -> TensorFlowModel.create(id, URI.create(modelUri)));
-  }
-
-  /**
-   * Returns a TensorFlow model loader based on a saved model.
-   *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
-   */
-  static TensorFlowLoader create(final String modelUri, final TensorFlowModel.Options options) {
-    return create(() -> TensorFlowModel.create(URI.create(modelUri), options));
-  }
-
-  /**
-   * Returns a TensorFlow model loader based on a saved model.
-   *
-   * @param id model id @{link Model.Id}.
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowLoader create(
-      final Model.Id id, final String modelUri, final TensorFlowModel.Options options) {
-    return create(() -> TensorFlowModel.create(id, URI.create(modelUri), options));
+      final Model.Id id, final String modelUri, final Executor executor) {
+    return create(() -> TensorFlowModel.create(id, URI.create(modelUri)), executor);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
+   * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
+   */
+  static TensorFlowLoader create(
+      final String modelUri, final TensorFlowModel.Options options, final Executor executor) {
+    return create(() -> TensorFlowModel.create(URI.create(modelUri), options), executor);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
+   * @param id model id @{link Model.Id}.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
+   * @param options TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
+   */
+  static TensorFlowLoader create(
+      final Model.Id id,
+      final String modelUri,
+      final TensorFlowModel.Options options,
+      final Executor executor) {
+    return create(() -> TensorFlowModel.create(id, URI.create(modelUri), options), executor);
   }
 
   /**
@@ -95,11 +100,10 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    * Returns a TensorFlow model loader based on a saved model.
    *
    * @param supplier {@link TensorFlowModel} supplier.
+   * @param executor the executor to use for asynchronous execution.
    */
-  static TensorFlowLoader create(final ThrowableSupplier<TensorFlowModel> supplier) {
-    final ModelLoader<TensorFlowModel> loader =
-        ModelLoader.lift(supplier).with(ModelMemoizer::memoize).with(Preloader.preloadAsync());
-
-    return loader::get;
+  static TensorFlowLoader create(
+      final ThrowableSupplier<TensorFlowModel> supplier, final Executor executor) {
+    return ModelLoader.load(supplier, executor)::get;
   }
 }

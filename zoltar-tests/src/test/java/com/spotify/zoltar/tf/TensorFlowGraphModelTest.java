@@ -39,6 +39,8 @@ import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
 
+import com.google.common.util.concurrent.MoreExecutors;
+
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -89,7 +91,8 @@ public class TensorFlowGraphModelTest {
   public void testDefaultId() throws IOException, ExecutionException, InterruptedException {
     final Path graphFile = createADummyTFGraph();
     final ModelLoader<TensorFlowGraphModel> model =
-        TensorFlowGraphLoader.create(graphFile.toString(), null, null);
+        TensorFlowGraphLoader.create(
+            graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -100,7 +103,8 @@ public class TensorFlowGraphModelTest {
   public void testCustomId() throws IOException, ExecutionException, InterruptedException {
     final Path graphFile = createADummyTFGraph();
     final ModelLoader<TensorFlowGraphModel> model =
-        TensorFlowGraphLoader.create(Id.create("dummy"), graphFile.toString(), null, null);
+        TensorFlowGraphLoader.create(
+            Id.create("dummy"), graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -161,7 +165,8 @@ public class TensorFlowGraphModelTest {
         new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
 
     final ModelLoader<TensorFlowGraphModel> tfModel =
-        TensorFlowGraphLoader.create(graphFile.toString(), null, null);
+        TensorFlowGraphLoader.create(
+            graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) ->

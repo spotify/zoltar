@@ -29,6 +29,7 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.metrics.PredictorMetrics;
+import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 
 /** Iris prediction meat and potatoes. */
@@ -40,13 +41,12 @@ public final class IrisPredictor {
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns.example(irisFeatureSpec, settings);
+    final TensorFlowLoader modelLoader =
+        TensorFlowLoader.create(
+            modelConfig.modelUri().toString(), modelConfig.modelLoaderExecutor());
 
     final String[] ops = new String[] {"linear/head/predictions/class_ids"};
     return Predictors.tensorFlow(
-        modelConfig.modelUri().toString(),
-        extractFn,
-        tensors -> tensors.get(ops[0]).longValue()[0],
-        ops,
-        metrics);
+        modelLoader, extractFn, tensors -> tensors.get(ops[0]).longValue()[0], ops, metrics);
   }
 }

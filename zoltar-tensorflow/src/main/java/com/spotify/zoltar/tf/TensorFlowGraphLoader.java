@@ -16,6 +16,7 @@
 package com.spotify.zoltar.tf;
 
 import java.net.URI;
+import java.util.concurrent.Executor;
 
 import javax.annotation.Nullable;
 
@@ -24,13 +25,8 @@ import org.tensorflow.framework.ConfigProto;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
-import com.spotify.zoltar.loaders.Preloader;
 
-/**
- * {@link TensorFlowGraphModel} loader. This loader is composed with {@link ModelMemoizer} and
- * {@link Preloader}.
- */
+/** {@link TensorFlowGraphModel} loader. */
 @FunctionalInterface
 public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel> {
 
@@ -41,10 +37,16 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    *     local filesystem, resource, GCS etc.
    * @param config optional TensorFlow {@link ConfigProto} config.
    * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(
-      final String modelUri, @Nullable final ConfigProto config, @Nullable final String prefix) {
-    return create(() -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix));
+      final String modelUri,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix,
+      final Executor executor) {
+    final ThrowableSupplier<TensorFlowGraphModel> supplier =
+        () -> TensorFlowGraphModel.create(URI.create(modelUri), config, prefix);
+    return create(supplier, executor);
   }
 
   /**
@@ -55,13 +57,17 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    *     local filesystem, resource, GCS etc.
    * @param config optional TensorFlow {@link ConfigProto} config.
    * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(
       final Model.Id id,
       final String modelUri,
       @Nullable final ConfigProto config,
-      @Nullable final String prefix) {
-    return create(() -> TensorFlowGraphModel.create(id, URI.create(modelUri), config, prefix));
+      @Nullable final String prefix,
+      final Executor executor) {
+    final ThrowableSupplier<TensorFlowGraphModel> supplier =
+        () -> TensorFlowGraphModel.create(id, URI.create(modelUri), config, prefix);
+    return create(supplier, executor);
   }
 
   /**
@@ -70,10 +76,14 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config optional TensorFlow {@link ConfigProto} config.
    * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(
-      final byte[] graphDef, @Nullable final ConfigProto config, @Nullable final String prefix) {
-    return create(() -> TensorFlowGraphModel.create(graphDef, config, prefix));
+      final byte[] graphDef,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix,
+      final Executor executor) {
+    return create(() -> TensorFlowGraphModel.create(graphDef, config, prefix), executor);
   }
 
   /**
@@ -83,24 +93,25 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config optional TensorFlow {@link ConfigProto} config.
    * @param prefix optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(
       final Model.Id id,
       final byte[] graphDef,
       @Nullable final ConfigProto config,
-      @Nullable final String prefix) {
-    return create(() -> TensorFlowGraphModel.create(id, graphDef, config, prefix));
+      @Nullable final String prefix,
+      final Executor executor) {
+    return create(() -> TensorFlowGraphModel.create(id, graphDef, config, prefix), executor);
   }
 
   /**
    * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
    * @param supplier {@link TensorFlowGraphModel} supplier.
+   * @param executor the executor to use for asynchronous execution.
    */
-  static TensorFlowGraphLoader create(final ThrowableSupplier<TensorFlowGraphModel> supplier) {
-    final ModelLoader<TensorFlowGraphModel> loader =
-        ModelLoader.lift(supplier).with(ModelMemoizer::memoize).with(Preloader.preloadAsync());
-
-    return loader::get;
+  static TensorFlowGraphLoader create(
+      final ThrowableSupplier<TensorFlowGraphModel> supplier, final Executor executor) {
+    return ModelLoader.load(supplier, executor)::get;
   }
 }

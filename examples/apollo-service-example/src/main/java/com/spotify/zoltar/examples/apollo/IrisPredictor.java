@@ -51,7 +51,7 @@ public final class IrisPredictor {
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(irisFeatureSpec, settings);
     final TensorFlowLoader modelLoader = TensorFlowLoader
-        .create(modelConfig.modelUri().toString(), modelConfig.modelExecutor());
+        .create(modelConfig.modelUri().toString(), modelConfig.modelLoaderExecutor());
 
     final String[] ops = new String[]{"linear/head/predictions/class_ids"};
     return Predictors.tensorFlow(

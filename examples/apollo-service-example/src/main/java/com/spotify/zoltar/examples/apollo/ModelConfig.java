@@ -39,7 +39,7 @@ public abstract class ModelConfig {
   /** settings URI path. */
   public abstract URI settingsUri();
 
-  public Executor modelExecutor() {
+  public Executor modelLoaderExecutor() {
     final int threads = Runtime.getRuntime().availableProcessors();
     return Executors.newFixedThreadPool(threads);
   }

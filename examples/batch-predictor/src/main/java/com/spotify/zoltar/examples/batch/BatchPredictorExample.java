@@ -27,7 +27,6 @@ import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
-import com.spotify.zoltar.loaders.Preloader;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -43,9 +42,7 @@ class BatchPredictorExample implements Predictor<List<Integer>, List<Float>> {
   private PredictorBuilder<DummyModel, List<Integer>, List<Float>, List<Float>> predictorBuilder;
 
   BatchPredictorExample() {
-    final ModelLoader<DummyModel> modelLoader = ModelLoader
-        .lift(DummyModel::new)
-        .with(Preloader.preload(Duration.ofMinutes(1)));
+    final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
 
     final BatchExtractFn<Integer, Float> batchExtractFn =
         BatchExtractFn.lift((Function<Integer, Float>) input -> (float) input / 10);

@@ -25,6 +25,9 @@ import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.xgboost.XGBoostLoader;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import org.tensorflow.Graph;
 import org.tensorflow.framework.ConfigProto;
@@ -45,9 +48,10 @@ public final class Models {
    *
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *                 filesystem, resource, GCS etc.
+   * @param executor the executor to use for asynchronous execution.
    */
-  public static XGBoostLoader xgboost(final String modelUri) {
-    return XGBoostLoader.create(modelUri);
+  public static XGBoostLoader xgboost(final String modelUri, final Executor executor) {
+    return XGBoostLoader.create(modelUri, executor);
   }
 
   /**
@@ -56,9 +60,12 @@ public final class Models {
    * @param id       model id @{link Model.Id}.
    * @param modelUri should point to serialized XGBoost model file, can be a URI to a local
    *                 filesystem, resource, GCS etc.
+   * @param executor the executor to use for asynchronous execution.
    */
-  public static XGBoostLoader xgboost(final Model.Id id, final String modelUri) {
-    return XGBoostLoader.create(id, modelUri);
+  public static XGBoostLoader xgboost(final Model.Id id,
+                                      final String modelUri,
+                                      final Executor executor) {
+    return XGBoostLoader.create(id, modelUri, executor);
   }
 
   /**
@@ -67,34 +74,10 @@ public final class Models {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
+   * @param executor the executor to use for asynchronous execution.
    */
-  public static TensorFlowLoader tensorFlow(final String modelUri) {
-    return TensorFlowLoader.create(modelUri);
-  }
-
-  /**
-   * Returns a TensorFlow model loader based on a saved model.
-   *
-   * @param id       model id @{link Model.Id}.
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
-   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
-   *                 GCS etc.
-   */
-  public static TensorFlowLoader tensorFlow(final Model.Id id, final String modelUri) {
-    return TensorFlowLoader.create(id, modelUri);
-  }
-
-  /**
-   * Returns a TensorFlow model loader based on a saved model.
-   *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
-   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
-   *                 GCS etc.
-   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
-   */
-  public static TensorFlowLoader tensorFlow(final String modelUri,
-                                            final TensorFlowModel.Options options) {
-    return TensorFlowLoader.create(modelUri, options);
+  public static TensorFlowLoader tensorFlow(final String modelUri, final Executor executor) {
+    return TensorFlowLoader.create(modelUri, executor);
   }
 
   /**
@@ -104,12 +87,44 @@ public final class Models {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
-   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
    */
   public static TensorFlowLoader tensorFlow(final Model.Id id,
                                             final String modelUri,
-                                            final TensorFlowModel.Options options) {
-    return TensorFlowLoader.create(id, modelUri, options);
+                                            final Executor executor) {
+    return TensorFlowLoader.create(id, modelUri, executor);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
+   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
+   */
+  public static TensorFlowLoader tensorFlow(final String modelUri,
+                                            final TensorFlowModel.Options options,
+                                            final Executor executor) {
+    return TensorFlowLoader.create(modelUri, options, executor);
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
+   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
+   */
+  public static TensorFlowLoader tensorFlow(final Model.Id id,
+                                            final String modelUri,
+                                            final TensorFlowModel.Options options,
+                                            final Executor executor) {
+    return TensorFlowLoader.create(id, modelUri, options, executor);
   }
 
   /**
@@ -119,12 +134,14 @@ public final class Models {
    *                 local filesystem, resource, GCS etc.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   public static TensorFlowGraphLoader tensorFlowGraph(
       final String modelUri,
       @Nullable final ConfigProto config,
-      @Nullable final String prefix) {
-    return TensorFlowGraphLoader.create(modelUri, config, prefix);
+      @Nullable final String prefix,
+      final Executor executor) {
+    return TensorFlowGraphLoader.create(modelUri, config, prefix, executor);
   }
 
   /**
@@ -135,13 +152,15 @@ public final class Models {
    *                 local filesystem, resource, GCS etc.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   public static TensorFlowGraphLoader tensorFlowGraph(
       final Model.Id id,
       final String modelUri,
       @Nullable final ConfigProto config,
-      @Nullable final String prefix) {
-    return TensorFlowGraphLoader.create(id, modelUri, config, prefix);
+      @Nullable final String prefix,
+      final Executor executor) {
+    return TensorFlowGraphLoader.create(id, modelUri, config, prefix, executor);
   }
 
   /**
@@ -150,12 +169,14 @@ public final class Models {
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   public static TensorFlowGraphLoader tensorFlowGraph(
       final byte[] graphDef,
       @Nullable final ConfigProto config,
-      @Nullable final String prefix) {
-    return TensorFlowGraphLoader.create(graphDef, config, prefix);
+      @Nullable final String prefix,
+      final Executor executor) {
+    return TensorFlowGraphLoader.create(graphDef, config, prefix, executor);
   }
 
   /**
@@ -165,13 +186,15 @@ public final class Models {
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   public static TensorFlowGraphLoader tensorFlowGraph(
       final Model.Id id,
       final byte[] graphDef,
       @Nullable final ConfigProto config,
-      @Nullable final String prefix) {
-    return TensorFlowGraphLoader.create(id, graphDef, config, prefix);
+      @Nullable final String prefix,
+      final Executor executor) {
+    return TensorFlowGraphLoader.create(id, graphDef, config, prefix, executor);
   }
 
   /**
@@ -180,7 +203,8 @@ public final class Models {
    * @param id model id. Id needs to be in the following format:
    *           <code>projects/$projectId/models/$modelId/version/$versionId</code>
    */
-  public static MlEngineLoader mlEngine(final Model.Id id) {
+  public static MlEngineLoader mlEngine(final Model.Id id)
+      throws IOException, GeneralSecurityException {
     return MlEngineLoader.create(id);
   }
 
@@ -193,7 +217,8 @@ public final class Models {
    */
   public static MlEngineLoader mlEngine(final String projectId,
                                         final String modelId,
-                                        final String versionId) {
+                                        final String versionId)
+      throws IOException, GeneralSecurityException {
     return MlEngineLoader.create(projectId, modelId, versionId);
   }
 }

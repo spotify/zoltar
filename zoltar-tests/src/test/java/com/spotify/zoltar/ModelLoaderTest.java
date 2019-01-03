@@ -18,26 +18,23 @@
  * -/-/-
  */
 
-package com.spotify.zoltar.loaders;
+package com.spotify.zoltar;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import com.spotify.zoltar.Model;
-import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.ModelLoader.PreLoader;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class ModelMemoizerTest {
+public class ModelLoaderTest {
 
   static class DummyModel implements Model<Object> {
-    private final AtomicInteger inc;
 
     public DummyModel() {
-      inc = new AtomicInteger();
     }
 
     @Override
@@ -47,7 +44,6 @@ public class ModelMemoizerTest {
 
     @Override
     public Object instance() {
-      inc.getAndIncrement();
       return null;
     }
 
@@ -55,21 +51,30 @@ public class ModelMemoizerTest {
     public void close() throws Exception {
 
     }
-
-    public int getIncrementValue() {
-      return inc.get();
-    }
   }
 
   @Test
-  public void memoize() throws InterruptedException, ExecutionException, TimeoutException {
-    final ModelLoader<DummyModel> loader =
-        ModelLoader.lift(DummyModel::new).with(ModelMemoizer::memoize);
+  public void preload() throws InterruptedException, ExecutionException, TimeoutException {
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .load(() -> {
+          Thread.sleep(Duration.ofMillis(5).toMillis());
+          return new DummyModel();
+        }, ForkJoinPool.commonPool());
 
-    final Duration duration = Duration.ofMillis(1000);
-    loader.get(duration).instance();
-    loader.get(duration).instance();
+    final ModelLoader<DummyModel> preloaded = ModelLoader.preload(loader, Duration.ofSeconds(1));
 
-    assertThat(loader.get(duration).getIncrementValue(), is(2));
+    assertThat(preloaded.get().toCompletableFuture().isDone(), is(true));
   }
+
+  @Test(expected = TimeoutException.class)
+  public void preloadTimeout() throws InterruptedException, ExecutionException, TimeoutException {
+    final ModelLoader<DummyModel> loader = ModelLoader
+        .load(() -> {
+          Thread.sleep(Duration.ofSeconds(10).toMillis());
+          return new DummyModel();
+        }, ForkJoinPool.commonPool());
+
+    ModelLoader.preload(loader, Duration.ZERO);
+  }
+
 }

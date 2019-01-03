@@ -24,6 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
@@ -63,9 +64,11 @@ public class TensorFlowModelTest {
         StandardCharsets.UTF_8);
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns
         .example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
+    final TensorFlowLoader modelLoader = TensorFlowLoader
+        .create(modelUri, MoreExecutors.directExecutor());
 
     final String op = "linear/head/predictions/class_ids";
-    return Predictors.tensorFlow(modelUri,
+    return Predictors.tensorFlow(modelLoader,
                                  extractFn,
                                  tensors -> tensors.get(op).longValue()[0],
                                  op);
@@ -75,7 +78,8 @@ public class TensorFlowModelTest {
   public void testDefaultId()
       throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
-    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+    final ModelLoader<TensorFlowModel> model =
+        TensorFlowLoader.create(trainedModelUri.toString(),  MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -85,8 +89,10 @@ public class TensorFlowModelTest {
   @Test
   public void testCustomId() throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
-    final ModelLoader<TensorFlowModel> model =
-        TensorFlowLoader.create(Id.create("dummy"), trainedModelUri.toString());
+    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(
+        Id.create("dummy"),
+        trainedModelUri.toString(),
+        MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 

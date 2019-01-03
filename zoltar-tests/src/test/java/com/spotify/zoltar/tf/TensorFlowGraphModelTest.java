@@ -25,6 +25,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -88,8 +89,11 @@ public class TensorFlowGraphModelTest {
   @Test
   public void testDefaultId() throws IOException, ExecutionException, InterruptedException {
     final Path graphFile = createADummyTFGraph();
-    final ModelLoader<TensorFlowGraphModel> model =
-        TensorFlowGraphLoader.create(graphFile.toString(), null, null);
+    final ModelLoader<TensorFlowGraphModel> model = TensorFlowGraphLoader.create(
+        graphFile.toString(),
+        null,
+        null,
+        MoreExecutors.directExecutor());
 
     final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -99,8 +103,12 @@ public class TensorFlowGraphModelTest {
   @Test
   public void testCustomId() throws IOException, ExecutionException, InterruptedException {
     final Path graphFile = createADummyTFGraph();
-    final ModelLoader<TensorFlowGraphModel> model =
-        TensorFlowGraphLoader.create(Id.create("dummy"), graphFile.toString(), null, null);
+    final ModelLoader<TensorFlowGraphModel> model = TensorFlowGraphLoader.create(
+        Id.create("dummy"),
+        graphFile.toString(),
+        null,
+        null,
+        MoreExecutors.directExecutor());
 
     final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -162,7 +170,7 @@ public class TensorFlowGraphModelTest {
                                        StandardCharsets.UTF_8);
 
     final ModelLoader<TensorFlowGraphModel> tfModel =
-        TensorFlowGraphLoader.create(graphFile.toString(), null, null);
+        TensorFlowGraphLoader.create(graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) -> vectors.stream()

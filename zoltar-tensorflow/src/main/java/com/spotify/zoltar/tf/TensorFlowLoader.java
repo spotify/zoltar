@@ -37,6 +37,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowLoader create(final String modelUri, final Executor executor) {
     return create(() -> TensorFlowModel.create(URI.create(modelUri)), executor);
@@ -49,6 +50,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowLoader create(final Model.Id id,
                                  final String modelUri,
@@ -63,6 +65,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowLoader create(final String modelUri,
                                  final TensorFlowModel.Options options,
@@ -78,6 +81,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
    *                 GCS etc.
    * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowLoader create(final Model.Id id,
                                  final String modelUri,
@@ -90,6 +94,7 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
    * Returns a TensorFlow model loader based on a saved model.
    *
    * @param supplier {@link TensorFlowModel} supplier.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowLoader create(final ThrowableSupplier<TensorFlowModel> supplier,
                                  final Executor executor) {

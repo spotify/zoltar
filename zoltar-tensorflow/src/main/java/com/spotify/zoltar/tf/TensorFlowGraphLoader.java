@@ -42,6 +42,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    *                 local filesystem, resource, GCS etc.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(final String modelUri,
                                       @Nullable final ConfigProto config,
@@ -60,6 +61,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    *                 local filesystem, resource, GCS etc.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(final Model.Id id,
                                       final String modelUri,
@@ -77,6 +79,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(final byte[] graphDef,
                                       @Nullable final ConfigProto config,
@@ -92,6 +95,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config   optional TensorFlow {@link ConfigProto} config.
    * @param prefix   optional prefix that will be prepended to names in the graph.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(final Model.Id id,
                                       final byte[] graphDef,
@@ -105,6 +109,7 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
    * @param supplier {@link TensorFlowGraphModel} supplier.
+   * @param executor the executor to use for asynchronous execution.
    */
   static TensorFlowGraphLoader create(final ThrowableSupplier<TensorFlowGraphModel> supplier,
                                       final Executor executor) {

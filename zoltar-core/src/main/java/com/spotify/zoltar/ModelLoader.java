@@ -49,7 +49,7 @@ public interface ModelLoader<M extends Model<?>> {
   }
 
   /**
-   * Lifts a supplier into a {@link ModelLoader}.
+   * Creates a {@link ModelLoader} with an already loaded model.
    *
    * @param model Underlying model instance.
    */
@@ -59,7 +59,7 @@ public interface ModelLoader<M extends Model<?>> {
   }
 
   /**
-   * Lifts a supplier into a {@link ModelLoader}.
+   * Create a {@link ModelLoader} that loads the supplied model asynchronously.
    *
    * @param supplier model supplier.
    * @param <M>      Underlying model instance.

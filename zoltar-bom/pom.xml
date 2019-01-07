@@ -21,7 +21,7 @@
     <proto.version>3.6.0</proto.version>
     <grpc.version>1.13.1</grpc.version>
     <netty.version>4.1.25.Final</netty.version>
-    <jackson.version>2.9.5</jackson.version>
+    <jackson.version>2.9.8</jackson.version>
   </properties>
 
   <dependencyManagement>

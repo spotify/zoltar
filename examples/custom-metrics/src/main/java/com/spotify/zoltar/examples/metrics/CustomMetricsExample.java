@@ -1,30 +1,32 @@
-/*-
- * -\-\-
- * custom-metrics
- * --
+/*
  * Copyright (C) 2016 - 2018 Spotify AB
- * --
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * -/-/-
  */
-
 package com.spotify.zoltar.examples.metrics;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import com.codahale.metrics.Counter;
 import com.google.auto.value.AutoValue;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -44,22 +46,13 @@ import com.spotify.zoltar.metrics.PredictMetrics;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.metrics.VectorMetrics;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
 
-/**
- * Example showing how to add custom metrics to a Predictor.
- */
+/** Example showing how to add custom metrics to a Predictor. */
 class CustomMetricsExample implements Predictor<Integer, Float> {
 
   private PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
 
-  /**
-   * Define a class containing all the additional metrics we want to register.
-   */
+  /** Define a class containing all the additional metrics we want to register. */
   @AutoValue
   abstract static class CustomMetrics {
 
@@ -74,8 +67,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
       final Counter negativeExtractCount = registry.counter(extractCountId);
 
       return new AutoValue_CustomMetricsExample_CustomMetrics(
-          negativePredictCount,
-          negativeExtractCount);
+          negativePredictCount, negativeExtractCount);
     }
   }
 
@@ -88,16 +80,17 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
 
     abstract LoadingCache<Model.Id, CustomMetrics> metricsCache();
 
-    static CustomPredictorMetrics create(final SemanticMetricRegistry registry,
-                                         final MetricId metricId) {
+    static CustomPredictorMetrics create(
+        final SemanticMetricRegistry registry, final MetricId metricId) {
       final LoadingCache<Model.Id, CustomMetrics> metersCache =
           CacheBuilder.<Model.Id, CustomMetrics>newBuilder()
-              .build(new CacheLoader<Model.Id, CustomMetrics>() {
-                @Override
-                public CustomMetrics load(final Model.Id id) {
-                  return CustomMetrics.create(registry, metricId.tagged("model", id.value()));
-                }
-              });
+              .build(
+                  new CacheLoader<Model.Id, CustomMetrics>() {
+                    @Override
+                    public CustomMetrics load(final Model.Id id) {
+                      return CustomMetrics.create(registry, metricId.tagged("model", id.value()));
+                    }
+                  });
 
       return new AutoValue_CustomMetricsExample_CustomPredictorMetrics(metersCache);
     }
@@ -121,9 +114,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
     }
   }
 
-  /**
-   * To define a metric you want to measure for prediction, implement PredictMetrics.
-   */
+  /** To define a metric you want to measure for prediction, implement PredictMetrics. */
   @AutoValue
   abstract static class NegativePredictMetrics implements PredictMetrics<Integer, Float> {
 
@@ -133,18 +124,14 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
       return new AutoValue_CustomMetricsExample_NegativePredictMetrics(negativeCount);
     }
 
-    /**
-     * Here, given a list of predictions, we want to measure the number of negatives.
-     */
+    /** Here, given a list of predictions, we want to measure the number of negatives. */
     @Override
     public void prediction(final List<Prediction<Integer, Float>> predictions) {
       negativePredictCount().inc(predictions.stream().filter(x -> x.value() < 0).count());
     }
   }
 
-  /**
-   * To define a metric you want to measure for feature extraction, implement VectorMetrics.
-   */
+  /** To define a metric you want to measure for feature extraction, implement VectorMetrics. */
   @AutoValue
   abstract static class NegativeExtractMetrics implements VectorMetrics<Integer, Float> {
 
@@ -166,11 +153,13 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
   CustomMetricsExample(final SemanticMetricRegistry metricRegistry, final MetricId metricId) {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
     final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
-    final PredictFn<DummyModel, Integer, Float, Float> predictFn = (model, vectors) -> {
-      return vectors.stream()
-          .map(vector -> Prediction.create(vector.input(), vector.value() * 2))
-          .collect(Collectors.toList());
-    };
+    final PredictFn<DummyModel, Integer, Float, Float> predictFn =
+        (model, vectors) -> {
+          return vectors
+              .stream()
+              .map(vector -> Prediction.create(vector.input(), vector.value() * 2))
+              .collect(Collectors.toList());
+        };
     final FeatureExtractor<DummyModel, Integer, Float> featureExtractor =
         FeatureExtractor.create(extractFn);
 
@@ -186,8 +175,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
 
     predictorBuilder =
         // #PredictorBuilderWithMetrics
-        Predictors
-            .newBuilder(modelLoader, featureExtractor, predictFn, predictorMetrics)
+        Predictors.newBuilder(modelLoader, featureExtractor, predictFn, predictorMetrics)
             // #PredictorBuilderWithMetrics
             .with(Instrumentations.predictor(customMetrics));
   }
@@ -197,5 +185,4 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
       final ScheduledExecutorService scheduler, final Duration timeout, final Integer... input) {
     return predictorBuilder.predictor().predict(scheduler, timeout, input);
   }
-
 }

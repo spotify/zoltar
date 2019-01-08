@@ -1,35 +1,29 @@
-/*-
- * -\-\-
- * apollo-service-example
- * --
+/*
  * Copyright (C) 2016 - 2018 Spotify AB
- * --
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * -/-/-
  */
-
 package com.spotify.zoltar.examples.apollo;
 
-import com.google.auto.value.AutoValue;
-import com.typesafe.config.Config;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-/**
- * Immutable object that contains model / feature extraction configuration properties.
- */
+import com.google.auto.value.AutoValue;
+import com.typesafe.config.Config;
+
+/** Immutable object that contains model / feature extraction configuration properties. */
 @AutoValue
 public abstract class ModelConfig {
 
@@ -44,9 +38,7 @@ public abstract class ModelConfig {
     return Executors.newFixedThreadPool(threads);
   }
 
-  /**
-   * Creates a {@link ModelConfig} create a {@link Config}.
-   */
+  /** Creates a {@link ModelConfig} create a {@link Config}. */
   public static ModelConfig from(final Config config) throws URISyntaxException {
     URI modelUri = URI.create(config.getString("model"));
 
@@ -65,5 +57,4 @@ public abstract class ModelConfig {
   public static ModelConfig create(final URI modelUri, final URI settingsUri) {
     return new AutoValue_ModelConfig(modelUri, settingsUri);
   }
-
 }

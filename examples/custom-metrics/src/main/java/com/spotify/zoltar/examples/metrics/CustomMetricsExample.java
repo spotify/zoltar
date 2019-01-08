@@ -15,10 +15,7 @@
  */
 package com.spotify.zoltar.examples.metrics;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import com.codahale.metrics.Counter;
@@ -197,11 +194,5 @@ class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Floa
   @Override
   public AsyncPredictFn<DummyModel, Integer, Float, Float> predictFn() {
     return predictor.predictFn();
-  }
-
-  @Override
-  public CompletionStage<List<Prediction<Integer, Float>>> predict(
-      final ScheduledExecutorService scheduler, final Duration timeout, final Integer... input) {
-    return predictor.predict(scheduler, timeout, input);
   }
 }

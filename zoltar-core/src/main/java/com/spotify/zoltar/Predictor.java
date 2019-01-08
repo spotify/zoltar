@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -63,47 +64,26 @@ public interface Predictor<ModelT extends Model<?>, InputT, VectorT, ValueT> {
   /**
    * Perform prediction.
    *
+   * @param executionContext prediction execution context.
    * @param inputs a list of inputs to perform feature extraction and prediction on.
    * @param timeout implementation specific timeout.
-   * @param scheduler implementation specific scheduler.
    */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(
-      ScheduledExecutorService scheduler, Duration timeout, InputT... inputs) {
-    final CompletableFuture<List<Prediction<InputT, ValueT>>> future =
-        modelLoader()
-            .get()
-            .thenCompose(
-                model -> {
-                  try {
-                    return predictFn().apply(model, featureExtractor().extract(model, inputs));
-                  } catch (final Exception e) {
-                    throw new CompletionException(e);
-                  }
-                })
-            .toCompletableFuture();
-
-    final ScheduledFuture<?> schedule =
-        scheduler.schedule(
-            () -> {
-              future.completeExceptionally(new TimeoutException());
-            },
-            timeout.toMillis(),
-            TimeUnit.MILLISECONDS);
-
-    future.whenComplete((r, t) -> schedule.cancel(true));
-
-    return future;
+      final ExecutionContext<InputT, ValueT> executionContext,
+      final Duration timeout,
+      final InputT... inputs) {
+    return executionContext.predict(timeout, inputs);
   }
 
   /** Perform prediction with a default scheduler. */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(
       final Duration timeout, final InputT... input) {
-    return predict(timeoutScheduler().scheduler(), timeout, input);
+    return predict(ExecutionContext.create(this), timeout, input);
   }
 
   /** Perform prediction with a default scheduler, and practically infinite timeout. */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input) {
-    return predict(timeoutScheduler().scheduler(), Duration.ofDays(Integer.MAX_VALUE), input);
+    return predict(ExecutionContext.create(this), Duration.ofDays(Integer.MAX_VALUE), input);
   }
 
   @SuppressWarnings("checkstyle:LineLength")
@@ -197,6 +177,80 @@ public interface Predictor<ModelT extends Model<?>, InputT, VectorT, ValueT> {
           return predictFn;
         }
       };
+    }
+  }
+
+  /**
+   * Prediction execution context.
+   *
+   * @param <InputT> type of the feature extraction input.
+   * @param <ValueT> type of the prediction output.
+   */
+  @FunctionalInterface
+  interface ExecutionContext<InputT, ValueT> {
+
+    ScheduledExecutorService DEFAULT_SCHEDULER =
+        Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+
+    @SuppressWarnings("checkstyle:LineLength")
+    static <ModelT extends Model<?>, InputT, VectorT, ValueT>
+        ExecutionContext<InputT, ValueT> create(
+            final Predictor<ModelT, InputT, VectorT, ValueT> predictor) {
+      return create(predictor, defaultTimeoutScheduler());
+    }
+
+    @SuppressWarnings("checkstyle:LineLength")
+    static <ModelT extends Model<?>, InputT, VectorT, ValueT>
+        ExecutionContext<InputT, ValueT> create(
+            final Predictor<ModelT, InputT, VectorT, ValueT> predictor,
+            final ScheduledExecutorService scheduler) {
+      return (timeout, inputs) -> {
+        final CompletableFuture<List<Prediction<InputT, ValueT>>> future =
+            predictor
+                .modelLoader()
+                .get()
+                .thenCompose(
+                    model -> {
+                      try {
+                        return predictor
+                            .predictFn()
+                            .apply(model, predictor.featureExtractor().extract(model, inputs));
+                      } catch (final Exception e) {
+                        throw new CompletionException(e);
+                      }
+                    })
+                .toCompletableFuture();
+
+        final ScheduledFuture<?> schedule =
+            scheduler.schedule(
+                () -> {
+                  future.completeExceptionally(new TimeoutException());
+                },
+                timeout.toMillis(),
+                TimeUnit.MILLISECONDS);
+
+        future.whenComplete((r, t) -> schedule.cancel(true));
+
+        return future;
+      };
+    }
+
+    /** timeout scheduler for predict functions. */
+    static ScheduledExecutorService defaultTimeoutScheduler() {
+      return DEFAULT_SCHEDULER;
+    }
+
+    /**
+     * Perform prediction.
+     *
+     * @param inputs a list of inputs to perform feature extraction and prediction on.
+     * @param timeout implementation specific timeout.
+     */
+    CompletionStage<List<Prediction<InputT, ValueT>>> predict(Duration timeout, InputT... inputs);
+
+    /** Perform prediction with a default scheduler, and practically infinite timeout. */
+    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input) {
+      return predict(Duration.ofDays(Integer.MAX_VALUE), input);
     }
   }
 }

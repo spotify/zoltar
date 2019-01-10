@@ -43,7 +43,7 @@ import com.spotify.zoltar.tf.TensorFlowModel;
 /** Route endpoints. */
 final class IrisPredictionHandler {
 
-  private static final Map<Long, String> idToClass =
+  private static Map<Long, String> idToClass =
       ImmutableMap.of(
           0L, "Iris-setosa",
           1L, "Iris-versicolor",

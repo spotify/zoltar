@@ -20,12 +20,8 @@ import java.security.GeneralSecurityException;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 
-/**
- * {@link MlEngineLoader} loader.
- */
+/** {@link MlEngineLoader} loader. */
 @FunctionalInterface
 public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
 
@@ -47,9 +43,7 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
    * @param modelId model id.
    * @param versionId model version id.
    */
-  static MlEngineLoader create(final String projectId,
-                               final String modelId,
-                               final String versionId)
+  static MlEngineLoader create(final String projectId, final String modelId, final String versionId)
       throws IOException, GeneralSecurityException {
     return ModelLoader.loaded(MlEngineModel.create(projectId, modelId, versionId))::get;
   }

@@ -20,11 +20,8 @@ import java.util.concurrent.Executor;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import java.util.concurrent.Executor;
 
-/**
- * {@link XGBoostModel} loader.
- */
+/** {@link XGBoostModel} loader. */
 @FunctionalInterface
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
@@ -55,8 +52,8 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    *
    * @param supplier {@link XGBoostModel} supplier.
    */
-  static XGBoostLoader create(final ThrowableSupplier<XGBoostModel> supplier,
-                              final Executor executor) {
+  static XGBoostLoader create(
+      final ThrowableSupplier<XGBoostModel> supplier, final Executor executor) {
     return ModelLoader.load(supplier, executor)::get;
   }
 }

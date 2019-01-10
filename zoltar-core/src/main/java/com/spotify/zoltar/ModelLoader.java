@@ -55,11 +55,10 @@ public interface ModelLoader<M extends Model<?>> {
      * @param supplier model supplier.
      * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
      * @param executor the executor to use for asynchronous execution.
-     * @param <M>      Underlying model instance.
+     * @param <M> Underlying model instance.
      */
-    static <M extends Model<?>> PreLoader<M> preload(final ThrowableSupplier<M> supplier,
-                                                     final Duration duration,
-                                                     final Executor executor)
+    static <M extends Model<?>> PreLoader<M> preload(
+        final ThrowableSupplier<M> supplier, final Duration duration, final Executor executor)
         throws InterruptedException, ExecutionException, TimeoutException {
       return preload(ModelLoader.load(supplier, executor), duration)::get;
     }
@@ -70,10 +69,10 @@ public interface ModelLoader<M extends Model<?>> {
      *
      * @param loader model loader.
      * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
-     * @param <M>    Underlying model instance.
+     * @param <M> Underlying model instance.
      */
-    static <M extends Model<?>> PreLoader<M> preload(final ModelLoader<M> loader,
-                                                     final Duration duration)
+    static <M extends Model<?>> PreLoader<M> preload(
+        final ModelLoader<M> loader, final Duration duration)
         throws InterruptedException, ExecutionException, TimeoutException {
       return ModelLoader.loaded(loader.get(duration))::get;
     }
@@ -97,7 +96,6 @@ public interface ModelLoader<M extends Model<?>> {
         }
       };
     }
-
   }
 
   /**
@@ -117,7 +115,6 @@ public interface ModelLoader<M extends Model<?>> {
       final CompletableFuture<M> m = CompletableFuture.completedFuture(model);
       return () -> m;
     }
-
   }
 
   /**
@@ -136,25 +133,24 @@ public interface ModelLoader<M extends Model<?>> {
    * @param supplier model supplier.
    * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
    * @param executor the executor to use for asynchronous execution.
-   * @param <M>      Underlying model instance.
+   * @param <M> Underlying model instance.
    */
-  static <M extends Model<?>> PreLoader<M> preload(final ThrowableSupplier<M> supplier,
-                                                   final Duration duration,
-                                                   final Executor executor)
+  static <M extends Model<?>> PreLoader<M> preload(
+      final ThrowableSupplier<M> supplier, final Duration duration, final Executor executor)
       throws InterruptedException, ExecutionException, TimeoutException {
     return PreLoader.preload(supplier, duration, executor);
   }
 
   /**
-   * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration}
-   * is met.
+   * Returns a blocking {@link PreLoader}. Blocks till the model is loaded or a {@link Duration} is
+   * met.
    *
    * @param loader model loader.
    * @param duration Amount of time that it should wait, if necessary, for model to be loaded.
-   * @param <M>    Underlying model instance.
+   * @param <M> Underlying model instance.
    */
-  static <M extends Model<?>> ModelLoader<M> preload(final ModelLoader<M> loader,
-                                                     final Duration duration)
+  static <M extends Model<?>> ModelLoader<M> preload(
+      final ModelLoader<M> loader, final Duration duration)
       throws InterruptedException, ExecutionException, TimeoutException {
     return PreLoader.preload(loader, duration);
   }
@@ -163,17 +159,20 @@ public interface ModelLoader<M extends Model<?>> {
    * Create a {@link ModelLoader} that loads the supplied model asynchronously.
    *
    * @param supplier model supplier.
-   * @param <M>      Underlying model instance.
+   * @param <M> Underlying model instance.
    */
-  static <M extends Model<?>> ModelLoader<M> load(final ThrowableSupplier<M> supplier,
-                                                  final Executor executor) {
-    final CompletableFuture<M> future = CompletableFuture.supplyAsync(() -> {
-      try {
-        return supplier.get();
-      } catch (final Exception e) {
-        throw new CompletionException(e);
-      }
-    }, executor);
+  static <M extends Model<?>> ModelLoader<M> load(
+      final ThrowableSupplier<M> supplier, final Executor executor) {
+    final CompletableFuture<M> future =
+        CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                return supplier.get();
+              } catch (final Exception e) {
+                throw new CompletionException(e);
+              }
+            },
+            executor);
 
     return () -> future;
   }

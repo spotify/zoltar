@@ -38,9 +38,7 @@ public abstract class ModelConfig {
     return Executors.newFixedThreadPool(threads);
   }
 
-  /**
-   * Creates a {@link ModelConfig} create a {@link Config}.
-   */
+  /** Creates a {@link ModelConfig} create a {@link Config}. */
   public static ModelConfig from(final Config config) throws URISyntaxException {
     URI modelUri = URI.create(config.getString("model"));
 

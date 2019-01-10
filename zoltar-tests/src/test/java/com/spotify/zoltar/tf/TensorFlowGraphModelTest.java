@@ -20,16 +20,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import com.google.common.util.concurrent.MoreExecutors;
-import com.spotify.featran.java.JFeatureSpec;
-import com.spotify.featran.transformers.Identity;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.Model.Id;
-import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.PredictFns.PredictFn;
-import com.spotify.zoltar.Prediction;
-import com.spotify.zoltar.PredictorsTest;
-import com.spotify.zoltar.featran.FeatranExtractFns;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +38,18 @@ import org.tensorflow.Output;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
+
+import com.google.common.util.concurrent.MoreExecutors;
+
+import com.spotify.featran.java.JFeatureSpec;
+import com.spotify.featran.transformers.Identity;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.Model.Id;
+import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.PredictFns.PredictFn;
+import com.spotify.zoltar.Prediction;
+import com.spotify.zoltar.Predictors;
+import com.spotify.zoltar.featran.FeatranExtractFns;
 
 public class TensorFlowGraphModelTest {
 
@@ -88,11 +90,9 @@ public class TensorFlowGraphModelTest {
   @Test
   public void testDefaultId() throws IOException, ExecutionException, InterruptedException {
     final Path graphFile = createADummyTFGraph();
-    final ModelLoader<TensorFlowGraphModel> model = TensorFlowGraphLoader.create(
-        graphFile.toString(),
-        null,
-        null,
-        MoreExecutors.directExecutor());
+    final ModelLoader<TensorFlowGraphModel> model =
+        TensorFlowGraphLoader.create(
+            graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -102,12 +102,9 @@ public class TensorFlowGraphModelTest {
   @Test
   public void testCustomId() throws IOException, ExecutionException, InterruptedException {
     final Path graphFile = createADummyTFGraph();
-    final ModelLoader<TensorFlowGraphModel> model = TensorFlowGraphLoader.create(
-        Id.create("dummy"),
-        graphFile.toString(),
-        null,
-        null,
-        MoreExecutors.directExecutor());
+    final ModelLoader<TensorFlowGraphModel> model =
+        TensorFlowGraphLoader.create(
+            Id.create("dummy"), graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final TensorFlowGraphModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -168,7 +165,8 @@ public class TensorFlowGraphModelTest {
         new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
 
     final ModelLoader<TensorFlowGraphModel> tfModel =
-        TensorFlowGraphLoader.create(graphFile.toString(), null, null, MoreExecutors.directExecutor());
+        TensorFlowGraphLoader.create(
+            graphFile.toString(), null, null, MoreExecutors.directExecutor());
 
     final PredictFn<TensorFlowGraphModel, Double, double[], Double> predictFn =
         (model, vectors) ->

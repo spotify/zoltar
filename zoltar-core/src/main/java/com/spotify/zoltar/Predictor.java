@@ -47,11 +47,6 @@ public interface Predictor<ModelT extends Model<?>, InputT, VectorT, ValueT> {
 
   AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn();
 
-  /** timeout scheduler for predict functions. */
-  default PredictorTimeoutScheduler timeoutScheduler() {
-    return DefaultPredictorTimeoutScheduler.create();
-  }
-
   default Builder<ModelT, InputT, VectorT, ValueT> toBuilder() {
     return new Builder<>(modelLoader(), featureExtractor(), predictFn());
   }

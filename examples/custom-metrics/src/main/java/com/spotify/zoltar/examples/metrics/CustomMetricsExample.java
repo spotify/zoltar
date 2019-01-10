@@ -156,8 +156,6 @@ class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Floa
               .map(vector -> Prediction.create(vector.input(), vector.value() * 2))
               .collect(Collectors.toList());
         };
-    final FeatureExtractor<DummyModel, Integer, Float> featureExtractor =
-        FeatureExtractor.create(extractFn);
 
     // We build the Predictor as usual, compose with the built-in metrics, and then compose
     // with our custom metrics.
@@ -173,7 +171,7 @@ class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Floa
     predictor =
         Predictor.<DummyModel, Integer, Float, Float>builder()
             .modelLoader(modelLoader)
-            .featureExtractor(featureExtractor)
+            .featureExtractFn(extractFn)
             .predictFn(predictFn)
             .build()
             .with(Instrumentations.predictor(predictorMetrics))

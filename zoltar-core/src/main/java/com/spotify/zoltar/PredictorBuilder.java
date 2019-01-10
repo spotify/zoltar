@@ -1,35 +1,31 @@
-/*-
- * -\-\-
- * zoltar-core
- * --
+/*
  * Copyright (C) 2016 - 2018 Spotify AB
- * --
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * -/-/-
  */
-
 package com.spotify.zoltar;
 
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import java.util.function.Function;
+
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 
 /**
  * PredictorBuilder holds the necessary info to build a {@link Predictor}.
  *
- * @param <ModelT>  underlying type of the {@link Model}.
- * @param <InputT>  type of the input to the {@link FeatureExtractor}.
+ * @param <ModelT> underlying type of the {@link Model}.
+ * @param <InputT> type of the input to the {@link FeatureExtractor}.
  * @param <VectorT> type of the output from {@link FeatureExtractor}.
- * @param <ValueT>  type of the prediction result.
+ * @param <ValueT> type of the prediction result.
  */
 public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT> {
 
@@ -68,5 +64,4 @@ public interface PredictorBuilder<ModelT extends Model<?>, InputT, VectorT, Valu
       final Function<PredictorBuilder<ModelT, InputT, VectorT, ValueT>, C> fn) {
     return fn.apply(this);
   }
-
 }

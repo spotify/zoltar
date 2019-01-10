@@ -1,24 +1,30 @@
-/*-
- * -\-\-
- * mlengine-example
- * --
+/*
  * Copyright (C) 2016 - 2018 Spotify AB
- * --
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * -/-/-
  */
-
 package com.spotify.zoltar.mlengine;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+import org.tensorflow.example.Example;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,17 +41,9 @@ import com.google.auto.value.AutoValue;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.io.BaseEncoding;
+
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.mlengine.MlEngineModel.Response.Predictions;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import org.tensorflow.example.Example;
 
 /**
  * This model can be used to allow prediction on models deployed to Google Cloud ML Engine.
@@ -60,7 +58,7 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    * Creates a Google Cloud ML Engine backed model.
    *
    * @param projectId Google project id.
-   * @param modelId   model id.
+   * @param modelId model id.
    */
   static MlEngineModel create(final String projectId, final String modelId)
       throws IOException, GeneralSecurityException {
@@ -72,15 +70,13 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    * Creates a Google Cloud ML Engine backed model.
    *
    * @param projectId Google project id.
-   * @param modelId   model id.
+   * @param modelId model id.
    * @param versionId model version id.
    */
-  static MlEngineModel create(final String projectId,
-                              final String modelId,
-                              final String versionId)
+  static MlEngineModel create(final String projectId, final String modelId, final String versionId)
       throws IOException, GeneralSecurityException {
-    final String id = String
-        .format("projects/%s/models/%s/versions/%s", projectId, modelId, versionId);
+    final String id =
+        String.format("projects/%s/models/%s/versions/%s", projectId, modelId, versionId);
     return create(Model.Id.create(id));
   }
 
@@ -88,22 +84,22 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    * Creates a Google Cloud ML Engine backed model.
    *
    * @param id {@link Model.Id} needs to be created with the following format:
-   *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}"</pre>
-   *           or
-   *           <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}/versions/{MODEL_VERSION}"</pre>
+   *     <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}"</pre>
+   *     or
+   *     <pre>"projects/{PROJECT_ID}/models/{MODEL_ID}/versions/{MODEL_VERSION}"</pre>
    */
   public static MlEngineModel create(final Model.Id id)
       throws IOException, GeneralSecurityException {
     final HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
     final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
-    final GoogleCredential credential = GoogleCredential
-        .getApplicationDefault()
-        .createScoped(CloudMachineLearningEngineScopes.all());
+    final GoogleCredential credential =
+        GoogleCredential.getApplicationDefault()
+            .createScoped(CloudMachineLearningEngineScopes.all());
 
-    final CloudMachineLearningEngine mlEngine = new CloudMachineLearningEngine
-        .Builder(httpTransport, jsonFactory, credential)
-        .setApplicationName(APPLICATION_NAME)
-        .build();
+    final CloudMachineLearningEngine mlEngine =
+        new CloudMachineLearningEngine.Builder(httpTransport, jsonFactory, credential)
+            .setApplicationName(APPLICATION_NAME)
+            .build();
 
     return new AutoValue_MlEngineModel(id, mlEngine, httpTransport);
   }
@@ -118,14 +114,16 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
   public Predictions predict(final List<?> data) throws IOException, MlEnginePredictException {
     final GoogleCloudMlV1PredictRequest predict =
         new GoogleCloudMlV1PredictRequest().set("instances", data);
-    final GoogleApiHttpBody httpBody = instance().projects()
-        .predict(id().value(), predict)
-        .execute();
+    final GoogleApiHttpBody httpBody =
+        instance().projects().predict(id().value(), predict).execute();
 
     final Response response = Response.from(httpBody);
-    return response.predictions().orElseThrow(() -> {
-      return response.error().map(MlEnginePredictException::new).get();
-    });
+    return response
+        .predictions()
+        .orElseThrow(
+            () -> {
+              return response.error().map(MlEnginePredictException::new).get();
+            });
   }
 
   /**
@@ -135,27 +133,28 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
    */
   public Predictions predictExamples(final List<Example> examples)
       throws IOException, MlEnginePredictException {
-    final List<Map<String, String>> data = examples.stream().map(example -> {
-      final byte[] bytes = example.toByteArray();
-      final String b64 = BaseEncoding.base64().encode(bytes);
+    final List<Map<String, String>> data =
+        examples
+            .stream()
+            .map(
+                example -> {
+                  final byte[] bytes = example.toByteArray();
+                  final String b64 = BaseEncoding.base64().encode(bytes);
 
-      return Collections.singletonMap("b64", b64);
-    }).collect(Collectors.toList());
+                  return Collections.singletonMap("b64", b64);
+                })
+            .collect(Collectors.toList());
 
     return predict(data);
   }
 
-  /**
-   * Close the model.
-   */
+  /** Close the model. */
   @Override
   public void close() throws Exception {
     httpTransport().shutdown();
   }
 
-  /**
-   * Prediction response.
-   */
+  /** Prediction response. */
   @AutoValue
   public abstract static class Response {
 
@@ -168,11 +167,12 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
     /**
      * List of predictions. Return type depends on the model used.
      *
-     * @see <a href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
+     * @see <a
+     *     href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
      */
     public Optional<Predictions> predictions() {
-      final List<Object> predictions = (List<Object>) content()
-          .getOrDefault("predictions", Collections.emptyList());
+      final List<Object> predictions =
+          (List<Object>) content().getOrDefault("predictions", Collections.emptyList());
 
       if (predictions.isEmpty()) {
         return Optional.empty();
@@ -196,7 +196,8 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
       /**
        * List of predictions. Return type depends on the model used.
        *
-       * @see <a href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
+       * @see <a
+       *     href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
        */
       public abstract List<Object> values();
 
@@ -220,5 +221,4 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
       }
     }
   }
-
 }

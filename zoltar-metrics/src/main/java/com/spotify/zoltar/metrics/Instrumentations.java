@@ -18,7 +18,7 @@ package com.spotify.zoltar.metrics;
 import java.util.function.Function;
 
 import com.spotify.zoltar.Model;
-import com.spotify.zoltar.PredictorBuilder;
+import com.spotify.zoltar.Predictor;
 
 /**
  * This class consists exclusively of static methods that return functions used to decorate types
@@ -37,9 +37,9 @@ public final class Instrumentations {
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
       Function<
-              PredictorBuilder<ModelT, InputT, VectorT, ValueT>,
-              InstrumentedPredictorBuilder<ModelT, InputT, VectorT, ValueT>>
+              Predictor<ModelT, InputT, VectorT, ValueT>,
+              InstrumentedPredictor<ModelT, InputT, VectorT, ValueT>>
           predictor(final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
-    return InstrumentedPredictorBuilder.create(metrics);
+    return predictor -> InstrumentedPredictor.create(predictor, metrics);
   }
 }

@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 
 import okio.ByteString;
 
+import org.tensorflow.example.Example;
+
 import com.typesafe.config.Config;
 
 import com.spotify.apollo.Environment;
@@ -36,6 +38,7 @@ import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
+import com.spotify.zoltar.tf.TensorFlowModel;
 
 /** Application entry point. */
 public class App {
@@ -61,7 +64,7 @@ public class App {
       throw new RuntimeException(e.getMessage());
     }
 
-    final Predictor<Iris, Long> predictor;
+    final Predictor<TensorFlowModel, Iris, Example, Long> predictor;
     try {
       final ModelConfig irisModelConfig = ModelConfig.from(config.getConfig("iris"));
       predictor = IrisPredictor.create(irisModelConfig, metrics);

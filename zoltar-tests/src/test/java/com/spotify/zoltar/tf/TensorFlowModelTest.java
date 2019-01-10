@@ -52,7 +52,8 @@ import com.spotify.zoltar.tf.TensorFlowModel.Options;
 
 public class TensorFlowModelTest {
 
-  public static Predictor<Iris, Long> getTFIrisPredictor() throws Exception {
+  public static Predictor<TensorFlowModel, Iris, Example, Long> getTFIrisPredictor()
+      throws Exception {
     final String modelUri =
         TensorFlowModelTest.class.getResource("/trained_model").toURI().toString();
     final URI settingsUri = TensorFlowModelTest.class.getResource("/settings.json").toURI();

@@ -30,7 +30,7 @@ import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 
 /**
- * This class consists exclusively of static methods that return {@link PredictorBuilder} or {@link
+ * This class consists exclusively of static methods that return {@link Predictor} or {@link
  * Predictor}.
  *
  * <p>This is the public entry point for Predictors.
@@ -40,8 +40,7 @@ public final class Predictors {
   private Predictors() {}
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor}and a {@link
-   * PredictFn}.
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor}and a {@link PredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param extractFn a feature extract function to use to transform input into extracted features.
@@ -53,15 +52,15 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final ExtractFn<InputT, VectorT> extractFn,
           final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return DefaultPredictorBuilder.create(modelLoader, extractFn, predictFn);
+    return create(modelLoader, FeatureExtractor.create(extractFn), AsyncPredictFn.lift(predictFn));
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
@@ -74,16 +73,15 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final ExtractFn<InputT, VectorT> extractFn,
           final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return DefaultPredictorBuilder.create(modelLoader, extractFn, predictFn);
+    return create(modelLoader, FeatureExtractor.create(extractFn), predictFn);
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
-   * PredictFn}.
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
@@ -95,16 +93,16 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
           final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
+    return create(modelLoader, featureExtractor, AsyncPredictFn.lift(predictFn));
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
-   * PredictFn}.
+   * Returns a predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * AsyncPredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
@@ -116,16 +114,15 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
           final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-    return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn);
+    return Predictor.builder(modelLoader, featureExtractor, predictFn).build();
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor}and a {@link
-   * PredictFn}.
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor}and a {@link PredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param extractFn a feature extract function to use to transform input into extracted features.
@@ -139,17 +136,16 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final ExtractFn<InputT, VectorT> extractFn,
           final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
           final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
-    return DefaultPredictorBuilder.create(modelLoader, extractFn, predictFn)
-        .with(Instrumentations.predictor(metrics));
+    return create(modelLoader, extractFn, predictFn).with(Instrumentations.predictor(metrics));
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor} and a {@link
    * AsyncPredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
@@ -164,18 +160,16 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final ExtractFn<InputT, VectorT> extractFn,
           final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
           final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
-    return DefaultPredictorBuilder.create(modelLoader, extractFn, predictFn)
-        .with(Instrumentations.predictor(metrics));
+    return create(modelLoader, extractFn, predictFn).with(Instrumentations.predictor(metrics));
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
-   * PredictFn}.
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
@@ -189,18 +183,17 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
           final PredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
           final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
-    return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn)
+    return create(modelLoader, featureExtractor, predictFn)
         .with(Instrumentations.predictor(metrics));
   }
 
   /**
-   * Returns a PredictorBuilder given a {@link Model}, {@link FeatureExtractor} and a {@link
-   * PredictFn}.
+   * Returns a Predictor given a {@link Model}, {@link FeatureExtractor} and a {@link PredictFn}.
    *
    * @param modelLoader model loader that loads the model to perform prediction on.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
@@ -214,12 +207,12 @@ public final class Predictors {
    */
   @SuppressWarnings("checkstyle:LineLength")
   public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
-      PredictorBuilder<ModelT, InputT, VectorT, ValueT> newBuilder(
+      Predictor<ModelT, InputT, VectorT, ValueT> create(
           final ModelLoader<ModelT> modelLoader,
           final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
           final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn,
           final PredictorMetrics<InputT, VectorT, ValueT> metrics) {
-    return DefaultPredictorBuilder.create(modelLoader, featureExtractor, predictFn)
+    return create(modelLoader, featureExtractor, predictFn)
         .with(Instrumentations.predictor(metrics));
   }
 
@@ -234,7 +227,7 @@ public final class Predictors {
    * @param <InputT> type of the input to the {@link FeatureExtractor}.
    * @param <ValueT> type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
@@ -256,7 +249,7 @@ public final class Predictors {
    * @param <InputT> type of the input to the {@link FeatureExtractor}.
    * @param <ValueT> type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
@@ -277,7 +270,7 @@ public final class Predictors {
    * @param <InputT> type of the input to the {@link FeatureExtractor}.
    * @param <ValueT> type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
@@ -285,7 +278,27 @@ public final class Predictors {
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
         TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
 
-    return newBuilder(modelLoader, featureExtractor, predictFn).predictor();
+    return create(modelLoader, featureExtractor, predictFn);
+  }
+
+  /**
+   * Returns a TensorFlow Predictor. Assumes feature extraction is embedded in the model via
+   * Tensorflow Transform, so no extractFn is needed and the input type must be Example.
+   *
+   * @param modelLoader should point to a directory of the saved TensorFlow {@link
+   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
+   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param fetchOps operations to fetch.
+   * @param metrics a predictor metrics implementation {@link
+   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
+   * @param <ValueT> type of the prediction result.
+   */
+  public static <ValueT> Predictor<TensorFlowModel, Example, Example, ValueT> tensorFlow(
+      final ModelLoader<TensorFlowModel> modelLoader,
+      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
+      final String[] fetchOps,
+      final PredictorMetrics metrics) {
+    return tensorFlow(modelLoader, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);
   }
 
   /**
@@ -301,35 +314,15 @@ public final class Predictors {
    * @param <InputT> type of the input to the {@link FeatureExtractor}.
    * @param <ValueT> type of the prediction result.
    */
-  public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
+  public static <InputT, ValueT> Predictor<TensorFlowModel, InputT, Example, ValueT> tensorFlow(
       final ModelLoader<TensorFlowModel> modelLoader,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String[] fetchOps,
-      final PredictorMetrics metrics) {
+      final PredictorMetrics<InputT, Example, ValueT> metrics) {
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
         TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
 
-    return newBuilder(modelLoader, featureExtractor, predictFn, metrics).predictor();
-  }
-
-  /**
-   * Returns a TensorFlow Predictor. Assumes feature extraction is embedded in the model via
-   * Tensorflow Transform, so no extractFn is needed and the input type must be Example.
-   *
-   * @param modelLoader should point to a directory of the saved TensorFlow {@link
-   *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
-   * @param fetchOps operations to fetch.
-   * @param metrics a predictor metrics implementation {@link
-   *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
-   * @param <ValueT> type of the prediction result.
-   */
-  public static <ValueT> Predictor<Example, ValueT> tensorFlow(
-      final ModelLoader<TensorFlowModel> modelLoader,
-      final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
-      final String[] fetchOps,
-      final PredictorMetrics metrics) {
-    return tensorFlow(modelLoader, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);
+    return create(modelLoader, featureExtractor, predictFn, metrics);
   }
 }

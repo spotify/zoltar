@@ -30,12 +30,13 @@ import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.tf.TensorFlowLoader;
+import com.spotify.zoltar.tf.TensorFlowModel;
 
 /** Iris prediction meat and potatoes. */
 public final class IrisPredictor {
 
   /** Configure Iris prediction, should be called at the service startup/configuration stage. */
-  public static Predictor<Iris, Long> create(
+  public static Predictor<TensorFlowModel, Iris, Example, Long> create(
       final ModelConfig modelConfig, final PredictorMetrics metrics) throws IOException {
 
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();

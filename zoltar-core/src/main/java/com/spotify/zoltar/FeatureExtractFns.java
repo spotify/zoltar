@@ -138,6 +138,13 @@ public interface FeatureExtractFns {
       return timeout(extract(fn, executor), duration, executor);
     }
 
+    static <InputT, VectorT> ExtractFn<InputT, VectorT> extract(
+        final ExtractFn<InputT, VectorT> fn, final Executor executor) {
+      return extract(
+          (BatchExtractFn<InputT, VectorT>) inputs -> fn.apply(inputs).toCompletableFuture().join(),
+          executor);
+    }
+
     static <InputT, VectorT> ExtractFn<InputT, VectorT> timeout(
         final ExtractFn<InputT, VectorT> fn, final Duration duration, final Executor executor) {
       return TimeoutExtractFn.timeout(fn, duration, executor);

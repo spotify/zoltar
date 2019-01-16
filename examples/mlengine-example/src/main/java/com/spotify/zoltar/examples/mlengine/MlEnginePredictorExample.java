@@ -121,18 +121,9 @@ public final class MlEnginePredictorExample
   }
 
   @Override
-  public ModelLoader<MlEngineModel> modelLoader() {
-    return predictor.modelLoader();
-  }
-
-  @Override
-  public FeatureExtractor<MlEngineModel, Iris, Example> featureExtractor() {
-    return predictor.featureExtractor();
-  }
-
-  @Override
-  public AsyncPredictFn<MlEngineModel, Iris, Example, Integer> predictFn() {
-    return predictor.predictFn();
+  public CompletionStage<List<Prediction<Iris, Integer>>> predict(
+      final ScheduledExecutorService scheduler, final Duration timeout, final List<Iris> input) {
+    return predictor.predict(scheduler, timeout, input);
   }
 
   @AutoValue

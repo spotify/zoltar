@@ -131,7 +131,7 @@ public class XGBoostModelTest {
 
   @Test
   public void testModelPrediction() throws Exception {
-    final Iris[] irisStream = IrisHelper.getIrisTestData();
+    final List<Iris> irisStream = IrisHelper.getIrisTestData();
 
     final Map<Integer, String> classToId =
         ImmutableMap.of(
@@ -156,6 +156,6 @@ public class XGBoostModelTest {
                 })
             .toCompletableFuture();
 
-    assertTrue("Should be more the 0.8", sum.get() / (float) irisStream.length > .8);
+    assertTrue("Should be more the 0.8", sum.get() / (float) irisStream.size() > .8);
   }
 }

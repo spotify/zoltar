@@ -15,12 +15,9 @@
  */
 package com.spotify.zoltar;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
-
-import com.google.common.collect.Lists;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 
@@ -46,19 +43,11 @@ public interface FeatureExtractor<ModelT extends Model<?>, InputT, VectorT> {
   @SuppressWarnings("checkstyle:LineLength")
   static <ModelT extends Model<?>, InputT, VectorT>
       FeatureExtractor<ModelT, InputT, VectorT> create(final ExtractFn<InputT, VectorT> fn) {
-    return (model, inputs) -> {
-      final List<Vector<InputT, VectorT>> result = Lists.newArrayList();
-      final Iterator<InputT> i1 = Arrays.asList(inputs).iterator();
-      final Iterator<VectorT> i2 = fn.apply(inputs).iterator();
-      while (i1.hasNext() && i2.hasNext()) {
-        result.add(Vector.create(i1.next(), i2.next()));
-      }
-      return result;
-    };
+    return (model, inputs) -> fn.apply(inputs);
   }
 
   /** Functional interface. Perform the feature extraction given the input. */
-  List<Vector<InputT, VectorT>> extract(ModelT model, InputT... input) throws Exception;
+  CompletionStage<List<Vector<InputT, VectorT>>> extract(ModelT model, List<InputT> input);
 
   default <C extends FeatureExtractor<ModelT, InputT, VectorT>> C with(
       final Function<FeatureExtractor<ModelT, InputT, VectorT>, C> fn) {

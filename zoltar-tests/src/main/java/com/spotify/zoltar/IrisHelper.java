@@ -18,8 +18,12 @@ package com.spotify.zoltar;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import scala.Option;
+
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 
 /** Helper class to generate Iris test data. */
 public class IrisHelper {
@@ -37,11 +41,11 @@ public class IrisHelper {
   }
 
   /** Get Iris test data. */
-  public static IrisFeaturesSpec.Iris[] getIrisTestData() throws Exception {
+  public static List<Iris> getIrisTestData() throws Exception {
     final URI data = IrisHelper.class.getResource("/iris.csv").toURI();
     return Files.readAllLines(Paths.get(data))
         .stream()
         .map(IrisHelper::fromCsvString)
-        .toArray(IrisFeaturesSpec.Iris[]::new);
+        .collect(Collectors.toList());
   }
 }

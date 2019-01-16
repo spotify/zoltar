@@ -27,6 +27,7 @@ import com.google.common.cache.LoadingCache;
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
 import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
@@ -148,7 +149,8 @@ class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Floa
 
   CustomMetricsExample(final SemanticMetricRegistry metricRegistry, final MetricId metricId) {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
-    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
+    final ExtractFn<Integer, Float> extractFn =
+        ExtractFn.extract((UnaryExtractFn<Integer, Float>) input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {
           return vectors
@@ -180,17 +182,8 @@ class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Floa
   }
 
   @Override
-  public ModelLoader<DummyModel> modelLoader() {
-    return predictor.modelLoader();
-  }
-
-  @Override
-  public FeatureExtractor<DummyModel, Integer, Float> featureExtractor() {
-    return predictor.featureExtractor();
-  }
-
-  @Override
-  public AsyncPredictFn<DummyModel, Integer, Float, Float> predictFn() {
-    return predictor.predictFn();
+  public CompletionStage<List<Prediction<Integer, Float>>> predict(
+      final ScheduledExecutorService scheduler, final Duration timeout, final List<Integer> input) {
+    return predictorBuilder.predictor().predict(scheduler, timeout, input);
   }
 }

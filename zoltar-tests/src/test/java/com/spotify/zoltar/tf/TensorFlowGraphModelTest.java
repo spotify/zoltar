@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +37,8 @@ import org.tensorflow.Output;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
+
+import avro.shaded.com.google.common.collect.ImmutableList;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -197,8 +198,8 @@ public class TensorFlowGraphModelTest {
                 .collect(Collectors.toList());
     final ExtractFn<Double, double[]> extractFn = FeatranExtractFns.doubles(featureSpec, settings);
 
-    final Double[] input = new Double[] {0.0D, 1.0D, 7.0D};
-    final double[] expected = Arrays.stream(input).mapToDouble(d -> d * 2.0D).toArray();
+    final List<Double> input = ImmutableList.of(0.0D, 1.0D, 7.0D);
+    final double[] expected = input.stream().mapToDouble(d -> d * 2.0D).toArray();
     final CompletableFuture<double[]> result =
         Predictors.create(tfModel, extractFn, predictFn)
             .predict(input)

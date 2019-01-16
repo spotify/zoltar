@@ -16,11 +16,12 @@
 package com.spotify.zoltar.examples.batch;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
-import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
-import com.spotify.zoltar.FeatureExtractor;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
@@ -29,27 +30,23 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 
 /** Example showing a batch predictor. */
-class BatchPredictorExample
-    implements Predictor<DummyModel, List<Integer>, List<Float>, List<Float>> {
+class BatchPredictorExample implements Predictor<Integer, Float> {
 
   private Predictor<DummyModel, List<Integer>, List<Float>, List<Float>> predictor;
 
   BatchPredictorExample() {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
 
-    final BatchExtractFn<Integer, Float> batchExtractFn =
-        BatchExtractFn.lift((Function<Integer, Float>) input -> (float) input / 10);
+    final ExtractFn<Integer, Float> batchExtractFn =
+        ExtractFn.extract((UnaryExtractFn<Integer, Float>) input -> (float) input / 10);
 
-    final PredictFn<DummyModel, List<Integer>, List<Float>, List<Float>> predictFn =
+    final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {
           return vectors
               .stream()
               .map(
                   vector -> {
-                    final List<Float> values =
-                        vector.value().stream().map(v -> v * 2).collect(Collectors.toList());
-
-                    return Prediction.create(vector.input(), values);
+                    return Prediction.create(vector.input(), vector.value() * 2);
                   })
               .collect(Collectors.toList());
         };
@@ -59,17 +56,8 @@ class BatchPredictorExample
   }
 
   @Override
-  public ModelLoader<DummyModel> modelLoader() {
-    return predictor.modelLoader();
-  }
-
-  @Override
-  public FeatureExtractor<DummyModel, List<Integer>, List<Float>> featureExtractor() {
-    return predictor.featureExtractor();
-  }
-
-  @Override
-  public AsyncPredictFn<DummyModel, List<Integer>, List<Float>, List<Float>> predictFn() {
-    return predictor.predictFn();
+  public CompletionStage<List<Prediction<Integer, Float>>> predict(
+      final ScheduledExecutorService scheduler, final Duration timeout, final List<Integer> input) {
+    return predictorBuilder.predictor().predict(scheduler, timeout, input);
   }
 }

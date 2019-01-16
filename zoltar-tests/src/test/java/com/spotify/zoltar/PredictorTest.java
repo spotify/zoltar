@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.ConsExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 
@@ -58,7 +60,7 @@ public class PredictorTest {
     final Duration wait = Duration.ofSeconds(1);
     final Duration predictionTimeout = Duration.ZERO;
 
-    final ExtractFn<Object, Object> extractFn = inputs -> Collections.emptyList();
+    final ExtractFn<Object, Object> extractFn = ConsExtractFn.cons(Collections.emptyList());
     final PredictFn<DummyModel, Object, Object, Object> predictFn =
         (model, vectors) -> {
           Thread.sleep(wait.toMillis());
@@ -81,13 +83,14 @@ public class PredictorTest {
   @Test
   public void empty() throws InterruptedException, ExecutionException, TimeoutException {
     final Duration wait = Duration.ofSeconds(1);
-    final ExtractFn<Object, Object> extractFn = inputs -> Collections.emptyList();
+    final ExtractFn<Object, Object> extractFn = ConsExtractFn.cons(Collections.emptyList());
     final AsyncPredictFn<DummyModel, Object, Object, Object> predictFn =
         (model, vectors) -> CompletableFuture.completedFuture(Collections.emptyList());
 
     final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
-    Predictors.create(loader, extractFn, predictFn)
-        .predict()
+    DefaultPredictorBuilder.create(loader, extractFn, predictFn)
+        .predictor()
+        .predict(Collections.emptyList())
         .toCompletableFuture()
         .get(wait.toMillis(), TimeUnit.MILLISECONDS);
   }
@@ -95,7 +98,8 @@ public class PredictorTest {
   @Test
   public void nonEmpty() throws InterruptedException, ExecutionException, TimeoutException {
     final Duration wait = Duration.ofSeconds(1);
-    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
+    final ExtractFn<Integer, Float> extractFn =
+        ExtractFn.extract((UnaryExtractFn<Integer, Float>) input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {
           return vectors

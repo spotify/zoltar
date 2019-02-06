@@ -15,8 +15,8 @@
  */
 package com.spotify.zoltar.fs;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +30,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,10 +49,7 @@ public class FileSystemExtrasTest {
 
   @Test
   public void jarPath() throws IOException {
-    final String file = getClass().getResource("/model.jar").getFile();
-    final URI uri = URI.create(String.format("jar:file:%s!/tensorflow/", file));
-    final Path path = FileSystemExtras.path(uri);
-    assertThat(path, notNullValue());
+    assertThat(pathForJar(), notNullValue());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -95,25 +91,37 @@ public class FileSystemExtrasTest {
   }
 
   @Test
+  public void copyDirectoryFromJar() throws IOException {
+    final Path src = pathForJar();
+    final Path dest = Files.createTempDirectory("zoltar-");
+    final File file = FileSystemExtras.copyDir(src, dest, true).toFile();
+    file.deleteOnExit();
+    checkCopiedDirectory(file);
+  }
+
+  @Test
   public void copyDirectory() throws IOException, URISyntaxException {
     final URI resource = getClass().getResource("/trained_model").toURI();
-    final String abspath = new File(resource).getAbsolutePath();
-    final Path model = Paths.get(abspath);
-
+    final Path src = new File(resource).toPath();
     final Path dest = Files.createTempDirectory("zoltar-");
-    final Path path = FileSystemExtras.copyDir(model, dest, true);
+    final File file = FileSystemExtras.copyDir(src, dest, true).toFile();
+    file.deleteOnExit();
+    checkCopiedDirectory(file);
+  }
 
-    assertTrue(path.toFile().exists());
-    assertTrue(path.toFile().isDirectory());
-    assertTrue(path.toFile().getName().startsWith("zoltar"));
+  private void checkCopiedDirectory(final File file) {
+    assertTrue(file.exists());
+    assertTrue(file.isDirectory());
 
     final List<String> dirContents =
-        Arrays.stream(path.toFile().listFiles()).map(File::getName).collect(Collectors.toList());
+        Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList());
 
-    final List<String> expected = Arrays.asList("variables", "saved_model.pb", "trained_model.txt");
+    assertThat(dirContents, containsInAnyOrder("variables", "saved_model.pb", "trained_model.txt"));
+  }
 
-    assertThat(dirContents.containsAll(expected), is(true));
-
-    path.toFile().deleteOnExit();
+  private Path pathForJar() throws IOException {
+    final String file = getClass().getResource("/trained_model.jar").getFile();
+    final URI uri = URI.create(String.format("jar:file:%s!/", file));
+    return FileSystemExtras.path(uri);
   }
 }

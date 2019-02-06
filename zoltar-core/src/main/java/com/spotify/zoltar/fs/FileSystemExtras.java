@@ -107,20 +107,20 @@ public final class FileSystemExtras {
     return copyDir(src, temp, true).toUri();
   }
 
-  static Path copyDir(final Path src, final Path dest, final boolean overwrite)
-      throws IOException {
-    final List<URI> uris = Files.walk(src)
-        .filter(path -> !path.equals(src))
-        .map(Path::toUri)
-        .collect(Collectors.toList());
+  static Path copyDir(final Path src, final Path dest, final boolean overwrite) throws IOException {
+    final List<Path> paths =
+        Files.walk(src).filter(path -> !path.equals(src)).collect(Collectors.toList());
 
-    for (final URI uri : uris) {
-      final String relative =
-          uri.toString().substring(src.toUri().toString().length(), uri.toString().length());
-      final Path fullDst = Paths.get(dest.toUri().resolve(relative));
-      final CopyOption[] flags = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING}
-          : new CopyOption[]{};
-      Files.copy(Paths.get(uri), fullDst, flags);
+    for (final Path path : paths) {
+      final Path relative = src.relativize(path);
+      // The 'resolve' method can be passed a String or a Path - we must pass String. If copying
+      // from a jar file, the relative path will be ZipPath, while our destination directory will
+      // be UnixPath. This difference will cause resolve to throw ProviderMismatchException, so
+      // we must first convert relative to String.
+      final Path fullDst = dest.resolve(relative.toString());
+      final CopyOption[] flags =
+          overwrite ? new CopyOption[] {StandardCopyOption.REPLACE_EXISTING} : new CopyOption[] {};
+      Files.copy(path, fullDst, flags);
     }
 
     return dest;

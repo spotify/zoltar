@@ -112,7 +112,7 @@ public final class FileSystemExtras {
         Files.walk(src).filter(path -> !path.equals(src)).collect(Collectors.toList());
 
     for (final Path path : paths) {
-      final Path relative = src.relativize(path);
+      final Path relative = src.relativize(path(path.toUri()));
       // The 'resolve' method can be passed a String or a Path - we must pass String. If copying
       // from a jar file, the relative path will be ZipPath, while our destination directory will
       // be UnixPath. This difference will cause resolve to throw ProviderMismatchException, so

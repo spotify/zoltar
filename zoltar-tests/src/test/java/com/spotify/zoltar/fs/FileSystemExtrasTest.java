@@ -20,13 +20,13 @@
 
 package com.spotify.zoltar.fs;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.checkCopiedDirectory;
+import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.pathForJar;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -35,9 +35,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.Test;
 
 public class FileSystemExtrasTest {
@@ -100,7 +97,7 @@ public class FileSystemExtrasTest {
     final Path dest = Files.createTempDirectory("zoltar-");
     final File file = FileSystemExtras.copyDir(src, dest, true).toFile();
     file.deleteOnExit();
-    checkCopiedDirectory(file);
+    checkCopiedDirectory(file, "variables", "saved_model.pb", "trained_model.txt");
   }
 
   @Test
@@ -110,22 +107,7 @@ public class FileSystemExtrasTest {
     final Path dest = Files.createTempDirectory("zoltar-");
     final File file = FileSystemExtras.copyDir(src, dest, true).toFile();
     file.deleteOnExit();
-    checkCopiedDirectory(file);
+    checkCopiedDirectory(file, "variables", "saved_model.pb", "trained_model.txt");
   }
 
-  private void checkCopiedDirectory(final File file) {
-    assertTrue(file.exists());
-    assertTrue(file.isDirectory());
-
-    final List<String> dirContents =
-        Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList());
-
-    assertThat(dirContents, containsInAnyOrder("variables", "saved_model.pb", "trained_model.txt"));
-  }
-
-  private Path pathForJar() throws IOException {
-    final String file = getClass().getResource("/trained_model.jar").getFile();
-    final URI uri = URI.create(String.format("jar:file:%s!/", file));
-    return FileSystemExtras.path(uri);
-  }
 }

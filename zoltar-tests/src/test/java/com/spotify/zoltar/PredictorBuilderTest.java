@@ -47,51 +47,36 @@ public class PredictorBuilderTest {
     public void close() {}
   }
 
-  static final class IdentityPredictorBuilder<ModelT extends Model<?>, InputT, VectorT, ValueT>
-      implements PredictorBuilder<ModelT, InputT, VectorT, ValueT> {
+  static final class IdentityPredictor<ModelT extends Model<?>, InputT, VectorT, ValueT>
+      implements Predictor<ModelT, InputT, VectorT, ValueT> {
 
-    private final PredictorBuilder<ModelT, InputT, VectorT, ValueT> predictorBuilder;
+    private final Predictor<ModelT, InputT, VectorT, ValueT> predictor;
 
-    IdentityPredictorBuilder(
-        final PredictorBuilder<ModelT, InputT, VectorT, ValueT> predictorBuilder) {
-      this.predictorBuilder = predictorBuilder;
+    IdentityPredictor(final Predictor<ModelT, InputT, VectorT, ValueT> predictor) {
+      this.predictor = predictor;
     }
 
     public static <ModelT extends Model<?>, InputT, VectorT, ValueT>
         Function<
-                PredictorBuilder<ModelT, InputT, VectorT, ValueT>,
-                IdentityPredictorBuilder<ModelT, InputT, VectorT, ValueT>>
+                Predictor<ModelT, InputT, VectorT, ValueT>,
+                IdentityPredictor<ModelT, InputT, VectorT, ValueT>>
             decorate() {
-      return IdentityPredictorBuilder::new;
+      return IdentityPredictor::new;
     }
 
     @Override
     public ModelLoader<ModelT> modelLoader() {
-      return predictorBuilder.modelLoader();
+      return predictor.modelLoader();
     }
 
     @Override
     public FeatureExtractor<ModelT, InputT, VectorT> featureExtractor() {
-      return predictorBuilder.featureExtractor();
+      return predictor.featureExtractor();
     }
 
     @Override
     public AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn() {
-      return predictorBuilder.predictFn();
-    }
-
-    @Override
-    public Predictor<InputT, ValueT> predictor() {
-      return predictorBuilder.predictor();
-    }
-
-    @Override
-    public IdentityPredictorBuilder<ModelT, InputT, VectorT, ValueT> with(
-        final ModelLoader<ModelT> modelLoader,
-        final FeatureExtractor<ModelT, InputT, VectorT> featureExtractor,
-        final AsyncPredictFn<ModelT, InputT, VectorT, ValueT> predictFn) {
-      return IdentityPredictorBuilder.<ModelT, InputT, VectorT, ValueT>decorate()
-          .apply(predictorBuilder.with(modelLoader, featureExtractor, predictFn));
+      return predictor.predictFn();
     }
   }
 
@@ -108,9 +93,8 @@ public class PredictorBuilderTest {
         };
 
     final List<Prediction<Integer, Float>> predictions =
-        DefaultPredictorBuilder.create(loader, extractFn, predictFn)
-            .with(IdentityPredictorBuilder.decorate())
-            .predictor()
+        Predictors.create(loader, extractFn, predictFn)
+            .with(IdentityPredictor.decorate())
             .predict(1)
             .toCompletableFuture()
             .get();

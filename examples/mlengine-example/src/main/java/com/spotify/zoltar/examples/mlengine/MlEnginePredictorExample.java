@@ -20,13 +20,10 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,23 +36,29 @@ import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Models;
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.mlengine.MlEngineLoader;
+import com.spotify.zoltar.mlengine.MlEngineModel;
 import com.spotify.zoltar.mlengine.MlEnginePredictException;
 import com.spotify.zoltar.mlengine.MlEnginePredictFn;
 
 /** Cloud Machine Learning Engine online prediction example. */
-public final class MlEnginePredictorExample implements Predictor<Iris, Integer> {
+public final class MlEnginePredictorExample
+    implements Predictor<MlEngineModel, Iris, Example, Integer> {
 
-  private final Predictor<Iris, Integer> predictor;
+  private final Predictor<MlEngineModel, Iris, Example, Integer> predictor;
 
-  private MlEnginePredictorExample(final Predictor<Iris, Integer> predictor) {
+  private MlEnginePredictorExample(
+      final Predictor<MlEngineModel, Iris, Example, Integer> predictor) {
     this.predictor = predictor;
   }
 
@@ -111,16 +114,25 @@ public final class MlEnginePredictorExample implements Predictor<Iris, Integer> 
           return CompletableFutures.allAsList(predictions);
         };
 
-    final Predictor<Iris, Integer> predictor =
-        Predictors.newBuilder(mlEngineLoader, extractFn, predictFn).predictor();
+    final Predictor<MlEngineModel, Iris, Example, Integer> predictor =
+        Predictors.create(mlEngineLoader, extractFn, predictFn);
 
     return new MlEnginePredictorExample(predictor);
   }
 
   @Override
-  public CompletionStage<List<Prediction<Iris, Integer>>> predict(
-      final ScheduledExecutorService scheduler, final Duration timeout, final Iris... input) {
-    return predictor.predict(scheduler, timeout, input);
+  public ModelLoader<MlEngineModel> modelLoader() {
+    return predictor.modelLoader();
+  }
+
+  @Override
+  public FeatureExtractor<MlEngineModel, Iris, Example> featureExtractor() {
+    return predictor.featureExtractor();
+  }
+
+  @Override
+  public AsyncPredictFn<MlEngineModel, Iris, Example, Integer> predictFn() {
+    return predictor.predictFn();
   }
 
   @AutoValue

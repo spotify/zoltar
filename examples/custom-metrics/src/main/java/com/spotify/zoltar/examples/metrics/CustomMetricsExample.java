@@ -15,10 +15,7 @@
  */
 package com.spotify.zoltar.examples.metrics;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import com.codahale.metrics.Counter;
@@ -33,11 +30,10 @@ import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
-import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.Vector;
 import com.spotify.zoltar.loaders.Preloader;
 import com.spotify.zoltar.metrics.FeatureExtractorMetrics;
@@ -49,9 +45,9 @@ import com.spotify.zoltar.metrics.VectorMetrics;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
 
 /** Example showing how to add custom metrics to a Predictor. */
-class CustomMetricsExample implements Predictor<Integer, Float> {
+class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Float> {
 
-  private final PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
+  private Predictor<DummyModel, Integer, Float, Float> predictor;
 
   /** Define a class containing all the additional metrics we want to register. */
   @AutoValue
@@ -162,10 +158,8 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
               .map(vector -> Prediction.create(vector.input(), vector.value() * 2))
               .collect(Collectors.toList());
         };
-    final FeatureExtractor<DummyModel, Integer, Float> featureExtractor =
-        FeatureExtractor.create(extractFn);
 
-    // We build the PredictorBuilder as usual, compose with the built-in metrics, and then compose
+    // We build the Predictor as usual, compose with the built-in metrics, and then compose
     // with our custom metrics.
     // #PredictorMetrics
     final PredictorMetrics<Integer, Float, Float> predictorMetrics =
@@ -175,16 +169,30 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
     final PredictorMetrics<Integer, Float, Float> customMetrics =
         CustomPredictorMetrics.create(metricRegistry, metricId);
 
-    predictorBuilder =
-        // #PredictorBuilderWithMetrics
-        Predictors.newBuilder(modelLoader, featureExtractor, predictFn, predictorMetrics)
-            // #PredictorBuilderWithMetrics
+    // #PredictorWithMetrics
+    predictor =
+        Predictor.<DummyModel, Integer, Float, Float>builder()
+            .modelLoader(modelLoader)
+            .featureExtractFn(extractFn)
+            .predictFn(predictFn)
+            .build()
+            .with(Instrumentations.predictor(predictorMetrics))
             .with(Instrumentations.predictor(customMetrics));
+    // #PredictorWithMetrics
   }
 
   @Override
-  public CompletionStage<List<Prediction<Integer, Float>>> predict(
-      final ScheduledExecutorService scheduler, final Duration timeout, final Integer... input) {
-    return predictorBuilder.predictor().predict(scheduler, timeout, input);
+  public ModelLoader<DummyModel> modelLoader() {
+    return predictor.modelLoader();
+  }
+
+  @Override
+  public FeatureExtractor<DummyModel, Integer, Float> featureExtractor() {
+    return predictor.featureExtractor();
+  }
+
+  @Override
+  public AsyncPredictFn<DummyModel, Integer, Float, Float> predictFn() {
+    return predictor.predictFn();
   }
 }

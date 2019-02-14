@@ -22,6 +22,9 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Stream;
 
 import okio.ByteString;
+
+import org.tensorflow.example.Example;
+
 import scala.Option;
 
 import com.google.common.collect.ImmutableMap;
@@ -35,6 +38,7 @@ import com.spotify.apollo.route.Route;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
+import com.spotify.zoltar.tf.TensorFlowModel;
 
 /** Route endpoints. */
 final class IrisPredictionHandler {
@@ -45,13 +49,14 @@ final class IrisPredictionHandler {
           1L, "Iris-versicolor",
           2L, "Iris-virginica");
 
-  private IrisPredictionHandler(final Predictor<Iris, Long> predictor) {
+  private IrisPredictionHandler(final Predictor<TensorFlowModel, Iris, Example, Long> predictor) {
     this.predictor = predictor;
   }
 
-  private final Predictor<Iris, Long> predictor;
+  private final Predictor<TensorFlowModel, Iris, Example, Long> predictor;
 
-  static IrisPredictionHandler create(final Predictor<Iris, Long> predictor) {
+  static IrisPredictionHandler create(
+      final Predictor<TensorFlowModel, Iris, Example, Long> predictor) {
     return new IrisPredictionHandler(predictor);
   }
 

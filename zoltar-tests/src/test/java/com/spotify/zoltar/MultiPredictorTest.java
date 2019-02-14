@@ -21,22 +21,28 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import ml.dmlc.xgboost4j.LabeledPoint;
+
 import org.junit.Test;
+import org.tensorflow.example.Example;
 
 import com.google.common.collect.Lists;
 
+import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowModelTest;
+import com.spotify.zoltar.xgboost.XGBoostModel;
 import com.spotify.zoltar.xgboost.XGBoostModelTest;
 
 public class MultiPredictorTest {
 
   @Test
   public void testMultiplePredictors() throws Exception {
-    final Predictor<IrisFeaturesSpec.Iris, Long> tfPredictor =
+    final Predictor<TensorFlowModel, Iris, Example, Long> tfPredictor =
         TensorFlowModelTest.getTFIrisPredictor();
-    final Predictor<IrisFeaturesSpec.Iris, Long> xgBoostPredictor =
+    final Predictor<XGBoostModel, Iris, LabeledPoint, Long> xgBoostPredictor =
         XGBoostModelTest.getXGBoostIrisPredictor();
-    final ArrayList<Predictor<IrisFeaturesSpec.Iris, Long>> predictors =
+    final ArrayList<Predictor<?, IrisFeaturesSpec.Iris, ?, Long>> predictors =
         Lists.newArrayList(tfPredictor, xgBoostPredictor);
     final IrisFeaturesSpec.Iris[] irisStream = IrisHelper.getIrisTestData();
 

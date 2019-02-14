@@ -50,12 +50,13 @@ import com.spotify.zoltar.IrisHelper;
 import com.spotify.zoltar.Model.Id;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorsTest;
+import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 
 public class XGBoostModelTest {
 
-  public static Predictor<Iris, Long> getXGBoostIrisPredictor() throws Exception {
+  public static Predictor<XGBoostModel, Iris, LabeledPoint, Long> getXGBoostIrisPredictor()
+      throws Exception {
     final URI trainedModelUri = XGBoostModelTest.class.getResource("/iris.model").toURI();
     final URI settingsUri = XGBoostModelTest.class.getResource("/settings.json").toURI();
 
@@ -96,7 +97,7 @@ public class XGBoostModelTest {
     final ExtractFn<Iris, LabeledPoint> extractFn =
         FeatranExtractFns.labeledPoints(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
-    return PredictorsTest.newBuilder(model, extractFn, predictFn).predictor();
+    return Predictors.create(model, extractFn, predictFn);
   }
 
   @Test

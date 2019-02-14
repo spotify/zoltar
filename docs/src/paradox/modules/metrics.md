@@ -23,7 +23,7 @@ Attach it to the @javadoc[PredictorBuilder](com.spotify.zoltar.PredictorBuilder)
 
 @@snip [PredictorMetrics](../../../../examples/custom-metrics/src/main/java/com/spotify/zoltar/examples/metrics/CustomMetricsExample.java) { #PredictorMetrics }
 
-@@snip [PredictorBuilderWithMetrics](../../../../examples/custom-metrics/src/main/java/com/spotify/zoltar/examples/metrics/CustomMetricsExample.java) { #PredictorBuilderWithMetrics }
+@@snip [PredictorWithMetrics](../../../../examples/custom-metrics/src/main/java/com/spotify/zoltar/examples/metrics/CustomMetricsExample.java) { #PredictorWithMetrics }
 
 ## Example 
 

@@ -15,25 +15,24 @@
  */
 package com.spotify.zoltar.examples.batch;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
+import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
-import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 
 /** Example showing a batch predictor. */
-class BatchPredictorExample implements Predictor<List<Integer>, List<Float>> {
+class BatchPredictorExample
+    implements Predictor<DummyModel, List<Integer>, List<Float>, List<Float>> {
 
-  private PredictorBuilder<DummyModel, List<Integer>, List<Float>, List<Float>> predictorBuilder;
+  private Predictor<DummyModel, List<Integer>, List<Float>, List<Float>> predictor;
 
   BatchPredictorExample() {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
@@ -55,15 +54,22 @@ class BatchPredictorExample implements Predictor<List<Integer>, List<Float>> {
               .collect(Collectors.toList());
         };
 
-    // We build the PredictorBuilder as usual
-    predictorBuilder = Predictors.newBuilder(modelLoader, batchExtractFn, predictFn);
+    // We build the Predictor as usual
+    predictor = Predictors.create(modelLoader, batchExtractFn, predictFn);
   }
 
   @Override
-  public CompletionStage<List<Prediction<List<Integer>, List<Float>>>> predict(
-      final ScheduledExecutorService scheduler,
-      final Duration timeout,
-      final List<Integer>... input) {
-    return predictorBuilder.predictor().predict(scheduler, timeout, input);
+  public ModelLoader<DummyModel> modelLoader() {
+    return predictor.modelLoader();
+  }
+
+  @Override
+  public FeatureExtractor<DummyModel, List<Integer>, List<Float>> featureExtractor() {
+    return predictor.featureExtractor();
+  }
+
+  @Override
+  public AsyncPredictFn<DummyModel, List<Integer>, List<Float>, List<Float>> predictFn() {
+    return predictor.predictFn();
   }
 }

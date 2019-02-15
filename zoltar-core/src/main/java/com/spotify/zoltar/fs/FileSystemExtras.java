@@ -69,6 +69,22 @@ public final class FileSystemExtras {
       return Paths.get(uri.toString());
     }
 
+    // uri starts with 'gs'
+    if (scheme.equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
+      // GCS requires that the path has a trailing slash.
+      final URI trailingSlashUri = uri.toString().endsWith("/")
+                                   ? uri : URI.create(uri.toString() + "/");
+      try {
+        return Paths.get(trailingSlashUri);
+      } catch (IllegalArgumentException e) {
+        if (uri.getHost() == null && scheme.equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
+          // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_hostnames
+          throw new IllegalArgumentException("gcs bucket is not rfc 2396 compliant");
+        }
+        throw e;
+      }
+    }
+
     try {
       return Paths.get(uri);
     } catch (FileSystemNotFoundException e) {
@@ -76,16 +92,7 @@ public final class FileSystemExtras {
       // the files in it. See Oracle doc for more details:
       // https://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
       FileSystems.newFileSystem(uri, Collections.emptyMap());
-
       return Paths.get(uri);
-    } catch (IllegalArgumentException e) {
-      if (uri.getHost() == null
-          && uri.getScheme().equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
-        // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_hostnames
-        throw new IllegalArgumentException("gcs bucket is not rfc 2396 compliant");
-      }
-
-      throw e;
     }
   }
 
@@ -96,9 +103,7 @@ public final class FileSystemExtras {
    * <p>NOTE: Zoltar internal use only!</p>
    */
   public static URI downloadIfNonLocal(final URI path) throws IOException {
-    final String fixedPath =
-        path.toString().endsWith("/") ? path.toString() : path.toString() + "/";
-    final Path src = path(URI.create(fixedPath));
+    final Path src = path(path);
     if (src.getFileSystem().equals(FileSystems.getDefault())) {
       return src.toUri();
     }
@@ -112,8 +117,11 @@ public final class FileSystemExtras {
         Files.walk(src).filter(path -> !path.equals(src)).collect(Collectors.toList());
 
     for (final Path path : paths) {
-      final Path relative = src.relativize(path(path.toUri()));
-      // The 'resolve' method can be passed a String or a Path - we must pass String. If copying
+      // The relativize method requires that src and path are either both absolute or both relative.
+      // For GCS, src will be an absolute CloudStoragePath object, and path will be a relative
+      // UnixPath object. To avoid any mismatch, always make them both absolute.
+      final Path relative = src.toAbsolutePath().relativize(path.toAbsolutePath());
+      // The resolve method can be passed a String or a Path - we must pass String. If copying
       // from a jar file, the relative path will be ZipPath, while our destination directory will
       // be UnixPath. This difference will cause resolve to throw ProviderMismatchException, so
       // we must first convert relative to String.

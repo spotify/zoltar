@@ -29,4 +29,4 @@ created_job_ids
 .venv
 
 ## Do not ignore jars used by unit tests
-!zoltar-tests/src/test/resources/model.jar
+!zoltar-tests/src/test/resources/*.jar

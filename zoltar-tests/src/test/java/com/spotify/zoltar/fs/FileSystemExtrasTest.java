@@ -21,7 +21,8 @@
 package com.spotify.zoltar.fs;
 
 import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.checkCopiedDirectory;
-import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.pathForJar;
+import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.jarUri;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,7 +51,14 @@ public class FileSystemExtrasTest {
 
   @Test
   public void jarPath() throws IOException {
-    assertThat(pathForJar(), notNullValue());
+    final Path jarPath = FileSystemExtras.path(jarUri());
+    assertThat(jarPath, notNullValue());
+  }
+
+  @Test
+  public void gcsPath() throws IOException {
+    final Path gcsPath = FileSystemExtras.path(URI.create("gs://bucket/name"));
+    assertThat(gcsPath.toString(), equalTo("/name/"));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -92,8 +100,15 @@ public class FileSystemExtrasTest {
   }
 
   @Test
+  public void downloadIfNonLocalWithJar() throws IOException {
+    final URI uri = FileSystemExtras.downloadIfNonLocal(jarUri());
+    final File file = new File(uri);
+    checkCopiedDirectory(file, "variables", "saved_model.pb", "trained_model.txt");
+  }
+
+  @Test
   public void copyDirectoryFromJar() throws IOException {
-    final Path src = pathForJar();
+    final Path src = FileSystemExtras.path(jarUri());
     final Path dest = Files.createTempDirectory("zoltar-");
     final File file = FileSystemExtras.copyDir(src, dest, true).toFile();
     file.deleteOnExit();

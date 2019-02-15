@@ -25,9 +25,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,10 +42,10 @@ public final class FileSystemExtrasTestUtils {
     assertThat(dirContents, containsInAnyOrder(items));
   }
 
-  public static Path pathForJar() throws IOException {
-    final String file = FileSystemExtrasTestUtils.class.getResource("/trained_model.jar").getFile();
-    final URI uri = URI.create(String.format("jar:file:%s!/", file));
-    return FileSystemExtras.path(uri);
+  public static URI jarUri() {
+    final String file =
+        FileSystemExtrasTestUtils.class.getResource("/trained_model.jar").getFile();
+    return URI.create(String.format("jar:file:%s!/trained_model", file));
   }
 
 }

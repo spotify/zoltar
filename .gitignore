@@ -7,9 +7,15 @@
 *.ear
 target
 
-## IntelliJ
+## IDE's 
 .idea
 *.iml
+.project
+.settings
+.classpath
+.metals
+.vscode
+.factorypath
 
 ## Logs
 *.log

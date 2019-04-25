@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     install_requires=[
         "numpy==1.14.0",
-        "tensorflow==1.5.0",
+        "tensorflow==1.13.1",
         "xgboost==0.6a2",
         "spotify-tensorflow==0.2.11"
     ],

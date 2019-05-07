@@ -21,6 +21,7 @@
 package com.spotify.zoltar.tf;
 
 import com.google.auto.value.AutoValue;
+import com.google.cloud.storage.contrib.nio.CloudStorageFileSystem;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
 import java.io.IOException;
@@ -83,7 +84,13 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   public static TensorFlowModel create(final Model.Id id,
                                        final URI modelResource,
                                        final Options options) throws IOException {
-    final URI localDir = FileSystemExtras.downloadIfNonLocal(modelResource);
+    // GCS requires that directory URIs have a trailing slash, so add the slash if it's missing
+    // and the URI starts with 'gs'.
+    final URI normalizedUri =
+        !CloudStorageFileSystem.URI_SCHEME.equalsIgnoreCase(modelResource.getScheme())
+        || modelResource.toString().endsWith("/")
+        ? modelResource : URI.create(modelResource.toString() + "/");
+    final URI localDir = FileSystemExtras.downloadIfNonLocal(normalizedUri);
     final SavedModelBundle model = SavedModelBundle.load(localDir.toString(),
                                                          options.tags().toArray(new String[0]));
     return new AutoValue_TensorFlowModel(id, model, options);

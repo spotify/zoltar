@@ -22,9 +22,8 @@ package ml.dmlc.xgboost4j.java;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
-import java.util.Vector;
 
 /**
  * Utility class to load <a href="https://gcc.gnu.org/projects/gomp/">GOMP</a> library on both Mac
@@ -43,28 +42,21 @@ public class GompLoader {
   }
 
   private static void load(final String name) throws IOException {
-    try {
-      final Vector<String> libraries = getLoadedLibraries(ClassLoader.getSystemClassLoader());
-      System.out.println("Loaded libs" + libraries);
-      final String[] libs = libraries.toArray(new String[libraries.size()]);
-
-      final String libFile = name.substring(name.lastIndexOf('/') + 1, name.length());
-      final String libName = libFile.substring(0, libFile.indexOf('.'));
-      if (Arrays.stream(libs).noneMatch(n -> n.contains(libName))) {
-        System.load(NativeLibLoader.createTempFileFromResource(name));
-      }
-    } catch (final IOException e) {
-      throw new IOException(e);
+    final Collection<String> libraries = getLoadedLibraries(ClassLoader.getSystemClassLoader());
+    System.out.println("Loaded libs" + libraries);
+    final String libFile = name.substring(name.lastIndexOf('/') + 1);
+    final String libName = libFile.substring(0, libFile.indexOf('.'));
+    if (libraries.stream().noneMatch(n -> n.contains(libName))) {
+      System.load(NativeLibLoader.createTempFileFromResource(name));
     }
-
   }
 
-  private static Vector<String> getLoadedLibraries(final ClassLoader loader) throws IOException {
+  private static Collection<String> getLoadedLibraries(final ClassLoader loader)
+      throws IOException {
     try {
       final Field libField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
       libField.setAccessible(true);
-
-      return (Vector<String>) libField.get(loader);
+      return (Collection<String>) libField.get(loader);
     } catch (final NoSuchFieldException | IllegalAccessException noSuchFieldError) {
       throw new IOException(noSuchFieldError);
     }

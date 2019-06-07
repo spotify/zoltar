@@ -69,22 +69,6 @@ public final class FileSystemExtras {
       return Paths.get(uri.toString());
     }
 
-    // uri starts with 'gs'
-    if (scheme.equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
-      // GCS requires that the path has a trailing slash.
-      final URI trailingSlashUri = uri.toString().endsWith("/")
-                                   ? uri : URI.create(uri.toString() + "/");
-      try {
-        return Paths.get(trailingSlashUri);
-      } catch (IllegalArgumentException e) {
-        if (uri.getHost() == null && scheme.equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
-          // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_hostnames
-          throw new IllegalArgumentException("gcs bucket is not rfc 2396 compliant");
-        }
-        throw e;
-      }
-    }
-
     try {
       return Paths.get(uri);
     } catch (FileSystemNotFoundException e) {
@@ -93,6 +77,12 @@ public final class FileSystemExtras {
       // https://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
       FileSystems.newFileSystem(uri, Collections.emptyMap());
       return Paths.get(uri);
+    } catch (IllegalArgumentException e) {
+      if (uri.getHost() == null && scheme.equalsIgnoreCase(CloudStorageFileSystem.URI_SCHEME)) {
+        // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_hostnames
+        throw new IllegalArgumentException("gcs bucket is not rfc 2396 compliant");
+      }
+      throw e;
     }
   }
 

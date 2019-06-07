@@ -58,7 +58,7 @@ public class FileSystemExtrasTest {
   @Test
   public void gcsPath() throws IOException {
     final Path gcsPath = FileSystemExtras.path(URI.create("gs://bucket/name"));
-    assertThat(gcsPath.toString(), equalTo("/name/"));
+    assertThat(gcsPath.toString(), equalTo("/name"));
   }
 
   @Test(expected = IllegalArgumentException.class)

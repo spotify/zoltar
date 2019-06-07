@@ -32,7 +32,7 @@ public class FileSystemExtrasTestIT {
   @Test
   public void downloadGcsBucket() throws IOException {
     final URI gcsUri = URI.create(
-        "gs://data-integration-test-us/zoltar/iris/trained/regadas/2018-04-16--14-47-55/export/1523904529");
+        "gs://data-integration-test-us/zoltar/iris/trained/regadas/2018-04-16--14-47-55/export/1523904529/");
     final File local = new File(FileSystemExtras.downloadIfNonLocal(gcsUri));
     local.deleteOnExit();
 

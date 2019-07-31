@@ -86,6 +86,12 @@ public abstract class JTensor implements Serializable {
           jt = new AutoValue_JTensor(
               tensor.dataType(), tensor.numDimensions(), tensor.shape(), doubleBuf.array());
           break;
+        case BOOL:
+          final boolean[] array = new boolean[tensor.numElements()];
+          tensor.copyTo(array);
+          jt = new AutoValue_JTensor(
+              tensor.dataType(), tensor.numDimensions(), tensor.shape(), array);
+          break;
         default:
           throw new IllegalStateException("Unsupported data type " + tensor.dataType());
       }
@@ -161,6 +167,11 @@ public abstract class JTensor implements Serializable {
   public double[] doubleValue() {
     Preconditions.checkState(dataType() == DataType.DOUBLE);
     return (double []) data();
+  }
+
+  public boolean[] booleanValue() {
+    Preconditions.checkState(dataType() == DataType.BOOL);
+    return (boolean[]) data();
   }
 
   private static int[] toIntExact(final long[] dimensions) {

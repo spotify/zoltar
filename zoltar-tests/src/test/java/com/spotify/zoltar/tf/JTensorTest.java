@@ -159,6 +159,22 @@ public class JTensorTest {
   }
 
   @Test
+  public void testBooleanTensor() {
+    final boolean[] booleanValue = {true, true, false, true, false};
+    final Tensor<Boolean> tensor = Tensors.create(booleanValue);
+    final JTensor jt = JTensor.create(tensor);
+    assertEquals(DataType.BOOL, jt.dataType());
+    assertEquals(1, jt.numDimensions());
+    assertArrayEquals(shape, jt.shape());
+    assertArrayEquals(booleanValue, jt.booleanValue());
+    testException(jt, JTensor::stringValue);
+    testException(jt, JTensor::intValue);
+    testException(jt, JTensor::longValue);
+    testException(jt, JTensor::floatValue);
+    testException(jt, JTensor::doubleValue);
+  }
+
+  @Test
   public void stringTensorSerializable() throws IOException {
     final String stringValue = "world";
     final Tensor<String> tensor = Tensors.create(stringValue);

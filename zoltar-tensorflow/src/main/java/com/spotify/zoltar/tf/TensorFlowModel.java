@@ -22,6 +22,7 @@ package com.spotify.zoltar.tf;
 
 import com.google.auto.value.AutoValue;
 import com.google.cloud.storage.contrib.nio.CloudStorageFileSystem;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
 import java.io.IOException;
@@ -29,7 +30,12 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.tensorflow.SavedModelBundle;
+import org.tensorflow.framework.MetaGraphDef;
+import org.tensorflow.framework.SignatureDef;
+import org.tensorflow.framework.TensorInfo;
 
 /**
  * This model can be used to load TensorFlow {@link SavedModelBundle} model. Whenever possible
@@ -44,6 +50,7 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   private static final Options DEFAULT_OPTIONS = Options.builder()
       .tags(Collections.singletonList("serve"))
       .build();
+  private static final String DEFAULT_SIGNATURE_DEF = "serving_default";
 
   /**
    * Note: Please use Models from zoltar-models module.
@@ -78,12 +85,25 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   /**
    * Note: Please use Models from zoltar-models module.
    *
-   * <p>Returns a TensorFlow model given {@link SavedModelBundle} export directory URI and
-   * {@link Options}.</p>
+   * <p>Returns a TensorFlow model with metadata given {@link SavedModelBundle} export directory
+   * URI and {@link Options}.</p>
    */
   public static TensorFlowModel create(final Model.Id id,
                                        final URI modelResource,
                                        final Options options) throws IOException {
+    return create(id, modelResource, options, DEFAULT_SIGNATURE_DEF);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Returns a TensorFlow model with metadata given {@link SavedModelBundle} export directory
+   * URI and {@link Options}.</p>
+   */
+  public static TensorFlowModel create(final Model.Id id,
+                                       final URI modelResource,
+                                       final Options options,
+                                       final String signatureDefinition) throws IOException {
     // GCS requires that directory URIs have a trailing slash, so add the slash if it's missing
     // and the URI starts with 'gs'.
     final URI normalizedUri =
@@ -93,7 +113,17 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     final URI localDir = FileSystemExtras.downloadIfNonLocal(normalizedUri);
     final SavedModelBundle model = SavedModelBundle.load(localDir.toString(),
                                                          options.tags().toArray(new String[0]));
-    return new AutoValue_TensorFlowModel(id, model, options);
+    final MetaGraphDef metaGraphDef = extractMetaGraphDefinition(model);
+    final SignatureDef signatureDef = metaGraphDef.getSignatureDefOrThrow(signatureDefinition);
+
+    return new AutoValue_TensorFlowModel(
+        id,
+        model,
+        options,
+        metaGraphDef,
+        signatureDef,
+        toNameMap(signatureDef.getInputsMap()),
+        toNameMap(signatureDef.getOutputsMap()));
   }
 
   /**
@@ -116,6 +146,14 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
    * {@link Options} of this model.
    */
   public abstract Options options();
+
+  public abstract MetaGraphDef metaGraphDefinition();
+
+  public abstract SignatureDef signatureDefinition();
+
+  public abstract Map<String, String> inputsNameMap();
+
+  public abstract Map<String, String> outputsNameMap();
 
   /**
    * Value class for our TensorFlow options.
@@ -142,6 +180,22 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
 
       public abstract Options build();
     }
+  }
+
+  private static MetaGraphDef extractMetaGraphDefinition(final SavedModelBundle bundle) {
+    final MetaGraphDef metaGraphDef;
+    try {
+      metaGraphDef = MetaGraphDef.parseFrom(bundle.metaGraphDef());
+    } catch (InvalidProtocolBufferException e) {
+      throw new RuntimeException("Failed parsing tensorflow metagraph definition", e);
+    }
+
+    return metaGraphDef;
+  }
+
+  private static Map<String, String> toNameMap(final Map<String, TensorInfo> infoMap) {
+    return infoMap.entrySet().stream()
+        .collect(Collectors.toMap(Map.Entry::getKey, p -> p.getValue().getName()));
   }
 
 }

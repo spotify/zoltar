@@ -87,6 +87,23 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
   /**
    * Returns a TensorFlow model loader based on a saved model.
    *
+   * @param id       model id @{link Model.Id}.
+   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   *                 org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource,
+   *                 GCS etc.
+   * @param options  TensorFlow options, see {@link TensorFlowModel.Options}.
+   * @param signatureDef name of the signature definition to load from the exported model
+   */
+  static TensorFlowLoader create(final Model.Id id,
+                                 final String modelUri,
+                                 final TensorFlowModel.Options options,
+                                 final String signatureDef) {
+    return create(() -> TensorFlowModel.create(id, URI.create(modelUri), options, signatureDef));
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a saved model.
+   *
    * @param supplier {@link TensorFlowModel} supplier.
    */
   static TensorFlowLoader create(final ThrowableSupplier<TensorFlowModel> supplier) {

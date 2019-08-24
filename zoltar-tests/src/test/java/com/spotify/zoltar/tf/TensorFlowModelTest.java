@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -80,6 +81,66 @@ public class TensorFlowModelTest {
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 
     assertThat(tensorFlowModel.id().value(), is("tensorflow"));
+  }
+
+  @Test
+  public void testMetaGraphDefinition()
+    throws URISyntaxException, ExecutionException, InterruptedException {
+    final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
+    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+
+    final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
+
+    assertThat(tensorFlowModel.metaGraphDefinition().getSignatureDefCount(), is(3));
+    Assert.assertTrue(tensorFlowModel.metaGraphDefinition().containsSignatureDef("serving_default"));
+    Assert.assertTrue(tensorFlowModel.metaGraphDefinition().containsSignatureDef("predict"));
+    Assert.assertTrue(tensorFlowModel.metaGraphDefinition().containsSignatureDef("classification"));
+  }
+
+  @Test
+  public void testDefaultSignatureInputAndOutputNameMapping()
+      throws URISyntaxException, ExecutionException, InterruptedException {
+    final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
+    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+
+    final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
+
+    assertThat(tensorFlowModel.inputsNameMap(), is(new HashMap<String, String>(){{
+      put("inputs", "input_example_tensor:0");
+    }}));
+
+    assertThat(tensorFlowModel.outputsNameMap(), is(new HashMap<String, String>(){{
+      put("classes", "linear/head/Tile:0");
+      put("scores", "linear/head/predictions/probabilities:0");
+    }}));
+  }
+
+  @Test
+  public void testProvidedSignatureDefInputAndOutputNameMapping()
+      throws URISyntaxException, ExecutionException, InterruptedException {
+    final Options options = Options.builder()
+        .tags(Collections.singletonList("serve"))
+        .build();
+    final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
+    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(
+        Id.create("prediction-model"),
+        trainedModelUri.toString(),
+        options,
+        "predict"
+    );
+
+    final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
+
+    assertThat(tensorFlowModel.inputsNameMap(), is(new HashMap<String, String>(){{
+      put("examples", "input_example_tensor:0");
+    }}));
+
+    assertThat(tensorFlowModel.outputsNameMap(), is(new HashMap<String, String>(){{
+      put("class_ids", "linear/head/predictions/ExpandDims:0");
+      put("classes", "linear/head/predictions/str_classes:0");
+      put("logits", "linear/linear_model/weighted_sum:0");
+      put("probabilities", "linear/head/predictions/probabilities:0");
+    }}));
   }
 
   @Test

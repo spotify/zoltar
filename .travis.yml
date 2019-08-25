@@ -1,4 +1,8 @@
 language: java
+
+jdk:
+  - openjdk8
+
 env:
   global:
     - SONATYPE_USERNAME=neville

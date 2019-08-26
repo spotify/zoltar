@@ -113,7 +113,12 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     final URI localDir = FileSystemExtras.downloadIfNonLocal(normalizedUri);
     final SavedModelBundle model = SavedModelBundle.load(localDir.toString(),
                                                          options.tags().toArray(new String[0]));
-    final MetaGraphDef metaGraphDef = extractMetaGraphDefinition(model);
+    final MetaGraphDef metaGraphDef;
+    try {
+      metaGraphDef = extractMetaGraphDefinition(model);
+    } catch (TensorflowMetagraphParsingException e) {
+      throw new RuntimeException(e);
+    }
     final SignatureDef signatureDef = metaGraphDef.getSignatureDefOrThrow(signatureDefinition);
 
     return new AutoValue_TensorFlowModel(
@@ -182,12 +187,13 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     }
   }
 
-  private static MetaGraphDef extractMetaGraphDefinition(final SavedModelBundle bundle) {
+  private static MetaGraphDef extractMetaGraphDefinition(final SavedModelBundle bundle)
+      throws TensorflowMetagraphParsingException {
     final MetaGraphDef metaGraphDef;
     try {
       metaGraphDef = MetaGraphDef.parseFrom(bundle.metaGraphDef());
     } catch (InvalidProtocolBufferException e) {
-      throw new RuntimeException("Failed parsing tensorflow metagraph definition", e);
+      throw new TensorflowMetagraphParsingException(e);
     }
 
     return metaGraphDef;

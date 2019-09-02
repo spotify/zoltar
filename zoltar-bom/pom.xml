@@ -31,6 +31,7 @@
     <apiclient.version>1.30.2</apiclient.version>
     <joda.version>2.10.1</joda.version>
     <boringssl.version>2.0.8.Final</boringssl.version>
+    <xgboost.version>0.90</xgboost.version>
   </properties>
 
   <dependencyManagement>
@@ -224,7 +225,7 @@
       <dependency>
         <groupId>ml.dmlc</groupId>
         <artifactId>xgboost4j</artifactId>
-        <version>0.80</version>
+        <version>${xgboost.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -346,11 +347,6 @@
         <artifactId>google-http-client-jackson2</artifactId>
         <version>${httpclient.version}</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>com.google.http-client</groupId>-->
-<!--        <artifactId>google-http-client-jackson</artifactId>-->
-<!--        <version>${httpclient.old.version}</version>-->
-<!--      </dependency>-->
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client</artifactId>

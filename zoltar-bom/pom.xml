@@ -18,10 +18,20 @@
     <tensorFlow.version>1.13.1</tensorFlow.version>
     <scio.version>0.5.7</scio.version>
     <featran.version>0.2.1</featran.version>
-    <proto.version>3.6.0</proto.version>
-    <grpc.version>1.13.1</grpc.version>
-    <netty.version>4.1.25.Final</netty.version>
-    <jackson.version>2.9.8</jackson.version>
+    <proto.version>3.9.1</proto.version>
+    <grpc.version>1.23.0</grpc.version>
+    <netty.version>4.1.38.Final</netty.version>
+    <jackson.version>2.9.9</jackson.version>
+    <guava.version>28.1-jre</guava.version>
+    <errorprone.version>2.3.2</errorprone.version>
+    <google.auth.version>0.17.1</google.auth.version>
+    <opencensus.version>0.23.0</opencensus.version>
+    <httpclient.version>1.31.0</httpclient.version>
+    <gson.version>2.8.5</gson.version>
+    <apiclient.version>1.30.2</apiclient.version>
+    <joda.version>2.10.1</joda.version>
+    <boringssl.version>2.0.8.Final</boringssl.version>
+    <xgboost.version>0.90</xgboost.version>
   </properties>
 
   <dependencyManagement>
@@ -29,7 +39,7 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-bom</artifactId>
-        <version>0.58.0-alpha</version>
+        <version>0.107.0-alpha</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -83,12 +93,12 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>20.0</version>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.auto.value</groupId>
         <artifactId>auto-value</artifactId>
-        <version>1.5.3</version>
+        <version>1.5.4</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -138,7 +148,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.9.9</version>
+        <version>${joda.version}</version>
       </dependency>
       <dependency>
         <groupId>org.scala-lang</groupId>
@@ -215,7 +225,7 @@
       <dependency>
         <groupId>ml.dmlc</groupId>
         <artifactId>xgboost4j</artifactId>
-        <version>0.80</version>
+        <version>${xgboost.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -239,12 +249,12 @@
       <dependency>
         <groupId>org.typelevel</groupId>
         <artifactId>cats-kernel_2.11</artifactId>
-        <version>1.0.1</version>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.typelevel</groupId>
         <artifactId>machinist_2.11</artifactId>
-        <version>0.6.2</version>
+        <version>0.6.6</version>
       </dependency>
 
       <dependency>
@@ -285,7 +295,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-tcnative-boringssl-static</artifactId>
-        <version>2.0.6.Final</version>
+        <version>${boringssl.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
@@ -295,17 +305,17 @@
       <dependency>
         <groupId>com.google.auth</groupId>
         <artifactId>google-auth-library-credentials</artifactId>
-        <version>0.10.0</version>
+        <version>${google.auth.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.auth</groupId>
         <artifactId>google-auth-library-oauth2-http</artifactId>
-        <version>0.10.0</version>
+        <version>${google.auth.version}</version>
       </dependency>
       <dependency>
         <groupId>io.opencensus</groupId>
         <artifactId>opencensus-api</artifactId>
-        <version>0.15.0</version>
+        <version>${opencensus.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -330,27 +340,37 @@
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.2.0</version>
+        <version>${errorprone.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client-jackson2</artifactId>
-        <version>1.24.1</version>
+        <version>${httpclient.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.http-client</groupId>
-        <artifactId>google-http-client-jackson</artifactId>
-        <version>1.24.1</version>
+        <artifactId>google-http-client</artifactId>
+        <version>${httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.api-client</groupId>
+        <artifactId>google-api-client</artifactId>
+        <version>${apiclient.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-storage</artifactId>
-        <version>v1-rev135-1.24.1</version>
+        <version>v1-rev20190624-1.30.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-ml</artifactId>
-        <version>v1-rev56-1.24.1</version>
+        <version>v1-rev20190816-1.30.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

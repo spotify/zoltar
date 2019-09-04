@@ -193,7 +193,8 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     try {
       metaGraphDef = MetaGraphDef.parseFrom(bundle.metaGraphDef());
     } catch (InvalidProtocolBufferException e) {
-      throw new TensorflowMetaGraphDefParsingException("Failed parsing tensorflow metagraph definition", e);
+      throw new TensorflowMetaGraphDefParsingException("Failed parsing tensorflow metagraph "
+                                                       + "definition", e);
     }
 
     return metaGraphDef;

@@ -24,8 +24,8 @@ package com.spotify.zoltar.tf;
 /**
  * Thrown when loading metagraph definitions from a tensorflow exported model fails.
  */
-public class TensorflowMetagraphParsingException extends Exception {
-  public TensorflowMetagraphParsingException(final Throwable cause) {
-    super("Failed parsing tensorflow metagraph definition", cause);
+public final class TensorflowMetaGraphDefParsingException extends Exception {
+  public TensorflowMetaGraphDefParsingException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 }

@@ -116,8 +116,8 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     final MetaGraphDef metaGraphDef;
     try {
       metaGraphDef = extractMetaGraphDefinition(model);
-    } catch (TensorflowMetagraphParsingException e) {
-      throw new RuntimeException(e);
+    } catch (TensorflowMetaGraphDefParsingException e) {
+      throw new IOException(e);
     }
     final SignatureDef signatureDef = metaGraphDef.getSignatureDefOrThrow(signatureDefinition);
 
@@ -188,12 +188,12 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   }
 
   private static MetaGraphDef extractMetaGraphDefinition(final SavedModelBundle bundle)
-      throws TensorflowMetagraphParsingException {
+      throws TensorflowMetaGraphDefParsingException {
     final MetaGraphDef metaGraphDef;
     try {
       metaGraphDef = MetaGraphDef.parseFrom(bundle.metaGraphDef());
     } catch (InvalidProtocolBufferException e) {
-      throw new TensorflowMetagraphParsingException(e);
+      throw new TensorflowMetaGraphDefParsingException("Failed parsing tensorflow metagraph definition", e);
     }
 
     return metaGraphDef;

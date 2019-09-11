@@ -28,6 +28,8 @@ import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphModel;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
+import com.spotify.zoltar.xgboost.XGBoostLoader;
+import com.spotify.zoltar.xgboost.XGBoostModel;
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
@@ -93,7 +95,7 @@ public class LoaderIT {
   public void xgBoostLoader() throws Exception {
     // Load a file from GCS without trailing slash
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/xgBoost/model.xgb";
-    final TensorFlowGraphModel model = TensorFlowGraphLoader.create(uri, null, null).get(TIMEOUT);
+    final XGBoostModel model = XGBoostLoader.create(uri).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -102,7 +104,7 @@ public class LoaderIT {
     // Load a file from GCS with trailing slash. This should throw an exception because GCS does
     // not allow a trailing slash on files.
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/xgBoost/model.xgb/";
-    final TensorFlowGraphModel model = TensorFlowGraphLoader.create(uri, null, null).get(TIMEOUT);
+    final XGBoostModel model = XGBoostLoader.create(uri).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 

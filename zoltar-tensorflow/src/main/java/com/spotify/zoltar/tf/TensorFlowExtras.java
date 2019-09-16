@@ -48,12 +48,15 @@ public class TensorFlowExtras {
     for (final String op : fetchOps) {
       runner.fetch(op);
     }
-    final List<Tensor<?>> tensors = runner.run();
     final Map<String, JTensor> result = Maps.newLinkedHashMapWithExpectedSize(fetchOps.length);
-    for (int i = 0; i < fetchOps.length; i++) {
-      final Tensor<?> tensor = tensors.get(i);
-      result.put(fetchOps[i], JTensor.create(tensor));
-      tensor.close();
+    final List<Tensor<?>> tensors = runner.run();
+    try {
+      for (int i = 0; i < fetchOps.length; i++) {
+        final Tensor<?> tensor = tensors.get(i);
+        result.put(fetchOps[i], JTensor.create(tensor));
+      }
+    } finally {
+      tensors.forEach(Tensor::close);
     }
     return result;
   }

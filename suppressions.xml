@@ -6,4 +6,5 @@
 
 <suppressions>
     <suppress files="AutoValue.*\.java" checks="[a-zA-Z0-9]*"/>
+    <suppress files=".*org\/tensorflow\/.*\.java" checks="[a-zA-Z0-9]*"/>
 </suppressions>

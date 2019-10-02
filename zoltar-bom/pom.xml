@@ -21,7 +21,7 @@
     <proto.version>3.9.1</proto.version>
     <grpc.version>1.23.0</grpc.version>
     <netty.version>4.1.38.Final</netty.version>
-    <jackson.version>2.9.9</jackson.version>
+    <jackson.version>2.10.0</jackson.version>
     <guava.version>28.1-jre</guava.version>
     <errorprone.version>2.3.2</errorprone.version>
     <google.auth.version>0.17.1</google.auth.version>

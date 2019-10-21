@@ -162,6 +162,10 @@
           </execution>
         </executions>
         <configuration>
+          <!-- for Java 11+ support -->
+          <args>
+            <arg>-nobootcp</arg>
+          </args>
           <scalaVersion>${scala.version}</scalaVersion>
           <jvmArgs>
             <jvmArg>${bigquery.project.arg}</jvmArg>

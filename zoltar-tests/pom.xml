@@ -39,12 +39,6 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-tensorflow_2.11</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.tensorflow</groupId>
-          <artifactId>tensorflow</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -65,12 +59,6 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>scio-tensorflow_2.11</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.tensorflow</groupId>
-          <artifactId>tensorflow</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>provided</scope>
     </dependency>
 

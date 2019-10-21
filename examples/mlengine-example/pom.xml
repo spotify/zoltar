@@ -16,7 +16,6 @@
     <maven.install.skip>true</maven.install.skip>
     <checkstyle.violationSeverity>warning</checkstyle.violationSeverity>
     <jacoco.skip>true</jacoco.skip>
-    <jackson.version>2.9.2</jackson.version>
   </properties>
 
   <dependencyManagement>

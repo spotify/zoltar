@@ -4,7 +4,7 @@
   <parent>
     <artifactId>zoltar-parent</artifactId>
     <groupId>com.spotify</groupId>
-    <version>0.5.6</version>
+    <version>0.5.7-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
 
@@ -23,7 +23,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>zoltar-bom</artifactId>
-        <version>0.5.6</version>
+        <version>0.5.7-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

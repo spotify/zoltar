@@ -15,7 +15,7 @@
 
   <properties>
     <scala.version>2.11.12</scala.version>
-    <tensorFlow.version>1.14.0</tensorFlow.version>
+    <tensorFlow.version>1.15.0</tensorFlow.version>
     <scio.version>0.5.7</scio.version>
     <featran.version>0.2.1</featran.version>
     <proto.version>3.9.1</proto.version>

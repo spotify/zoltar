@@ -17,11 +17,11 @@ Once you've got that in place, you should be able to do deployment using the fol
 export SONATYPE_USERNAME=<your Sonatype username>
 export SONATYPE_PASSWORD=<your Sonatype password>
 
-# deploy snapshot version
-mvn clean deploy --settings settings.xml # -Prelease to test signing
+# deploy snapshot version (to test signing)
+mvn clean deploy -Prelease --settings settings.xml
 
 # make and deploy a release
-mvn release:clean release:prepare release:perform --settings settings.xml
+mvn release:clean release:prepare release:perform -Prelease --settings settings.xml
 ```
 
 Then update https://github.com/spotify/zoltar/releases with release notes!

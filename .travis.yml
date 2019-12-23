@@ -26,7 +26,3 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - ./scripts/deploy.sh
-
-notifications:
-  email:
-    - flatmap-squad@spotify.com

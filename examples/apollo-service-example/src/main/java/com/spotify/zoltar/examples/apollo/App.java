@@ -1,24 +1,26 @@
-/*-
- * -\-\-
- * apollo-service-example
- * --
- * Copyright (C) 2016 - 2018 Spotify AB
- * --
+/*
+ * Copyright (C) 2019 Spotify AB
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * -/-/-
  */
-
 package com.spotify.zoltar.examples.apollo;
+
+import java.io.IOException;
+import java.util.stream.Stream;
+
+import okio.ByteString;
+
+import com.typesafe.config.Config;
 
 import com.spotify.apollo.Environment;
 import com.spotify.apollo.Response;
@@ -34,20 +36,13 @@ import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.metrics.semantic.SemanticPredictorMetrics;
-import com.typesafe.config.Config;
-import java.io.IOException;
-import java.util.stream.Stream;
-import okio.ByteString;
 
-/**
- * Application entry point.
- */
+/** Application entry point. */
 public class App {
 
   private static final String SERVICE_NAME = "zoltar-example";
 
-  private App() {
-  }
+  private App() {}
 
   static void configure(final Environment environment) {
     final Config config = environment.config();
@@ -75,13 +70,10 @@ public class App {
     }
 
     final IrisPredictionHandler irisPredictionHandler = IrisPredictionHandler.create(predictor);
-    final Stream<Route<AsyncHandler<Response<ByteString>>>> routes = irisPredictionHandler
-        .routes()
-        .map(r -> r.withPrefix("/v1"));
+    final Stream<Route<AsyncHandler<Response<ByteString>>>> routes =
+        irisPredictionHandler.routes().map(r -> r.withPrefix("/v1"));
 
-    environment
-        .routingEngine()
-        .registerRoutes(routes);
+    environment.routingEngine().registerRoutes(routes);
   }
 
   /**
@@ -91,11 +83,8 @@ public class App {
    */
   public static void main(final String... args) throws LoadingException {
 
-    final Service service = HttpService
-        .usingAppInit(App::configure, SERVICE_NAME)
-        .build();
+    final Service service = HttpService.usingAppInit(App::configure, SERVICE_NAME).build();
 
     HttpService.boot(service, args);
   }
-
 }

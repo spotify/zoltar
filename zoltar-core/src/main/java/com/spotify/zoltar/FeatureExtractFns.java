@@ -73,12 +73,13 @@ public interface FeatureExtractFns {
   @FunctionalInterface
   interface BatchExtractFn<InputT, VectorT> extends ExtractFn<List<InputT>, List<VectorT>> {
 
+    @SuppressWarnings("unchecked")
     static <InputT, VectorT> BatchExtractFn<InputT, VectorT> lift(
         final ExtractFn<InputT, VectorT> fn) {
       return inputs -> {
         final ImmutableList.Builder<List<VectorT>> output = ImmutableList.builder();
         for (final List<InputT> batch: inputs) {
-          final InputT[] objects = (InputT[]) batch.toArray(new Object[batch.size()]);
+          final InputT[] objects = batch.toArray((InputT[]) new Object[0]);
           output.add(fn.apply(objects));
         }
 

@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  */
 class BatchPredictorExample implements Predictor<List<Integer>, List<Float>> {
 
+  @SuppressWarnings("checkstyle:LineLength")
   private final PredictorBuilder<DummyModel, List<Integer>, List<Float>, List<Float>> predictorBuilder;
 
   BatchPredictorExample() {

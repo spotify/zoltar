@@ -43,7 +43,7 @@ import scala.Option;
  */
 final class IrisPredictionHandler {
 
-  private static Map<Long, String> idToClass = ImmutableMap.of(
+  private static final Map<Long, String> idToClass = ImmutableMap.of(
       0L, "Iris-setosa",
       1L, "Iris-versicolor",
       2L, "Iris-virginica");

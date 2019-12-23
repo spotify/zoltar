@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  */
 class CustomMetricsExample implements Predictor<Integer, Float> {
 
-  private PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
+  private final PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
 
   /**
    * Define a class containing all the additional metrics we want to register.

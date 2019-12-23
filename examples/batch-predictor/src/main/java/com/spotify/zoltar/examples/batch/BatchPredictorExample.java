@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 class BatchPredictorExample implements Predictor<List<Integer>, List<Float>> {
 
-  private PredictorBuilder<DummyModel, List<Integer>, List<Float>, List<Float>> predictorBuilder;
+  private final PredictorBuilder<DummyModel, List<Integer>, List<Float>, List<Float>> predictorBuilder;
 
   BatchPredictorExample() {
     final ModelLoader<DummyModel> modelLoader = ModelLoader

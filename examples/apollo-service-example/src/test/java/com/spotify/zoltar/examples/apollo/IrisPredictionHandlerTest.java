@@ -32,7 +32,7 @@ import org.junit.Test;
 public class IrisPredictionHandlerTest {
 
   @Rule
-  public ServiceHelper serviceHelper = ServiceHelper.create(App::configure, "zoltar-example");
+  public final ServiceHelper serviceHelper = ServiceHelper.create(App::configure, "zoltar-example");
 
   @Test
   public void shouldPredict() throws Exception {

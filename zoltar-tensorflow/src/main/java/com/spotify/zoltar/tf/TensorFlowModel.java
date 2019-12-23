@@ -135,7 +135,7 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
    * Close the model.
    */
   @Override
-  public void close() throws Exception {
+  public void close() {
     if (instance() != null) {
       instance().close();
     }

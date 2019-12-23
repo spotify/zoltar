@@ -46,7 +46,7 @@ public class PreloaderTest {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
   }

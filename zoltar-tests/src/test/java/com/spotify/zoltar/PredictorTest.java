@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import java.time.Duration;

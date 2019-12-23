@@ -32,6 +32,7 @@ import org.junit.Test;
 
 public class BatchPredictorExampleTest {
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testCustomMetrics() {
     final BatchPredictorExample example = new BatchPredictorExample();

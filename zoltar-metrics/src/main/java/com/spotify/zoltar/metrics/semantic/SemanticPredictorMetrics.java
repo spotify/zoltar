@@ -56,7 +56,7 @@ public abstract class SemanticPredictorMetrics<InputT, VectorT, ValueT>
         CacheBuilder.newBuilder()
             .build(new CacheLoader<Id, Metrics>() {
               @Override
-              public Metrics load(final Id id) throws Exception {
+              public Metrics load(final Id id) {
                 return Metrics.create(registry, metricId.tagged("model", id.value()));
               }
             });

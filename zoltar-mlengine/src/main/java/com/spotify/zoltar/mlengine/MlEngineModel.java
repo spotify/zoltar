@@ -170,6 +170,7 @@ public abstract class MlEngineModel implements Model<CloudMachineLearningEngine>
      *
      * @see <a href="https://cloud.google.com/ml-engine/docs/v1/predict-request">https://cloud.google.com/ml-engine/docs/v1/predict-request</a>
      */
+    @SuppressWarnings("unchecked")
     public Optional<Predictions> predictions() {
       final List<Object> predictions = (List<Object>) content()
           .getOrDefault("predictions", Collections.emptyList());

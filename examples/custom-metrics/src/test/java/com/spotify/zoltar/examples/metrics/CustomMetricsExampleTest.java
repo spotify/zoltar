@@ -28,7 +28,7 @@ import org.junit.Test;
 public class CustomMetricsExampleTest {
 
   @Test
-  public void testCustomMetrics() throws Exception {
+  public void testCustomMetrics() {
     // #SemanticMetricRegistry
     final SemanticMetricRegistry registry = new SemanticMetricRegistry();
     final MetricId metricId = MetricId.build().tagged("service", "my-application");

@@ -75,6 +75,6 @@ public abstract class XGBoostModel implements Model<Booster> {
    * Closes the model.
    */
   @Override
-  public void close() throws Exception {
+  public void close() {
   }
 }

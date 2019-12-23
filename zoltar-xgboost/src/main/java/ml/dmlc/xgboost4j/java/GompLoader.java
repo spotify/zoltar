@@ -51,6 +51,7 @@ public class GompLoader {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private static Collection<String> getLoadedLibraries(final ClassLoader loader)
       throws IOException {
     try {

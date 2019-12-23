@@ -34,5 +34,5 @@ class DummyModel implements Model<Object> {
   }
 
   @Override
-  public void close() throws Exception {}
+  public void close() {}
 }

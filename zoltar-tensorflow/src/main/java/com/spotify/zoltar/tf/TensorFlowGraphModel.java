@@ -110,8 +110,7 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
   public static TensorFlowGraphModel create(final Model.Id id,
                                             final byte[] graphDef,
                                             @Nullable final ConfigProto config,
-                                            @Nullable final String prefix)
-      throws IOException {
+                                            @Nullable final String prefix) {
     final Graph graph = new Graph();
     final Session session = new Session(graph, config != null ? config.toByteArray() : null);
     final long loadStart = System.currentTimeMillis();

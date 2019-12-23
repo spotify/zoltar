@@ -31,6 +31,7 @@ import org.junit.Test;
 
 public class FeatureExtractFnsTest {
 
+  @SuppressWarnings("unchecked")
   @Test
   public void batchExtractFn() throws Exception {
     final ExtractFn<Integer, Double> fn = ExtractFn.lift(Integer::doubleValue);

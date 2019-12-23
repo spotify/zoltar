@@ -52,7 +52,7 @@ public class ModelMemoizerTest {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 

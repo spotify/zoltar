@@ -15,6 +15,7 @@ fi
 
 mvn -Dbigquery.project.arg="-Dbigquery.project=dummy-project" \
   clean \
+  spotless:check \
   checkstyle:checkstyle \
   findbugs:findbugs \
   $GOAL

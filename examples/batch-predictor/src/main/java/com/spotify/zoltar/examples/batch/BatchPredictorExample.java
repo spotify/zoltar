@@ -32,7 +32,8 @@ import com.spotify.zoltar.Predictors;
 /** Example showing a batch predictor. */
 class BatchPredictorExample implements Predictor<Integer, Float> {
 
-  private Predictor<DummyModel, List<Integer>, List<Float>, List<Float>> predictor;
+  @SuppressWarnings("checkstyle:LineLength")
+  private final PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
 
   BatchPredictorExample() {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());

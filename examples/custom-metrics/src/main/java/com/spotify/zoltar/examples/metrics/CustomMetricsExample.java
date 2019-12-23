@@ -92,7 +92,7 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
     static CustomPredictorMetrics create(final SemanticMetricRegistry registry,
                                          final MetricId metricId) {
       final LoadingCache<Model.Id, CustomMetrics> metersCache =
-          CacheBuilder.<Model.Id, CustomMetrics>newBuilder()
+          CacheBuilder.newBuilder()
               .build(new CacheLoader<Model.Id, CustomMetrics>() {
                 @Override
                 public CustomMetrics load(final Model.Id id) {

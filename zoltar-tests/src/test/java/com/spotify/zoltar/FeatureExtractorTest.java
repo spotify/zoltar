@@ -24,7 +24,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import java.util.Collections;
 import java.util.List;
 import org.hamcrest.core.Is;

@@ -61,10 +61,11 @@ public class TensorFlowModelTest {
         new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
     final ExtractFn<Iris, Example> extractFn =
         FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
+    final TensorFlowLoader modelLoader = TensorFlowLoader.create(modelUri);
 
     final String op = "linear/head/predictions/class_ids";
     return Predictors.tensorFlow(
-        modelUri, extractFn, tensors -> tensors.get(op).longValue()[0], op);
+        modelLoader, extractFn, tensors -> tensors.get(op).longValue()[0], op);
   }
 
   @Test

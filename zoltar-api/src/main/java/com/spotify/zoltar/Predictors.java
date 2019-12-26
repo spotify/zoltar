@@ -26,7 +26,6 @@ import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.metrics.Instrumentations;
 import com.spotify.zoltar.metrics.PredictorMetrics;
 import com.spotify.zoltar.tf.JTensor;
-import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 
@@ -220,7 +219,7 @@ public final class Predictors {
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * @param modelLoader should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param extractFn a feature extract function to use to transform input into extracted features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
@@ -233,13 +232,14 @@ public final class Predictors {
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String... fetchOps) {
-    return tensorFlow(modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps);
+    return tensorFlow(
+        modelLoader, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps);
   }
 
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * @param modelLoader should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param extractFn a feature extract function to use to transform input into extracted features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
@@ -256,13 +256,13 @@ public final class Predictors {
       final String[] fetchOps,
       final PredictorMetrics metrics) {
     return tensorFlow(
-        modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps, metrics);
+        modelLoader, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps, metrics);
   }
 
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * @param modelLoader should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
@@ -275,7 +275,6 @@ public final class Predictors {
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor,
       final String... fetchOps) {
-    final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
         TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
 
@@ -286,7 +285,7 @@ public final class Predictors {
    * Returns a TensorFlow Predictor. Assumes feature extraction is embedded in the model via
    * Tensorflow Transform, so no extractFn is needed and the input type must be Example.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * @param modelLoader should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
    * @param fetchOps operations to fetch.
@@ -305,7 +304,7 @@ public final class Predictors {
   /**
    * Returns a TensorFlow Predictor.
    *
-   * @param modelUri should point to a directory of the saved TensorFlow {@link
+   * @param modelLoader should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
    * @param outTensorExtractor function to extract the output value from a {@link JTensor}.

@@ -25,21 +25,32 @@ import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.ConsExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
 
 public class FeatureExtractorTest {
 
   @Test
   public void emptyExtract() throws Exception {
-    final ExtractFn<Object, Object> fn = inputs -> Collections.emptyList();
-    final List<Vector<Object, Object>> vectors = FeatureExtractor.create(fn).extract(null);
+    final ExtractFn<Object, Object> fn = ConsExtractFn.cons(Collections.emptyList());
+    final List<Vector<Object, Object>> vectors =
+        FeatureExtractor.create(fn)
+            .extract(null, Collections.emptyList())
+            .toCompletableFuture()
+            .get();
 
     assertThat(vectors.size(), Is.is(0));
   }
 
   @Test
   public void nonEmptyExtract() throws Exception {
-    final ExtractFn<Integer, Float> fn = ExtractFn.lift(input -> (float) input / 10);
-    final List<Vector<Integer, Float>> vectors = FeatureExtractor.create(fn).extract(null, 1);
+    final ExtractFn<Integer, Float> fn =
+        ExtractFn.extract((UnaryExtractFn<Integer, Float>) input -> (float) input / 10);
+    final List<Vector<Integer, Float>> vectors =
+        FeatureExtractor.create(fn)
+            .extract(null, Collections.singletonList(1))
+            .toCompletableFuture()
+            .get();
 
     assertThat(vectors.size(), is(1));
     assertThat(vectors.get(0), is(Vector.create(1, 0.1f)));

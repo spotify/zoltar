@@ -15,6 +15,7 @@
  */
 package com.spotify.zoltar.examples.apollo;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -43,7 +44,7 @@ import com.spotify.zoltar.tf.TensorFlowModel;
 /** Route endpoints. */
 final class IrisPredictionHandler {
 
-  private static final Map<Long, String> idToClass =
+  private static Map<Long, String> idToClass =
       ImmutableMap.of(
           0L, "Iris-setosa",
           1L, "Iris-versicolor",
@@ -96,7 +97,7 @@ final class IrisPredictionHandler {
             Option.empty());
 
     return predictor
-        .predict(featureData)
+        .predict(Collections.singletonList(featureData))
         .thenApply(
             ps -> {
               return ps.stream()

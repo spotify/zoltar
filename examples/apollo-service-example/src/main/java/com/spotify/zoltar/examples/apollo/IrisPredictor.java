@@ -38,6 +38,7 @@ public final class IrisPredictor {
   /** Configure Iris prediction, should be called at the service startup/configuration stage. */
   public static Predictor<TensorFlowModel, Iris, Example, Long> create(
       final ModelConfig modelConfig, final PredictorMetrics metrics) throws IOException {
+
     final FeatureSpec<Iris> irisFeatureSpec = IrisFeaturesSpec.irisFeaturesSpec();
     final String settings = new String(Files.readAllBytes(Paths.get(modelConfig.settingsUri())));
     final ExtractFn<Iris, Example> extractFn = FeatranExtractFns.example(irisFeatureSpec, settings);

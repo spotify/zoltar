@@ -18,6 +18,7 @@ package com.spotify.zoltar;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 
@@ -83,7 +85,8 @@ public class PredictorBuilderTest {
   @Test
   public void identityDecoration() throws ExecutionException, InterruptedException {
     final ModelLoader<DummyModel> loader = ModelLoader.loaded(new DummyModel());
-    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
+    final ExtractFn<Integer, Float> extractFn =
+        ExtractFn.extract((UnaryExtractFn<Integer, Float>) input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {
           return vectors
@@ -95,7 +98,7 @@ public class PredictorBuilderTest {
     final List<Prediction<Integer, Float>> predictions =
         Predictors.create(loader, extractFn, predictFn)
             .with(IdentityPredictor.decorate())
-            .predict(1)
+            .predict(Collections.singletonList(1))
             .toCompletableFuture()
             .get();
 

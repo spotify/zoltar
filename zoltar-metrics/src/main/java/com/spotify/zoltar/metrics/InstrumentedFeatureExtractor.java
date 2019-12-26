@@ -15,12 +15,10 @@
  */
 package com.spotify.zoltar.metrics;
 
-import java.util.List;
 import java.util.function.Function;
 
 import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.Model;
-import com.spotify.zoltar.Vector;
 
 /**
  * Instrumented Functional interface for feature extraction {@link FeatureExtractor}.
@@ -43,11 +41,13 @@ interface InstrumentedFeatureExtractor<ModelT extends Model<?>, InputT, ValueT>
     return extractFn ->
         (model, inputs) -> {
           final VectorMetrics<InputT, ValueT> vectorMetrics = metrics.apply(model.id());
-          final List<Vector<InputT, ValueT>> result = extractFn.extract(model, inputs);
-
-          vectorMetrics.extraction(result);
-
-          return result;
+          return extractFn
+              .extract(model, inputs)
+              .thenApply(
+                  result -> {
+                    vectorMetrics.extraction(result);
+                    return result;
+                  });
         };
   }
 }

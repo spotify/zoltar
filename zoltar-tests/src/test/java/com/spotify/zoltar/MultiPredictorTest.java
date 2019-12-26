@@ -18,6 +18,7 @@ package com.spotify.zoltar;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class MultiPredictorTest {
         XGBoostModelTest.getXGBoostIrisPredictor();
     final ArrayList<Predictor<?, IrisFeaturesSpec.Iris, ?, Long>> predictors =
         Lists.newArrayList(tfPredictor, xgBoostPredictor);
-    final IrisFeaturesSpec.Iris[] irisStream = IrisHelper.getIrisTestData();
+    final List<Iris> irisStream = IrisHelper.getIrisTestData();
 
     predictors
         .stream()

@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -177,7 +178,7 @@ public class TensorFlowModelTest {
 
   @Test
   public void testModelInference() throws Exception {
-    final Iris[] irisStream = IrisHelper.getIrisTestData();
+    final List<Iris> irisStream = IrisHelper.getIrisTestData();
 
     final Map<String, Long> classToId =
         ImmutableMap.of("Iris-setosa", 0L, "Iris-versicolor", 1L, "Iris-virginica", 2L);

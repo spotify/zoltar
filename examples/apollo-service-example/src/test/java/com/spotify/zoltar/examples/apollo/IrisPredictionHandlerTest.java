@@ -28,8 +28,7 @@ import com.spotify.apollo.test.ServiceHelper;
 
 public class IrisPredictionHandlerTest {
 
-  @Rule
-  public final ServiceHelper serviceHelper = ServiceHelper.create(App::configure, "zoltar-example");
+  @Rule public ServiceHelper serviceHelper = ServiceHelper.create(App::configure, "zoltar-example");
 
   @Test
   public void shouldPredict() throws Exception {

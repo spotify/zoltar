@@ -60,7 +60,7 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, double[]> doubles(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(featureSpec.extractWithSettingsDouble(settings)::featureValue);
+    return ExtractFn.extract(featureSpec.extractWithSettingsDouble(settings)::featureValue);
   }
 
   /**
@@ -86,7 +86,7 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, Example> example(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(featureSpec.extractWithSettingsExample(settings)::featureValue);
+    return ExtractFn.extract(featureSpec.extractWithSettingsExample(settings)::featureValue);
   }
 
   /**
@@ -112,7 +112,7 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, float[]> floats(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(featureSpec.extractWithSettingsFloat(settings)::featureValue);
+    return ExtractFn.extract(featureSpec.extractWithSettingsFloat(settings)::featureValue);
   }
 
   /**
@@ -138,7 +138,8 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, FloatSparseArray> sparseFloats(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(featureSpec.extractWithSettingsFloatSparseArray(settings)::featureValue);
+    return ExtractFn.extract(
+        featureSpec.extractWithSettingsFloatSparseArray(settings)::featureValue);
   }
 
   /**
@@ -164,7 +165,8 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, DoubleSparseArray> sparseDoubles(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(featureSpec.extractWithSettingsDoubleSparseArray(settings)::featureValue);
+    return ExtractFn.extract(
+        featureSpec.extractWithSettingsDoubleSparseArray(settings)::featureValue);
   }
 
   /**
@@ -190,7 +192,7 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, LabeledPoint> labeledPoints(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(featureSpec.extractWithSettingsLabeledPoint(settings)::featureValue);
+    return ExtractFn.extract(featureSpec.extractWithSettingsLabeledPoint(settings)::featureValue);
   }
 
   /**
@@ -216,7 +218,7 @@ public final class FeatranExtractFns {
    */
   public static <InputT> ExtractFn<InputT, SparseLabeledPoint> sparseLabeledPoints(
       final JFeatureSpec<InputT> featureSpec, final String settings) {
-    return ExtractFn.lift(
+    return ExtractFn.extract(
         featureSpec.extractWithSettingsSparseLabeledPoint(settings)::featureValue);
   }
 }

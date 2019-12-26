@@ -66,18 +66,18 @@ public interface Predictor<ModelT extends Model<?>, InputT, VectorT, ValueT> {
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(
       final ExecutionContext<InputT, ValueT> executionContext,
       final Duration timeout,
-      final InputT... inputs) {
+      final List<InputT> inputs) {
     return executionContext.predict(timeout, inputs);
   }
 
   /** Perform prediction with a default scheduler. */
   default CompletionStage<List<Prediction<InputT, ValueT>>> predict(
-      final Duration timeout, final InputT... input) {
+      final Duration timeout, final List<InputT> input) {
     return predict(ExecutionContext.create(this), timeout, input);
   }
 
   /** Perform prediction with a default scheduler, and practically infinite timeout. */
-  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input) {
+  default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final List<InputT> input) {
     return predict(ExecutionContext.create(this), Duration.ofDays(Integer.MAX_VALUE), input);
   }
 
@@ -208,8 +208,13 @@ public interface Predictor<ModelT extends Model<?>, InputT, VectorT, ValueT> {
                     model -> {
                       try {
                         return predictor
-                            .predictFn()
-                            .apply(model, predictor.featureExtractor().extract(model, inputs));
+                            .featureExtractor()
+                            .extract(model, inputs)
+                            .thenCompose(
+                                vectors -> {
+                                  return predictor.predictFn().apply(model, vectors);
+                                });
+
                       } catch (final Exception e) {
                         throw new CompletionException(e);
                       }
@@ -241,10 +246,11 @@ public interface Predictor<ModelT extends Model<?>, InputT, VectorT, ValueT> {
      * @param inputs a list of inputs to perform feature extraction and prediction on.
      * @param timeout implementation specific timeout.
      */
-    CompletionStage<List<Prediction<InputT, ValueT>>> predict(Duration timeout, InputT... inputs);
+    CompletionStage<List<Prediction<InputT, ValueT>>> predict(
+        Duration timeout, List<InputT> inputs);
 
     /** Perform prediction with a default scheduler, and practically infinite timeout. */
-    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final InputT... input) {
+    default CompletionStage<List<Prediction<InputT, ValueT>>> predict(final List<InputT> input) {
       return predict(Duration.ofDays(Integer.MAX_VALUE), input);
     }
   }

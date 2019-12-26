@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
-import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 
 public class FeatureExtractFnsTest {
@@ -32,12 +31,12 @@ public class FeatureExtractFnsTest {
   @SuppressWarnings("unchecked")
   @Test
   public void batchExtractFn() throws Exception {
-    final ExtractFn<Integer, Double> fn = ExtractFn.lift(Integer::doubleValue);
-    final BatchExtractFn<Integer, Double> batchFn = BatchExtractFn.lift(fn);
+    final ExtractFn<Integer, Double> fn = ExtractFn.extract(Integer::doubleValue);
 
-    final List<List<Double>> extracted = batchFn.apply(ImmutableList.of(1), ImmutableList.of(2));
-    final List<List<Double>> expected =
-        ImmutableList.of(ImmutableList.of(1d), ImmutableList.of(2d));
+    final List<Vector<Integer, Double>> extracted =
+        fn.apply(ImmutableList.of(1, 2)).toCompletableFuture().get();
+    final List<Vector<Integer, Double>> expected =
+        ImmutableList.of(Vector.create(1, 1d), Vector.create(2, 2d));
 
     assertThat(extracted, is(expected));
   }

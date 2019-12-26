@@ -23,6 +23,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
@@ -148,7 +149,10 @@ class CustomMetricsExample implements Predictor<DummyModel, Integer, Float, Floa
 
   CustomMetricsExample(final SemanticMetricRegistry metricRegistry, final MetricId metricId) {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
-    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
+    final ExtractFn<Integer, Float> extractFn =
+        ExtractFn.extract(
+            (ExtractFn.UnaryExtractFn<Integer, Float>) input -> (float) input / 10,
+            MoreExecutors.directExecutor());
     final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {
           return vectors

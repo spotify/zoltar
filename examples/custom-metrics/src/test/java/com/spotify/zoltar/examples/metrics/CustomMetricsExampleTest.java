@@ -18,6 +18,8 @@ package com.spotify.zoltar.examples.metrics;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
+
 import com.spotify.metrics.core.MetricId;
 import com.spotify.metrics.core.SemanticMetricRegistry;
 
@@ -32,7 +34,7 @@ public class CustomMetricsExampleTest {
 
     final CustomMetricsExample example = new CustomMetricsExample(registry, metricId);
 
-    example.predict(3, 1, -4, -42, 42, -10).toCompletableFuture().join();
+    example.predict(ImmutableList.of(3, 1, -4, -42, 42, -10)).toCompletableFuture().join();
 
     registry.getCounters().values().forEach(counter -> Assert.assertEquals(3, counter.getCount()));
   }

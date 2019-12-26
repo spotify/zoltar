@@ -15,6 +15,7 @@
  */
 package com.spotify.zoltar.examples.apollo;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -96,7 +97,7 @@ final class IrisPredictionHandler {
             Option.empty());
 
     return predictor
-        .predict(featureData)
+        .predict(Collections.singletonList(featureData))
         .thenApply(
             ps -> {
               return ps.stream()

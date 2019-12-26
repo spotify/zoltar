@@ -18,6 +18,7 @@ package com.spotify.zoltar;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -97,7 +98,7 @@ public class PredictorBuilderTest {
     final List<Prediction<Integer, Float>> predictions =
         Predictors.create(loader, extractFn, predictFn)
             .with(IdentityPredictor.decorate())
-            .predict(1)
+            .predict(Collections.singletonList(1))
             .toCompletableFuture()
             .get();
 

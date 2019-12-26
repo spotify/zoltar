@@ -15,24 +15,22 @@
  */
 package com.spotify.zoltar.examples.batch;
 
-import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
+import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.ModelLoader;
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 
 /** Example showing a batch predictor. */
-class BatchPredictorExample implements Predictor<Integer, Float> {
+class BatchPredictorExample implements Predictor<DummyModel, Integer, Float, Float> {
 
-  @SuppressWarnings("checkstyle:LineLength")
-  private final PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
+  private Predictor<DummyModel, Integer, Float, Float> predictor;
 
   BatchPredictorExample() {
     final ModelLoader<DummyModel> modelLoader = ModelLoader.loaded(new DummyModel());
@@ -56,8 +54,17 @@ class BatchPredictorExample implements Predictor<Integer, Float> {
   }
 
   @Override
-  public CompletionStage<List<Prediction<Integer, Float>>> predict(
-      final ScheduledExecutorService scheduler, final Duration timeout, final List<Integer> input) {
-    return predictorBuilder.predictor().predict(scheduler, timeout, input);
+  public ModelLoader<DummyModel> modelLoader() {
+    return predictor.modelLoader();
+  }
+
+  @Override
+  public FeatureExtractor<DummyModel, Integer, Float> featureExtractor() {
+    return predictor.featureExtractor();
+  }
+
+  @Override
+  public AsyncPredictFn<DummyModel, Integer, Float, Float> predictFn() {
+    return predictor.predictFn();
   }
 }

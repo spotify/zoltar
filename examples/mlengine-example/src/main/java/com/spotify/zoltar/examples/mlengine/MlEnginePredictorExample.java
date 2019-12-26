@@ -36,9 +36,12 @@ import com.google.auto.value.AutoValue;
 import com.spotify.featran.FeatureSpec;
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
+import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Models;
+import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
@@ -118,9 +121,18 @@ public final class MlEnginePredictorExample
   }
 
   @Override
-  public CompletionStage<List<Prediction<Iris, Integer>>> predict(
-      final ScheduledExecutorService scheduler, final Duration timeout, final List<Iris> input) {
-    return predictor.predict(scheduler, timeout, input);
+  public ModelLoader<MlEngineModel> modelLoader() {
+    return predictor.modelLoader();
+  }
+
+  @Override
+  public FeatureExtractor<MlEngineModel, Iris, Example> featureExtractor() {
+    return predictor.featureExtractor();
+  }
+
+  @Override
+  public AsyncPredictFn<MlEngineModel, Iris, Example, Integer> predictFn() {
+    return predictor.predictFn();
   }
 
   @AutoValue

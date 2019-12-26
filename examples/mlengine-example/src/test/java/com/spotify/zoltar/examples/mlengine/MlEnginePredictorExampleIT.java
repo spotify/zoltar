@@ -17,6 +17,7 @@ package com.spotify.zoltar.examples.mlengine;
 
 import static org.junit.Assert.assertFalse;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class MlEnginePredictorExampleIT {
             Option.apply("Iris-setosa"));
 
     final List<Prediction<Iris, Integer>> predictions =
-        predictor.predict(input).toCompletableFuture().get();
+        predictor.predict(Collections.singletonList(input)).toCompletableFuture().get();
 
     assertFalse(predictions.isEmpty());
   }

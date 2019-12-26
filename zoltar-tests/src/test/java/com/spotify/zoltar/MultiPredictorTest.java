@@ -30,6 +30,7 @@ import org.tensorflow.example.Example;
 import com.google.common.collect.Lists;
 
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowModelTest;
 import com.spotify.zoltar.xgboost.XGBoostModel;
 import com.spotify.zoltar.xgboost.XGBoostModelTest;

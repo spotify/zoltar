@@ -85,7 +85,8 @@ public class TensorFlowModelTest {
   public void testMetaGraphDefinition()
       throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
-    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+    final ModelLoader<TensorFlowModel> model =
+        TensorFlowLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -100,7 +101,8 @@ public class TensorFlowModelTest {
   public void testDefaultSignatureInputAndOutputNameMapping()
       throws URISyntaxException, ExecutionException, InterruptedException {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
-    final ModelLoader<TensorFlowModel> model = TensorFlowLoader.create(trainedModelUri.toString());
+    final ModelLoader<TensorFlowModel> model =
+        TensorFlowLoader.create(trainedModelUri.toString(), MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 
@@ -131,7 +133,11 @@ public class TensorFlowModelTest {
     final URI trainedModelUri = TensorFlowModelTest.class.getResource("/trained_model").toURI();
     final ModelLoader<TensorFlowModel> model =
         TensorFlowLoader.create(
-            Id.create("prediction-model"), trainedModelUri.toString(), options, "predict");
+            Id.create("prediction-model"),
+            trainedModelUri.toString(),
+            options,
+            "predict",
+            MoreExecutors.directExecutor());
 
     final TensorFlowModel tensorFlowModel = model.get().toCompletableFuture().get();
 

@@ -92,8 +92,10 @@ public interface TensorFlowLoader extends ModelLoader<TensorFlowModel> {
       final Model.Id id,
       final String modelUri,
       final TensorFlowModel.Options options,
-      final String signatureDef) {
-    return create(() -> TensorFlowModel.create(id, URI.create(modelUri), options, signatureDef));
+      final String signatureDef,
+      final Executor executor) {
+    return create(
+        () -> TensorFlowModel.create(id, URI.create(modelUri), options, signatureDef), executor);
   }
 
   /**

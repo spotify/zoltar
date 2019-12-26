@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.spotify.zoltar.loaders;
+package com.spotify.zoltar;
 
 import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.jarUri;
 import static org.hamcrest.Matchers.notNullValue;
@@ -24,6 +24,8 @@ import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
+
+import com.google.common.util.concurrent.MoreExecutors;
 
 import com.spotify.zoltar.tf.TensorFlowGraphLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphModel;
@@ -41,7 +43,8 @@ public class LoaderIT {
     // Load directory from GCS without trailing slash. GCS requires trailing slash for
     // directories, so Zoltar should append it for us.
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/tensorflow/export";
-    final TensorFlowModel model = TensorFlowLoader.create(uri).get(TIMEOUT);
+    final TensorFlowModel model =
+        TensorFlowLoader.create(uri, MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -49,7 +52,8 @@ public class LoaderIT {
   public void tfLoaderGcsTrailingSlash() throws Exception {
     // Load directory from GCS with trailing slash, which GCS requires for directories.
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/tensorflow/export/";
-    final TensorFlowModel model = TensorFlowLoader.create(uri).get(TIMEOUT);
+    final TensorFlowModel model =
+        TensorFlowLoader.create(uri, MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -57,7 +61,8 @@ public class LoaderIT {
   public void tfLoaderJar() throws Exception {
     // Load directory from jar file without trailing slash.
     final URI uri = jarUri();
-    final TensorFlowModel model = TensorFlowLoader.create(uri.toString()).get(TIMEOUT);
+    final TensorFlowModel model =
+        TensorFlowLoader.create(uri.toString(), MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -67,7 +72,8 @@ public class LoaderIT {
     // because of ZipPath.relativize. See https://github.com/spotify/zoltar/pull/176 for more info.
     // It will not throw an exception on Java 11.
     final URI uri = jarUri();
-    final TensorFlowModel model = TensorFlowLoader.create(uri.toString() + "/").get(TIMEOUT);
+    final TensorFlowModel model =
+        TensorFlowLoader.create(uri.toString() + "/", MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -75,7 +81,8 @@ public class LoaderIT {
   public void tfGraphLoader() throws Exception {
     // Load a file from GCS without trailing slash
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/tensorflowGraph/tfgraph.bin";
-    final TensorFlowGraphModel model = TensorFlowGraphLoader.create(uri, null, null).get(TIMEOUT);
+    final TensorFlowGraphModel model =
+        TensorFlowGraphLoader.create(uri, null, null, MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -84,7 +91,8 @@ public class LoaderIT {
     // Load a file from GCS with trailing slash. This should throw an exception because GCS does
     // not allow a trailing slash on files.
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/tensorflowGraph/tfgraph.bin/";
-    final TensorFlowGraphModel model = TensorFlowGraphLoader.create(uri, null, null).get(TIMEOUT);
+    final TensorFlowGraphModel model =
+        TensorFlowGraphLoader.create(uri, null, null, MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -92,7 +100,8 @@ public class LoaderIT {
   public void xgBoostLoader() throws Exception {
     // Load a file from GCS without trailing slash
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/xgBoost/model.xgb";
-    final XGBoostModel model = XGBoostLoader.create(uri).get(TIMEOUT);
+    final XGBoostModel model =
+        XGBoostLoader.create(uri, MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 
@@ -101,7 +110,8 @@ public class LoaderIT {
     // Load a file from GCS with trailing slash. This should throw an exception because GCS does
     // not allow a trailing slash on files.
     final String uri = "gs://data-integration-test-us/zoltar/LoaderIT/xgBoost/model.xgb/";
-    final XGBoostModel model = XGBoostLoader.create(uri).get(TIMEOUT);
+    final XGBoostModel model =
+        XGBoostLoader.create(uri, MoreExecutors.directExecutor()).get(TIMEOUT);
     assertThat(model, notNullValue());
   }
 }

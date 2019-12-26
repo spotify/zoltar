@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn.UnaryExtractFn;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;

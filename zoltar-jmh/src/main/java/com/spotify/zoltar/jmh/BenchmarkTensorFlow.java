@@ -78,7 +78,7 @@ public class BenchmarkTensorFlow {
   private static final String OP = "linear/head/predictions/class_ids";
 
   private Predictor<Iris, Long> predictor;
-  private Predictor<List<Iris>, Long> batchPredictor;
+  private Predictor<List<Iris>, long[]> batchPredictor;
   private List<IrisFeaturesSpec.Iris> data;
 
   /** run benchmarks. */
@@ -136,10 +136,10 @@ public class BenchmarkTensorFlow {
     return FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
   }
 
-  private static Predictor<List<Iris>, Long> batchPredictor() throws Exception {
+  private static Predictor<List<Iris>, long[]> batchPredictor() throws Exception {
     final BatchExtractFn<Iris, Example> batch = BatchExtractFn.lift(extractFn());
-    final TensorFlowPredictFn<List<Iris>, List<Example>, Long> predictFn =
-        TensorFlowPredictFn.exampleBatch(tensors -> tensors.get(OP).longValue()[0], OP);
+    final TensorFlowPredictFn<List<Iris>, List<Example>, long[]> predictFn =
+        TensorFlowPredictFn.exampleBatch(tensors -> tensors.get(OP).longValue(), OP);
 
     return Predictors.newBuilder(modelLoader(), FeatureExtractor.create(batch), predictFn)
         .predictor();

@@ -15,8 +15,9 @@
  */
 package com.spotify.zoltar.jmh;
 
-// CHECKSTYLE:OFF
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -61,6 +62,7 @@ import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
 
+/** TensorFlow prediction benchmarks. */
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
 @Threads(value = 5)
@@ -73,17 +75,21 @@ public class BenchmarkTensorFlow {
   @Param({"5700", "11400"})
   private int size;
 
+  private static final String OP = "linear/head/predictions/class_ids";
+
   private Predictor<Iris, Long> predictor;
   private Predictor<List<Iris>, Long> batchPredictor;
   private List<IrisFeaturesSpec.Iris> data;
 
-  public static void main(String[] args) throws RunnerException {
+  /** run benchmarks. */
+  public static void main(final String[] args) throws RunnerException {
     final Options opt =
         new OptionsBuilder().include(BenchmarkTensorFlow.class.getSimpleName()).build();
 
     new Runner(opt).run();
   }
 
+  /** fetch benchmark data and initialize predictors. */
   @Setup
   public void setup() throws Exception {
     data = IrisHelper.getIrisData().subList(0, size);
@@ -91,6 +97,7 @@ public class BenchmarkTensorFlow {
     predictor = predictor();
   }
 
+  /** single input prediction. */
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
   public void single() throws ExecutionException, InterruptedException {
@@ -102,6 +109,7 @@ public class BenchmarkTensorFlow {
         .get();
   }
 
+  /** batch input prediction. right now the batch size matches the benchmark size param. */
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
   public void batch() throws ExecutionException, InterruptedException {
@@ -114,38 +122,33 @@ public class BenchmarkTensorFlow {
     batchPredictor.timeoutScheduler().scheduler().shutdown();
   }
 
-  public static Predictor<List<Iris>, Long> batchPredictor() throws Exception {
+  private static ModelLoader<TensorFlowModel> modelLoader() throws URISyntaxException {
     final String modelUri =
         BenchmarkTensorFlow.class.getResource("/trained_model").toURI().toString();
+    return TensorFlowLoader.create(modelUri);
+  }
+
+  private static ExtractFn<Iris, Example> extractFn() throws IOException, URISyntaxException {
     final URI settingsUri = BenchmarkTensorFlow.class.getResource("/settings.json").toURI();
     final String settings =
         new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
 
-    final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
+    return FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
+  }
 
-    final ExtractFn<Iris, Example> extractFn =
-        FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
-    final BatchExtractFn<Iris, Example> batch = BatchExtractFn.lift(extractFn);
-
-    final String op = "linear/head/predictions/class_ids";
+  private static Predictor<List<Iris>, Long> batchPredictor() throws Exception {
+    final BatchExtractFn<Iris, Example> batch = BatchExtractFn.lift(extractFn());
     final TensorFlowPredictFn<List<Iris>, List<Example>, Long> predictFn =
-        TensorFlowPredictFn.exampleBatch(tensors -> tensors.get(op).longValue()[0], op);
+        TensorFlowPredictFn.exampleBatch(tensors -> tensors.get(OP).longValue()[0], OP);
 
-    return Predictors.newBuilder(modelLoader, FeatureExtractor.create(batch), predictFn)
+    return Predictors.newBuilder(modelLoader(), FeatureExtractor.create(batch), predictFn)
         .predictor();
   }
 
-  public static Predictor<Iris, Long> predictor() throws Exception {
+  private static Predictor<Iris, Long> predictor() throws Exception {
     final String modelUri =
         BenchmarkTensorFlow.class.getResource("/trained_model").toURI().toString();
-    final URI settingsUri = BenchmarkTensorFlow.class.getResource("/settings.json").toURI();
-    final String settings =
-        new String(Files.readAllBytes(Paths.get(settingsUri)), StandardCharsets.UTF_8);
-    final ExtractFn<Iris, Example> extractFn =
-        FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
-
-    final String op = "linear/head/predictions/class_ids";
     return Predictors.tensorFlow(
-        modelUri, extractFn, tensors -> tensors.get(op).longValue()[0], op);
+        modelUri, extractFn(), tensors -> tensors.get(OP).longValue()[0], OP);
   }
 }

@@ -33,6 +33,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -69,6 +70,8 @@ import com.spotify.zoltar.tf.TensorFlowPredictFn;
 @Warmup(iterations = 20)
 @Measurement(iterations = 20)
 public class BenchmarkTensorFlow {
+  @Param({"5700", "11400"})
+  private int size;
 
   private Predictor<Iris, Long> predictor;
   private Predictor<List<Iris>, Long> batchPredictor;
@@ -83,7 +86,7 @@ public class BenchmarkTensorFlow {
 
   @Setup
   public void setup() throws Exception {
-    data = IrisHelper.getIrisData();
+    data = IrisHelper.getIrisData().subList(0, size);
     batchPredictor = batchPredictor();
     predictor = predictor();
   }

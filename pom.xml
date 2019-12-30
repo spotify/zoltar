@@ -22,6 +22,7 @@
     <module>zoltar-api</module>
     <module>zoltar-metrics</module>
     <module>zoltar-mlengine</module>
+    <module>zoltar-jmh</module>
     <module>examples/apollo-service-example</module>
     <module>examples/custom-metrics</module>
     <module>examples/mlengine-example</module>

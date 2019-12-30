@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /** {@link Predictor} {@link ScheduledExecutorService} supplier for timeout scheduling. */
 @FunctionalInterface
-interface PredictorTimeoutScheduler {
+public interface PredictorTimeoutScheduler {
 
   ScheduledExecutorService scheduler();
 }

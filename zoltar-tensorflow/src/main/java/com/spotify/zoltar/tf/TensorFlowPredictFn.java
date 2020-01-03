@@ -15,7 +15,8 @@
  */
 package com.spotify.zoltar.tf;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -51,21 +52,34 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
    * @param fetchOps operations to fetch.
    */
   static <InputT, ValueT> TensorFlowPredictFn<InputT, Example, ValueT> example(
-      final Function<Map<String, JTensor>, ValueT> outTensorExtractor, final String... fetchOps) {
-    return (model, vectors) -> {
-      final List<Vector<InputT, List<Example>>> bulk =
-          vectors
-              .stream()
-              .map(
-                  vector -> {
-                    final List<Example> examples = Collections.singletonList(vector.value());
-                    return Vector.create(vector.input(), examples);
-                  })
-              .collect(Collectors.toList());
+      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final String... fetchOps) {
+    return (model, vectors) ->
+        CompletableFuture.supplyAsync(
+            () -> {
+              final byte[][] bytes =
+                  vectors
+                      .stream()
+                      .map(Vector::value)
+                      .map(Example::toByteArray)
+                      .toArray(byte[][]::new);
 
-      return TensorFlowPredictFn.<InputT, ValueT>exampleBatch(outTensorExtractor, fetchOps)
-          .apply(model, bulk);
-    };
+              try (final Tensor<String> t = Tensors.create(bytes)) {
+                final Session.Runner runner =
+                    model.instance().session().runner().feed("input_example_tensor", t);
+                final Map<String, JTensor> result =
+                    TensorFlowExtras.runAndExtract(runner, fetchOps);
+
+                final Iterator<Vector<InputT, Example>> vectorIterator = vectors.iterator();
+                final Iterator<ValueT> valueTIterator = outTensorExtractor.apply(result).iterator();
+                final List<Prediction<InputT, ValueT>> predictions = new ArrayList<>();
+                while (vectorIterator.hasNext() && valueTIterator.hasNext()) {
+                  predictions.add(
+                      Prediction.create(vectorIterator.next().input(), valueTIterator.next()));
+                }
+                return predictions;
+              }
+            });
   }
 
   /**
@@ -74,6 +88,7 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
    * @param outTensorExtractor Function to extract the output value from JTensor's
    * @param fetchOps operations to fetch.
    */
+  @Deprecated
   static <InputT, ValueT> TensorFlowPredictFn<InputT, List<Example>, ValueT> exampleBatch(
       final Function<Map<String, JTensor>, ValueT> outTensorExtractor, final String... fetchOps) {
     final BiFunction<TensorFlowModel, List<Example>, ValueT> predictFn =

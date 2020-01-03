@@ -18,7 +18,9 @@ package com.spotify.zoltar.examples.metrics;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import com.codahale.metrics.Counter;
@@ -39,7 +41,6 @@ import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.Vector;
-import com.spotify.zoltar.loaders.Preloader;
 import com.spotify.zoltar.metrics.FeatureExtractorMetrics;
 import com.spotify.zoltar.metrics.Instrumentations;
 import com.spotify.zoltar.metrics.PredictFnMetrics;
@@ -151,9 +152,10 @@ class CustomMetricsExample implements Predictor<Integer, Float> {
     }
   }
 
-  CustomMetricsExample(final SemanticMetricRegistry metricRegistry, final MetricId metricId) {
+  CustomMetricsExample(final SemanticMetricRegistry metricRegistry, final MetricId metricId)
+      throws InterruptedException, ExecutionException, TimeoutException {
     final ModelLoader<DummyModel> modelLoader =
-        ModelLoader.lift(DummyModel::new).with(Preloader.preload(Duration.ofMinutes(1)));
+        ModelLoader.preload(ModelLoader.loaded(new DummyModel()), Duration.ofMinutes(1));
     final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
     final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {

@@ -19,6 +19,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
@@ -55,12 +57,14 @@ public class PreloaderTest {
 
   @Test
   public void preloadTimeout() {
+    ExecutorService executorService = Executors.newFixedThreadPool(1);
     final ModelLoader<DummyModel> loader =
-        ModelLoader.lift(
+        ModelLoader.load(
                 () -> {
                   Thread.sleep(Duration.ofSeconds(10).toMillis());
                   return new DummyModel();
-                })
+                },
+                executorService)
             .with(Preloader.preload(Duration.ZERO));
 
     assertThat(loader.get().toCompletableFuture().isCompletedExceptionally(), is(true));
@@ -68,12 +72,14 @@ public class PreloaderTest {
 
   @Test
   public void preloadAsync() {
+    ExecutorService executorService = Executors.newFixedThreadPool(1);
     final ModelLoader<DummyModel> loader =
-        ModelLoader.lift(
+        ModelLoader.load(
                 () -> {
                   Thread.sleep(Duration.ofSeconds(10).toMillis());
                   return new DummyModel();
-                })
+                },
+                executorService)
             .with(Preloader.preloadAsync());
 
     assertThat(loader.get().toCompletableFuture().isDone(), is(false));

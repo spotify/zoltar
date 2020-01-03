@@ -57,9 +57,6 @@ public interface XGBoostLoader extends ModelLoader<XGBoostModel> {
    * @param supplier {@link XGBoostModel} supplier.
    */
   static XGBoostLoader create(final ThrowableSupplier<XGBoostModel> supplier) {
-    final ModelLoader<XGBoostModel> loader =
-        ModelLoader.lift(supplier).with(ModelMemoizer::memoize).with(Preloader.preloadAsync());
-
-    return loader::get;
+    return ModelLoader.load(supplier)::get;
   }
 }

@@ -66,7 +66,7 @@ public class PredictorTest {
         };
 
     try {
-      final ModelLoader<DummyModel> loader = ModelLoader.lift(DummyModel::new);
+      final ModelLoader<DummyModel> loader = ModelLoader.load(DummyModel::new);
       DefaultPredictorBuilder.create(loader, extractFn, predictFn)
           .predictor()
           .predict(predictionTimeout, new Object())

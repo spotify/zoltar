@@ -54,8 +54,8 @@ import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 
 /** TensorFlow prediction benchmarks. */
-@OutputTimeUnit(TimeUnit.SECONDS)
-@State(Scope.Benchmark)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@State(Scope.Thread)
 @Threads(value = 1)
 @Fork(value = 4)
 // @Warmup(iterations = 20)
@@ -63,8 +63,6 @@ import com.spotify.zoltar.tf.TensorFlowModel;
 public class BenchmarkTensorFlow {
   @Param({"1", "100"})
   private int size;
-
-  private static final String OP = "linear/head/predictions/class_ids";
 
   private Predictor<Iris, Long> predictor;
   private Iris[] data;
@@ -111,12 +109,13 @@ public class BenchmarkTensorFlow {
   }
 
   private static Predictor<Iris, Long> predictor() throws Exception {
+    final String op = "linear/head/predictions/class_ids";
     final String modelUri =
         BenchmarkTensorFlow.class.getResource("/trained_model").toURI().toString();
     return Predictors.tensorFlow(
         modelUri,
         extractFn(),
-        tensors -> Arrays.stream(tensors.get(OP).longValue()).boxed().collect(Collectors.toList()),
-        OP);
+        tensors -> Arrays.stream(tensors.get(op).longValue()).boxed().collect(Collectors.toList()),
+        op);
   }
 }

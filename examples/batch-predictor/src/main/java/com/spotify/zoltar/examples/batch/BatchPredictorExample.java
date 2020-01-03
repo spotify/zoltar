@@ -19,10 +19,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
+import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.Prediction;
@@ -32,42 +31,31 @@ import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.loaders.Preloader;
 
 /** Example showing a batch predictor. */
-class BatchPredictorExample implements Predictor<List<Integer>, List<Float>> {
+class BatchPredictorExample implements Predictor<Integer, Float> {
 
-  @SuppressWarnings("checkstyle:LineLength")
-  private final PredictorBuilder<DummyModel, List<Integer>, List<Float>, List<Float>>
-      predictorBuilder;
+  private final PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
 
   BatchPredictorExample() {
     final ModelLoader<DummyModel> modelLoader =
         ModelLoader.lift(DummyModel::new).with(Preloader.preload(Duration.ofMinutes(1)));
 
-    final BatchExtractFn<Integer, Float> batchExtractFn =
-        BatchExtractFn.lift((Function<Integer, Float>) input -> (float) input / 10);
+    final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
 
-    final PredictFn<DummyModel, List<Integer>, List<Float>, List<Float>> predictFn =
+    final PredictFn<DummyModel, Integer, Float, Float> predictFn =
         (model, vectors) -> {
           return vectors
               .stream()
-              .map(
-                  vector -> {
-                    final List<Float> values =
-                        vector.value().stream().map(v -> v * 2).collect(Collectors.toList());
-
-                    return Prediction.create(vector.input(), values);
-                  })
+              .map(vector -> Prediction.create(vector.input(), vector.value() * 2))
               .collect(Collectors.toList());
         };
 
     // We build the PredictorBuilder as usual
-    predictorBuilder = Predictors.newBuilder(modelLoader, batchExtractFn, predictFn);
+    predictorBuilder = Predictors.newBuilder(modelLoader, extractFn, predictFn);
   }
 
   @Override
-  public CompletionStage<List<Prediction<List<Integer>, List<Float>>>> predict(
-      final ScheduledExecutorService scheduler,
-      final Duration timeout,
-      final List<Integer>... input) {
+  public CompletionStage<List<Prediction<Integer, Float>>> predict(
+      final ScheduledExecutorService scheduler, final Duration timeout, final Integer... input) {
     return predictorBuilder.predictor().predict(scheduler, timeout, input);
   }
 }

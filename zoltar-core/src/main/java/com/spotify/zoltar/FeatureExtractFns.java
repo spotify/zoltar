@@ -15,10 +15,9 @@
  */
 package com.spotify.zoltar;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -41,7 +40,13 @@ public interface FeatureExtractFns {
   interface ExtractFn<InputT, VectorT> {
 
     static <InputT, VectorT> ExtractFn<InputT, VectorT> lift(final Function<InputT, VectorT> fn) {
-      return inputs -> Arrays.stream(inputs).map(fn).collect(Collectors.toList());
+      return inputs -> {
+        final List<VectorT> result = new ArrayList<>();
+        for (InputT inputT : inputs) {
+          result.add(fn.apply(inputT));
+        }
+        return result;
+      };
     }
 
     static <InputT> ExtractFn<InputT, InputT> identity() {

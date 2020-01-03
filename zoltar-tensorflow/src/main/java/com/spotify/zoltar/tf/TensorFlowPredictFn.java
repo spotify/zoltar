@@ -85,6 +85,8 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
   /**
    * TensorFlow Example prediction function.
    *
+   * @deprecated Use {@link #example(Function, String...)}
+   *
    * @param outTensorExtractor Function to extract the output value from JTensor's
    * @param fetchOps operations to fetch.
    */

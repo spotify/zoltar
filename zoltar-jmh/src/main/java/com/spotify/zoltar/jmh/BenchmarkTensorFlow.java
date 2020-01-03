@@ -21,10 +21,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletionStage;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -46,45 +43,31 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.tensorflow.example.Example;
 
-import com.google.common.collect.Lists;
-
-import com.spotify.futures.CompletableFutures;
-import com.spotify.zoltar.FeatureExtractFns.BatchExtractFn;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
-import com.spotify.zoltar.FeatureExtractor;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
-import com.spotify.zoltar.tf.TensorFlowPredictFn;
 
 /** TensorFlow prediction benchmarks. */
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-@Threads(value = 5)
-@Fork(
-    value = 4,
-    jvmArgs = {"-Xms2G", "-Xmx2G"})
+@Threads(value = 1)
+@Fork(value = 4)
 // @Warmup(iterations = 20)
 // @Measurement(iterations = 20)
 public class BenchmarkTensorFlow {
-  @Param({"5700", "11400"})
+  @Param({"1", "100"})
   private int size;
-
-  @Param({"5700"})
-  private int batchSize;
 
   private static final String OP = "linear/head/predictions/class_ids";
 
   private Predictor<Iris, Long> predictor;
-  private Predictor<List<Iris>, long[]> batchPredictor;
-  private List<Iris> data;
-  private List<Iris>[] batchData;
+  private Iris[] data;
 
   /** run benchmarks. */
   public static void main(final String[] args) throws RunnerException {
@@ -97,40 +80,20 @@ public class BenchmarkTensorFlow {
   /** fetch benchmark data and initialize predictors. */
   @Setup
   public void setup() throws Exception {
-    data = new ArrayList<>(IrisHelper.getIrisData().subList(0, size));
-    batchData =
-        Lists.partition(data, batchSize)
-            .stream()
-            .map(ArrayList::new)
-            .collect(Collectors.toList())
-            .toArray((ArrayList<Iris>[]) new ArrayList[0]);
-    batchPredictor = batchPredictor();
+    data = Arrays.copyOf(IrisHelper.getIrisData(), size);
     predictor = predictor();
   }
 
-  /** single input prediction. */
+  /** input prediction. right now the batch size matches the benchmark size param. */
   @Benchmark
-  @BenchmarkMode(Mode.AverageTime)
-  public void single() throws ExecutionException, InterruptedException {
-    final List<CompletionStage<List<Prediction<Iris, Long>>>> predictions =
-        data.stream().map(predictor::predict).collect(Collectors.toList());
-
-    CompletableFutures.allAsList(predictions)
-        .thenApply(l -> l.stream().flatMap(Collection::stream).collect(Collectors.toList()))
-        .get();
-  }
-
-  /** batch input prediction. right now the batch size matches the benchmark size param. */
-  @Benchmark
-  @BenchmarkMode(Mode.AverageTime)
-  public void batch() throws ExecutionException, InterruptedException {
-    batchPredictor.predict(batchData).toCompletableFuture().get();
+  @BenchmarkMode(Mode.Throughput)
+  public void predict() throws ExecutionException, InterruptedException {
+    predictor.predict(data).toCompletableFuture().get();
   }
 
   @TearDown
   public void shutdown() {
     predictor.timeoutScheduler().scheduler().shutdown();
-    batchPredictor.timeoutScheduler().scheduler().shutdown();
   }
 
   private static ModelLoader<TensorFlowModel> modelLoader() throws URISyntaxException {
@@ -147,19 +110,13 @@ public class BenchmarkTensorFlow {
     return FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
   }
 
-  private static Predictor<List<Iris>, long[]> batchPredictor() throws Exception {
-    final BatchExtractFn<Iris, Example> batch = BatchExtractFn.lift(extractFn());
-    final TensorFlowPredictFn<List<Iris>, List<Example>, long[]> predictFn =
-        TensorFlowPredictFn.exampleBatch(tensors -> tensors.get(OP).longValue(), OP);
-
-    return Predictors.newBuilder(modelLoader(), FeatureExtractor.create(batch), predictFn)
-        .predictor();
-  }
-
   private static Predictor<Iris, Long> predictor() throws Exception {
     final String modelUri =
         BenchmarkTensorFlow.class.getResource("/trained_model").toURI().toString();
     return Predictors.tensorFlow(
-        modelUri, extractFn(), tensors -> tensors.get(OP).longValue()[0], OP);
+        modelUri,
+        extractFn(),
+        tensors -> Arrays.stream(tensors.get(OP).longValue()).boxed().collect(Collectors.toList()),
+        OP);
   }
 }

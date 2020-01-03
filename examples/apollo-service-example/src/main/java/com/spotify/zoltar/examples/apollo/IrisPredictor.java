@@ -18,6 +18,8 @@ package com.spotify.zoltar.examples.apollo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.tensorflow.example.Example;
 
@@ -44,7 +46,8 @@ public final class IrisPredictor {
     return Predictors.tensorFlow(
         modelConfig.modelUri().toString(),
         extractFn,
-        tensors -> tensors.get(ops[0]).longValue()[0],
+        tensors ->
+            Arrays.stream(tensors.get(ops[0]).longValue()).boxed().collect(Collectors.toList()),
         ops,
         metrics);
   }

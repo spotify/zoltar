@@ -66,10 +66,12 @@ public interface FeatureExtractFns {
    * Generic feature extraction function, takes a batch of raw inputs and should return extracted
    * features of user defined type for each input.
    *
+   * @deprecated Use {@link ExtractFn} instead
    * @param <InputT> type of the input to feature extraction.
    * @param <VectorT> type of feature extraction result.
    */
   @FunctionalInterface
+  @Deprecated
   interface BatchExtractFn<InputT, VectorT> extends ExtractFn<List<InputT>, List<VectorT>> {
 
     @SuppressWarnings("unchecked")

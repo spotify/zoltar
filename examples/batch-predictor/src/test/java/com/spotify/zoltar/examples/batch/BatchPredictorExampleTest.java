@@ -18,13 +18,11 @@ package com.spotify.zoltar.examples.batch;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
 
 import com.spotify.zoltar.Prediction;
 
@@ -35,7 +33,7 @@ public class BatchPredictorExampleTest {
   public void testCustomMetrics() {
     final BatchPredictorExample example = new BatchPredictorExample();
 
-    final List<Integer> batch = ImmutableList.of(3, 1, -4, -42, 42, -10);
+    final Integer[] batch = new Integer[] {3, 1, -4, -42, 42, -10};
     final List<Float> predictions =
         example
             .predict(batch)
@@ -43,11 +41,10 @@ public class BatchPredictorExampleTest {
             .join()
             .stream()
             .map(Prediction::value)
-            .findFirst()
-            .orElse(Collections.emptyList());
+            .collect(Collectors.toList());
 
     final List<Float> expected =
-        batch.stream().map(v -> (float) v / 10 * 2).collect(Collectors.toList());
+        Arrays.stream(batch).map(v -> (float) v / 10 * 2).collect(Collectors.toList());
 
     assertThat(predictions, is(expected));
   }

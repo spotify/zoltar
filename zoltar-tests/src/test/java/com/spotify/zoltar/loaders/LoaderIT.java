@@ -17,12 +17,14 @@ package com.spotify.zoltar.loaders;
 
 import static com.spotify.zoltar.fs.FileSystemExtrasTestUtils.jarUri;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
+import org.junit.Assume;
 import org.junit.Test;
 
 import com.spotify.zoltar.tf.TensorFlowGraphLoader;
@@ -63,6 +65,7 @@ public class LoaderIT {
 
   @Test(expected = ExecutionException.class)
   public void tfLoaderJarTrailingSlash() throws Exception {
+    Assume.assumeThat(System.getProperty("java.version"), startsWith("1.8"));
     // Load directory from jar file with trailing slash. On Java 1.8 this will throw an exception
     // because of ZipPath.relativize. See https://github.com/spotify/zoltar/pull/176 for more info.
     // It will not throw an exception on Java 11.

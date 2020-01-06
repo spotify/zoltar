@@ -15,12 +15,11 @@
  */
 package com.spotify.zoltar;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
-
-import com.google.common.collect.Lists;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 
@@ -47,7 +46,7 @@ public interface FeatureExtractor<ModelT extends Model<?>, InputT, VectorT> {
   static <ModelT extends Model<?>, InputT, VectorT>
       FeatureExtractor<ModelT, InputT, VectorT> create(final ExtractFn<InputT, VectorT> fn) {
     return (model, inputs) -> {
-      final List<Vector<InputT, VectorT>> result = Lists.newArrayList();
+      final List<Vector<InputT, VectorT>> result = new ArrayList<>();
       final Iterator<InputT> i1 = Arrays.asList(inputs).iterator();
       final Iterator<VectorT> i2 = fn.apply(inputs).iterator();
       while (i1.hasNext() && i2.hasNext()) {

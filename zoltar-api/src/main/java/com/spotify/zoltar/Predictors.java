@@ -262,7 +262,7 @@ public final class Predictors {
       final ExtractFn<InputT, Example> extractFn,
       final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
-      final PredictorMetrics metrics) {
+      final PredictorMetrics<InputT, Example, ValueT> metrics) {
     return tensorFlow(
         modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps, metrics);
   }
@@ -308,7 +308,7 @@ public final class Predictors {
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
       final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
-      final PredictorMetrics metrics) {
+      final PredictorMetrics<InputT, Example, ValueT> metrics) {
     final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
         TensorFlowPredictFn.example(outTensorExtractor, fetchOps);
@@ -332,7 +332,7 @@ public final class Predictors {
       final String modelUri,
       final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
-      final PredictorMetrics metrics) {
+      final PredictorMetrics<Example, Example, ValueT> metrics) {
     return tensorFlow(modelUri, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);
   }
 }

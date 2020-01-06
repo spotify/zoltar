@@ -33,32 +33,12 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>featran-core_2.11</artifactId>
+      <artifactId>featran-core_2.12</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>featran-tensorflow_2.11</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-scio_2.11</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-core_2.11</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-bigquery_2.11</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-tensorflow_2.11</artifactId>
+      <artifactId>featran-tensorflow_2.12</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -101,19 +81,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-test_2.11</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.api-client</groupId>
-          <artifactId>google-api-client</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>2.2-rc1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -151,17 +126,6 @@
         </executions>
         <configuration>
           <scalaVersion>${scala.version}</scalaVersion>
-          <jvmArgs>
-            <jvmArg>${bigquery.project.arg}</jvmArg>
-            <jvmArg>${bigquery.secret.arg}</jvmArg>
-          </jvmArgs>
-          <compilerPlugins>
-            <compilerPlugin>
-              <groupId>org.scalamacros</groupId>
-              <artifactId>paradise_2.11.11</artifactId>
-              <version>2.1.0</version>
-            </compilerPlugin>
-          </compilerPlugins>
         </configuration>
       </plugin>
       <plugin>

@@ -45,23 +45,7 @@
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
-      <artifactId>featran-java_2.11</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>featran-scio_2.11</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-core_2.11</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-bigquery_2.11</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.spotify</groupId>
-      <artifactId>scio-tensorflow_2.11</artifactId>
+      <artifactId>featran-java_2.12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.openjdk.jmh</groupId>
@@ -107,17 +91,6 @@
         </executions>
         <configuration>
           <scalaVersion>${scala.version}</scalaVersion>
-          <jvmArgs>
-            <jvmArg>${bigquery.project.arg}</jvmArg>
-            <jvmArg>${bigquery.secret.arg}</jvmArg>
-          </jvmArgs>
-          <compilerPlugins>
-            <compilerPlugin>
-              <groupId>org.scalamacros</groupId>
-              <artifactId>paradise_2.11.11</artifactId>
-              <version>2.1.0</version>
-            </compilerPlugin>
-          </compilerPlugins>
         </configuration>
       </plugin>
       <plugin>

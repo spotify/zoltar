@@ -14,10 +14,9 @@
   <packaging>pom</packaging>
 
   <properties>
-    <scala.version>2.11.12</scala.version>
+    <scala.version>2.12.10</scala.version>
     <tensorFlow.version>1.15.0</tensorFlow.version>
-    <scio.version>0.5.7</scio.version>
-    <featran.version>0.2.1</featran.version>
+    <featran.version>0.5.0</featran.version>
     <proto.version>3.9.1</proto.version>
     <grpc.version>1.23.0</grpc.version>
     <netty.version>4.1.38.Final</netty.version>
@@ -107,22 +106,17 @@
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
-        <artifactId>featran-core_2.11</artifactId>
+        <artifactId>featran-core_2.12</artifactId>
         <version>${featran.version}</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
-        <artifactId>featran-java_2.11</artifactId>
+        <artifactId>featran-java_2.12</artifactId>
         <version>${featran.version}</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>
-        <artifactId>featran-scio_2.11</artifactId>
-        <version>${featran.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>featran-tensorflow_2.11</artifactId>
+        <artifactId>featran-tensorflow_2.12</artifactId>
         <version>${featran.version}</version>
       </dependency>
       <dependency>
@@ -171,58 +165,6 @@
         <version>${tensorFlow.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-core_2.11</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client</artifactId>
-          </exclusion>
-        </exclusions>
-        <version>${scio.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.cloud.bigtable</groupId>
-        <artifactId>bigtable-protos</artifactId>
-        <version>1.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-bigquery_2.11</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.cloud.bigtable</groupId>
-            <artifactId>bigtable-protos</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client</artifactId>
-          </exclusion>
-        </exclusions>
-        <version>${scio.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-tensorflow_2.11</artifactId>
-        <version>${scio.version}</version>
-      </dependency>
-      <dependency>
         <groupId>ml.dmlc</groupId>
         <artifactId>xgboost4j</artifactId>
         <version>${xgboost.version}</version>
@@ -239,22 +181,16 @@
         <artifactId>commons-math3</artifactId>
         <version>3.6.1</version>
       </dependency>
-      <dependency>
-        <!-- initial reason: breeze 1.0-RC2 from scio-tensorflow 0.5.0 -->
-        <groupId>com.chuusai</groupId>
-        <artifactId>shapeless_2.11</artifactId>
-        <version>2.3.3</version>
-      </dependency>
 
       <dependency>
         <groupId>org.typelevel</groupId>
-        <artifactId>cats-kernel_2.11</artifactId>
-        <version>1.5.0</version>
+        <artifactId>cats-kernel_2.12</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.typelevel</groupId>
-        <artifactId>machinist_2.11</artifactId>
-        <version>0.6.6</version>
+        <artifactId>machinist_2.12</artifactId>
+        <version>0.6.8</version>
       </dependency>
 
       <dependency>
@@ -334,7 +270,7 @@
       </dependency>
        <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-scala_2.11</artifactId>
+        <artifactId>jackson-module-scala_2.12</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
@@ -379,11 +315,6 @@
       </dependency>
 
       <!-- Test dependencies -->
-      <dependency>
-        <groupId>com.spotify</groupId>
-        <artifactId>scio-test_2.11</artifactId>
-        <version>${scio.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>

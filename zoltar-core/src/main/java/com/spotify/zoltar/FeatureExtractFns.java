@@ -16,6 +16,7 @@
 package com.spotify.zoltar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -50,7 +51,7 @@ public interface FeatureExtractFns {
     }
 
     static <InputT> ExtractFn<InputT, InputT> identity() {
-      return lift(Function.identity());
+      return Arrays::asList;
     }
 
     /** Functional interface. Perform feature extraction. */

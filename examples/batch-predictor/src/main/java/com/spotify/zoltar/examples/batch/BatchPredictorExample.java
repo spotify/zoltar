@@ -18,7 +18,9 @@ package com.spotify.zoltar.examples.batch;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
@@ -28,16 +30,15 @@ import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorBuilder;
 import com.spotify.zoltar.Predictors;
-import com.spotify.zoltar.loaders.Preloader;
 
 /** Example showing a batch predictor. */
 class BatchPredictorExample implements Predictor<Integer, Float> {
 
   private final PredictorBuilder<DummyModel, Integer, Float, Float> predictorBuilder;
 
-  BatchPredictorExample() {
+  BatchPredictorExample() throws InterruptedException, ExecutionException, TimeoutException {
     final ModelLoader<DummyModel> modelLoader =
-        ModelLoader.lift(DummyModel::new).with(Preloader.preload(Duration.ofMinutes(1)));
+        ModelLoader.preload(ModelLoader.loaded(new DummyModel()), Duration.ofMinutes(1));
 
     final ExtractFn<Integer, Float> extractFn = ExtractFn.lift(input -> (float) input / 10);
 

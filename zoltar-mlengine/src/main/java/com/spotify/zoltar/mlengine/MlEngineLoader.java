@@ -63,9 +63,6 @@ public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
    * @param supplier {@link MlEngineModel} supplier.
    */
   static MlEngineLoader create(final ThrowableSupplier<MlEngineModel> supplier) {
-    final ModelLoader<MlEngineModel> loader =
-        ModelLoader.lift(supplier).with(ModelMemoizer::memoize);
-
-    return loader::get;
+    return ModelLoader.load(supplier)::get;
   }
 }

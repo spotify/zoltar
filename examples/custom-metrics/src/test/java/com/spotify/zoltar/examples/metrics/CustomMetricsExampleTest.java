@@ -15,6 +15,9 @@
  */
 package com.spotify.zoltar.examples.metrics;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +27,8 @@ import com.spotify.metrics.core.SemanticMetricRegistry;
 public class CustomMetricsExampleTest {
 
   @Test
-  public void testCustomMetrics() {
+  public void testCustomMetrics()
+      throws InterruptedException, ExecutionException, TimeoutException {
     // #SemanticMetricRegistry
     final SemanticMetricRegistry registry = new SemanticMetricRegistry();
     final MetricId metricId = MetricId.build().tagged("service", "my-application");

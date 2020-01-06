@@ -20,6 +20,8 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -30,7 +32,8 @@ public class BatchPredictorExampleTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testCustomMetrics() {
+  public void testCustomMetrics()
+      throws InterruptedException, ExecutionException, TimeoutException {
     final BatchPredictorExample example = new BatchPredictorExample();
 
     final Integer[] batch = new Integer[] {3, 1, -4, -42, 42, -10};

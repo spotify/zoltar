@@ -27,6 +27,7 @@ import com.spotify.zoltar.ModelLoader;
  *
  * @param <M> Model instance type.
  */
+@Deprecated
 @FunctionalInterface
 public interface ModelMemoizer<M extends Model<?>> extends ModelLoader<M> {
 

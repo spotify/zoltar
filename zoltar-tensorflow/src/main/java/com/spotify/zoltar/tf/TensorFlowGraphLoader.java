@@ -98,9 +98,6 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
    * @param supplier {@link TensorFlowGraphModel} supplier.
    */
   static TensorFlowGraphLoader create(final ThrowableSupplier<TensorFlowGraphModel> supplier) {
-    final ModelLoader<TensorFlowGraphModel> loader =
-        ModelLoader.lift(supplier).with(ModelMemoizer::memoize).with(Preloader.preloadAsync());
-
-    return loader::get;
+    return ModelLoader.load(supplier)::get;
   }
 }

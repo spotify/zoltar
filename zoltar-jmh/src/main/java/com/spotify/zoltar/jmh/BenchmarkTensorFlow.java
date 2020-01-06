@@ -46,12 +46,9 @@ import org.tensorflow.example.Example;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
-import com.spotify.zoltar.ModelLoader;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.Predictors;
 import com.spotify.zoltar.featran.FeatranExtractFns;
-import com.spotify.zoltar.tf.TensorFlowLoader;
-import com.spotify.zoltar.tf.TensorFlowModel;
 
 /** TensorFlow prediction benchmarks. */
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -92,12 +89,6 @@ public class BenchmarkTensorFlow {
   @TearDown
   public void shutdown() {
     predictor.timeoutScheduler().scheduler().shutdown();
-  }
-
-  private static ModelLoader<TensorFlowModel> modelLoader() throws URISyntaxException {
-    final String modelUri =
-        BenchmarkTensorFlow.class.getResource("/trained_model").toURI().toString();
-    return TensorFlowLoader.create(modelUri);
   }
 
   private static ExtractFn<Iris, Example> extractFn() throws IOException, URISyntaxException {

@@ -21,7 +21,7 @@
     <grpc.version>1.23.0</grpc.version>
     <netty.version>4.1.38.Final</netty.version>
     <jackson.version>2.10.2</jackson.version>
-    <guava.version>28.1-jre</guava.version>
+    <guava.version>28.2-jre</guava.version>
     <errorprone.version>2.3.4</errorprone.version>
     <google.auth.version>0.17.1</google.auth.version>
     <opencensus.version>0.23.0</opencensus.version>

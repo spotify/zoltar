@@ -19,13 +19,8 @@ import java.net.URI;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
-import com.spotify.zoltar.loaders.Preloader;
 
-/**
- * {@link XGBoostModel} loader. This loader is composed with {@link ModelMemoizer} and {@link
- * Preloader}.
- */
+/** {@link XGBoostModel} loader. */
 @FunctionalInterface
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public interface XGBoostLoader extends ModelLoader<XGBoostModel> {

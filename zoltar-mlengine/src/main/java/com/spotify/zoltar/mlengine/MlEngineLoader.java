@@ -17,9 +17,8 @@ package com.spotify.zoltar.mlengine;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
 
-/** {@link MlEngineLoader} loader. This loader is composed with {@link ModelMemoizer}. */
+/** {@link MlEngineLoader} loader. */
 @FunctionalInterface
 public interface MlEngineLoader extends ModelLoader<MlEngineModel> {
 

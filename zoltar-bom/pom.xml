@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <scala.version>2.12.10</scala.version>
+    <scala.version>2.13.1</scala.version>
     <tensorFlow.version>1.15.0</tensorFlow.version>
     <featran.version>0.5.0</featran.version>
     <proto.version>3.9.1</proto.version>

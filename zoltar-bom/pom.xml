@@ -19,7 +19,7 @@
     <featran.version>0.5.0</featran.version>
     <proto.version>3.9.1</proto.version>
     <grpc.version>1.23.0</grpc.version>
-    <netty.version>4.1.38.Final</netty.version>
+    <netty.version>4.1.45.Final</netty.version>
     <jackson.version>2.10.2</jackson.version>
     <guava.version>28.2-jre</guava.version>
     <errorprone.version>2.3.4</errorprone.version>

@@ -49,18 +49,20 @@
         <artifactId>auto-value</artifactId>
       </dependency>
       <dependency>
+        <groupId>com.google.auto.value</groupId>
+        <artifactId>auto-value-annotations</artifactId>
+      </dependency>
+      <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.25</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>
@@ -74,6 +76,12 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>apollo-http-service</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>auto-value-annotations</artifactId>
+          <groupId>com.google.auto.value</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.spotify</groupId>
@@ -105,6 +113,12 @@
       <groupId>com.spotify</groupId>
       <artifactId>apollo-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>auto-value-annotations</artifactId>
+          <groupId>com.google.auto.value</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

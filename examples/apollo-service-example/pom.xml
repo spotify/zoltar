@@ -174,7 +174,7 @@
           <plugin>
             <groupId>org.codehaus.gmaven</groupId>
             <artifactId>groovy-maven-plugin</artifactId>
-            <version>2.0</version>
+            <version>2.1.1</version>
             <executions>
               <execution>
                 <id>root-pom-service-build</id>
@@ -185,15 +185,15 @@
                 <configuration>
                   <source>
                     log.info(' _____________________________________________  ')
-                    log.info('/\\                                            \\ ')
-                    log.info('\\_|  == SERVICE marker file detected =======  | ')
+                    log.info('/\                                            \ ')
+                    log.info('\_|  == SERVICE marker file detected =======  | ')
                     log.info('  |                                           | ')
                     log.info('  |  -&gt; Assuming service module               | ')
                     log.info('  |  -&gt; Dependencies in target/lib            | ')
                     log.info('  |  -&gt; Runnable jar with classpath manifest  | ')
                     log.info('  |  -&gt; Docker image being built and pushed   | ')
                     log.info('  |  _________________________________________|_')
-                    log.info('  \\_/__________________________________________/')
+                    log.info('  \_/__________________________________________/')
                   </source>
                 </configuration>
               </execution>

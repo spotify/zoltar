@@ -26,7 +26,7 @@
     <jackson.version>2.10.2</jackson.version>
     <joda.version>2.10.5</joda.version>
     <netty.version>4.1.45.Final</netty.version>
-    <opencensus.version>0.24.0</opencensus.version>
+    <opencensus.version>0.26.0</opencensus.version>
     <proto.version>3.11.4</proto.version>
     <scala.version>2.12.10</scala.version>
     <scio.version>0.5.7</scio.version>

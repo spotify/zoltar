@@ -43,11 +43,11 @@
     </dependency>
 
     <!-- Required to please enforcer plugin -->
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    <!-- <dependency> -->
+    <!--   <groupId>com.google.cloud</groupId> -->
+    <!--   <artifactId>google-cloud-core</artifactId> -->
+    <!--   <scope>provided</scope> -->
+    <!-- </dependency> -->
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-all</artifactId>

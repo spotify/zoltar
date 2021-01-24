@@ -28,7 +28,7 @@
     <netty.version>4.1.52.Final</netty.version>
     <opencensus.version>0.28.0</opencensus.version>
     <proto.version>3.14.0</proto.version>
-    <scala.version>2.12.13</scala.version>
+    <scala.version>2.13.4</scala.version>
     <scio.version>0.5.7</scio.version>
     <tensorFlow.version>1.15.0</tensorFlow.version>
     <xgboost.version>0.90</xgboost.version>

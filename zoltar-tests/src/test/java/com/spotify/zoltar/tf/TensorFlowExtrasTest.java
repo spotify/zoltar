@@ -15,19 +15,17 @@
  */
 package com.spotify.zoltar.tf;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.junit.Test;
-import org.tensorflow.DataType;
 import org.tensorflow.Graph;
 import org.tensorflow.Output;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
+import org.tensorflow.types.TFloat64;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -38,14 +36,14 @@ public class TensorFlowExtrasTest {
   private static final String mul3 = "mul3";
 
   private static Graph createDummyGraph() {
-    final Tensor<Double> t2 = Tensors.create(2.0);
-    final Tensor<Double> t3 = Tensors.create(3.0);
+    final Tensor<TFloat64> t2 = TFloat64.scalarOf(2.0);
+    final Tensor<TFloat64> t3 = TFloat64.scalarOf(3.0);
 
     final Graph graph = new Graph();
-    final Output<Double> input =
-        graph.opBuilder("Placeholder", "input").setAttr("dtype", DataType.DOUBLE).build().output(0);
+    final Output<TFloat64> input =
+        graph.opBuilder("Placeholder", "input").setAttr("dtype", TFloat64.DTYPE).build().output(0);
 
-    final Output<Double> two =
+    final Output<TFloat64> two =
         graph
             .opBuilder("Const", "two")
             .setAttr("dtype", t2.dataType())
@@ -53,7 +51,7 @@ public class TensorFlowExtrasTest {
             .build()
             .output(0);
 
-    final Output<Double> three =
+    final Output<TFloat64> three =
         graph
             .opBuilder("Const", "three")
             .setAttr("dtype", t3.dataType())
@@ -73,8 +71,8 @@ public class TensorFlowExtrasTest {
     final Graph graph = createDummyGraph();
     final Session session = new Session(graph);
     final Session.Runner runner = session.runner();
-    runner.feed("input", Tensors.create(10.0));
-    final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2);
+    runner.feed("input", TFloat64.scalarOf(10.0));
+    final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, mul2);
     assertEquals(Sets.newHashSet(mul2), result.keySet());
     assertScalar(result.get(mul2), 20.0);
     session.close();
@@ -86,8 +84,8 @@ public class TensorFlowExtrasTest {
     final Graph graph = createDummyGraph();
     final Session session = new Session(graph);
     final Session.Runner runner = session.runner();
-    runner.feed("input", Tensors.create(10.0));
-    final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul2, mul3);
+    runner.feed("input", TFloat64.scalarOf(10.0));
+    final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, mul2, mul3);
     assertEquals(Lists.newArrayList(mul2, mul3), new ArrayList<>(result.keySet()));
     assertScalar(result.get(mul2), 20.0);
     assertScalar(result.get(mul3), 30.0);
@@ -100,8 +98,8 @@ public class TensorFlowExtrasTest {
     final Graph graph = createDummyGraph();
     final Session session = new Session(graph);
     final Session.Runner runner = session.runner();
-    runner.feed("input", Tensors.create(10.0));
-    final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, mul3, mul2);
+    runner.feed("input", TFloat64.scalarOf(10.0));
+    final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, mul3, mul2);
     assertEquals(Lists.newArrayList(mul3, mul2), new ArrayList<>(result.keySet()));
     assertScalar(result.get(mul2), 20.0);
     assertScalar(result.get(mul3), 30.0);
@@ -109,11 +107,11 @@ public class TensorFlowExtrasTest {
     graph.close();
   }
 
-  private void assertScalar(final JTensor jt, final Double value) {
-    assertEquals(DataType.DOUBLE, jt.dataType());
-    assertEquals(0, jt.numDimensions());
-    assertEquals(0, jt.shape().length);
-    final double[] expected = {value};
-    assertArrayEquals(expected, jt.doubleValue(), 0.0);
+  private void assertScalar(final Tensor<?> jt, final Double value) {
+    assert (jt.dataType().isFloating());
+    assertEquals(0, jt.shape().numDimensions());
+    assertEquals(0, jt.shape().asArray().length);
+    // final double[] expected = {value};
+    assertEquals(value, ((Tensor<TFloat64>) jt).data().getDouble(), 0.0);
   }
 }

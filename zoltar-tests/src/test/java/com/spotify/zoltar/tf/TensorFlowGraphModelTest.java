@@ -37,7 +37,8 @@ import org.tensorflow.Graph;
 import org.tensorflow.Output;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
+import org.tensorflow.ndarray.NdArrays;
+import org.tensorflow.types.TFloat64;
 
 import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.transformers.Identity;
@@ -61,15 +62,15 @@ public class TensorFlowGraphModelTest {
   private Path createADummyTFGraph() throws IOException {
     final Path graphFile;
     try (final Graph graph = new Graph();
-        final Tensor<Double> t = Tensors.create(2.0D)) {
-      final Output<Double> input =
+        final Tensor<TFloat64> t = TFloat64.scalarOf(2.0D)) {
+      final Output<TFloat64> input =
           graph
               .opBuilder("Placeholder", inputOpName)
               .setAttr("dtype", t.dataType())
               .build()
               .output(0);
 
-      final Output<Double> two =
+      final Output<TFloat64> two =
           graph
               .opBuilder("Const", "two")
               .setAttr("dtype", t.dataType())
@@ -80,7 +81,7 @@ public class TensorFlowGraphModelTest {
       graph.opBuilder("Mul", mulResult).addInput(two).addInput(input).build();
 
       graphFile = Files.createTempFile("tf-graph", ".bin");
-      Files.write(graphFile, graph.toGraphDef());
+      Files.write(graphFile, graph.toGraphDef().toByteArray());
     }
     return graphFile;
   }
@@ -113,11 +114,11 @@ public class TensorFlowGraphModelTest {
     try (final TensorFlowGraphModel model =
             TensorFlowGraphModel.create(graphFile.toUri(), null, null);
         final Session session = model.instance();
-        final Tensor<Double> double3 = Tensors.create(3.0D)) {
+        final Tensor<TFloat64> double3 = TFloat64.scalarOf(3.0D)) {
       List<Tensor<?>> result = null;
       try {
         result = session.runner().fetch(mulResult).feed(inputOpName, double3).run();
-        assertEquals(result.get(0).doubleValue(), 6.0D, Double.MIN_VALUE);
+        assertEquals(result.get(0).data(), NdArrays.scalarOf(6.0D));
       } finally {
         if (result != null) {
           result.forEach(Tensor::close);
@@ -133,7 +134,7 @@ public class TensorFlowGraphModelTest {
     try (final TensorFlowGraphModel model =
             TensorFlowGraphModel.create(graphFile.toUri(), null, prefix);
         final Session session = model.instance();
-        final Tensor<Double> double3 = Tensors.create(3.0D)) {
+        final Tensor<TFloat64> double3 = TFloat64.scalarOf(3.0D)) {
       List<Tensor<?>> result = null;
       try {
         result =
@@ -142,7 +143,7 @@ public class TensorFlowGraphModelTest {
                 .fetch(prefix + "/" + mulResult)
                 .feed(prefix + "/" + inputOpName, double3)
                 .run();
-        assertEquals(result.get(0).doubleValue(), 6.0D, Double.MIN_VALUE);
+        assertEquals(result.get(0).rawData().asDoubles().getDouble(0), 6.0D, Double.MIN_VALUE);
       } finally {
         if (result != null) {
           result.forEach(Tensor::close);
@@ -169,7 +170,7 @@ public class TensorFlowGraphModelTest {
                 .stream()
                 .map(
                     vector -> {
-                      try (Tensor<Double> input = Tensors.create(vector.value()[0])) {
+                      try (Tensor<TFloat64> input = TFloat64.scalarOf(vector.value()[0])) {
                         List<Tensor<?>> results = null;
                         try {
                           results =
@@ -179,7 +180,8 @@ public class TensorFlowGraphModelTest {
                                   .fetch(mulResult)
                                   .feed(inputOpName, input)
                                   .run();
-                          return Prediction.create(vector.input(), results.get(0).doubleValue());
+                          return Prediction.create(
+                              vector.input(), results.get(0).rawData().asDoubles().getDouble(0));
                         } finally {
                           if (results != null) {
                             results.forEach(Tensor::close);

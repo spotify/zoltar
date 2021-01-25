@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import org.tensorflow.example.Example;
+import org.tensorflow.proto.example.Example;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

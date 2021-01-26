@@ -19,14 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.tensorflow.example.Example;
+import org.tensorflow.Tensor;
+import org.tensorflow.proto.example.Example;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
 import com.spotify.zoltar.PredictFns.PredictFn;
 import com.spotify.zoltar.metrics.Instrumentations;
 import com.spotify.zoltar.metrics.PredictorMetrics;
-import com.spotify.zoltar.tf.JTensor;
 import com.spotify.zoltar.tf.TensorFlowLoader;
 import com.spotify.zoltar.tf.TensorFlowModel;
 import com.spotify.zoltar.tf.TensorFlowPredictFn;
@@ -231,7 +231,7 @@ public final class Predictors {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param extractFn a feature extract function to use to transform input into extracted features.
-   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param outTensorExtractor function to extract the output value from a {@link Tensor}.
    * @param fetchOps operations to fetch.
    * @param <InputT> type of the input to the {@link FeatureExtractor}.
    * @param <ValueT> type of the prediction result.
@@ -239,7 +239,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
-      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
       final String... fetchOps) {
     return tensorFlow(modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps);
   }
@@ -250,7 +250,7 @@ public final class Predictors {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param extractFn a feature extract function to use to transform input into extracted features.
-   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param outTensorExtractor function to extract the output value from a {@link Tensor}.
    * @param fetchOps operations to fetch.
    * @param metrics a predictor metrics implementation {@link
    *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
@@ -260,7 +260,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
-      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics<InputT, Example, ValueT> metrics) {
     return tensorFlow(
@@ -273,7 +273,7 @@ public final class Predictors {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
-   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param outTensorExtractor function to extract the output value from a {@link Tensor}.
    * @param fetchOps operations to fetch.
    * @param <InputT> type of the input to the {@link FeatureExtractor}.
    * @param <ValueT> type of the prediction result.
@@ -281,7 +281,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
-      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
       final String... fetchOps) {
     final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
@@ -296,7 +296,7 @@ public final class Predictors {
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
    * @param featureExtractor a feature extractor to use to transform input into extracted features.
-   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param outTensorExtractor function to extract the output value from a {@link Tensor}.
    * @param fetchOps operations to fetch.
    * @param metrics a predictor metrics implementation {@link
    *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
@@ -306,7 +306,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
-      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics<InputT, Example, ValueT> metrics) {
     final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
@@ -322,7 +322,7 @@ public final class Predictors {
    *
    * @param modelUri should point to a directory of the saved TensorFlow {@link
    *     org.tensorflow.SavedModelBundle}, can be a URI to a local filesystem, resource, GCS etc.
-   * @param outTensorExtractor function to extract the output value from a {@link JTensor}.
+   * @param outTensorExtractor function to extract the output value from a {@link Tensor}.
    * @param fetchOps operations to fetch.
    * @param metrics a predictor metrics implementation {@link
    *     com.spotify.zoltar.metrics.semantic.SemanticPredictMetrics}.
@@ -330,7 +330,7 @@ public final class Predictors {
    */
   public static <ValueT> Predictor<Example, ValueT> tensorFlow(
       final String modelUri,
-      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics<Example, Example, ValueT> metrics) {
     return tensorFlow(modelUri, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);

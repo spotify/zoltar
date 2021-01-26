@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -41,7 +42,10 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.tensorflow.example.Example;
+import org.tensorflow.Tensor;
+import org.tensorflow.ndarray.LongNdArray;
+import org.tensorflow.proto.example.Example;
+import org.tensorflow.types.TInt64;
 
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.IrisFeaturesSpec;
@@ -106,7 +110,12 @@ public class BenchmarkTensorFlow {
     return Predictors.tensorFlow(
         modelUri,
         extractFn(),
-        tensors -> Arrays.stream(tensors.get(op).longValue()).boxed().collect(Collectors.toList()),
+        tensors -> {
+          final TInt64 data = ((Tensor<TInt64>) tensors.get(op)).data();
+          return StreamSupport.stream(data.scalars().spliterator(), false)
+              .map(LongNdArray::getObject)
+              .collect(Collectors.toList());
+        },
         op);
   }
 }

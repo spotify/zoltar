@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +35,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.tensorflow.example.Example;
+import org.tensorflow.Tensor;
+import org.tensorflow.ndarray.LongNdArray;
+import org.tensorflow.proto.example.Example;
+import org.tensorflow.types.TInt64;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -66,8 +69,13 @@ public class TensorFlowModelTest {
         FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
     final String op = "linear/head/predictions/class_ids";
-    final Function<Map<String, JTensor>, List<Long>> tensorEctractorFn =
-        tensors -> Arrays.stream(tensors.get(op).longValue()).boxed().collect(Collectors.toList());
+    final Function<Map<String, Tensor<?>>, List<Long>> tensorEctractorFn =
+        tensors -> {
+          final TInt64 data = ((Tensor<TInt64>) tensors.get(op)).data();
+          return StreamSupport.stream(data.scalars().spliterator(), false)
+              .map(LongNdArray::getObject)
+              .collect(Collectors.toList());
+        };
     return Predictors.tensorFlow(modelUri, extractFn, tensorEctractorFn, op);
   }
 

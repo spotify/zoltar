@@ -18,7 +18,7 @@ package com.spotify.zoltar;
 import javax.annotation.Nullable;
 
 import org.tensorflow.Graph;
-import org.tensorflow.framework.ConfigProto;
+import org.tensorflow.proto.framework.ConfigProto;
 
 import com.spotify.zoltar.mlengine.MlEngineLoader;
 import com.spotify.zoltar.tf.TensorFlowGraphLoader;

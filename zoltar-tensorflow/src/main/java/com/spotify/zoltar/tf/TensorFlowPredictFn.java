@@ -26,8 +26,10 @@ import java.util.stream.Collectors;
 
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
-import org.tensorflow.example.Example;
+import org.tensorflow.ndarray.NdArray;
+import org.tensorflow.ndarray.NdArrays;
+import org.tensorflow.proto.example.Example;
+import org.tensorflow.types.TString;
 
 import com.spotify.futures.CompletableFutures;
 import com.spotify.zoltar.PredictFns.AsyncPredictFn;
@@ -48,11 +50,11 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
   /**
    * TensorFlow Example prediction function.
    *
-   * @param outTensorExtractor Function to extract the output value from JTensor's
+   * @param outTensorExtractor Function to extract the output value from Tensor's
    * @param fetchOps operations to fetch.
    */
   static <InputT, ValueT> TensorFlowPredictFn<InputT, Example, ValueT> example(
-      final Function<Map<String, JTensor>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
       final String... fetchOps) {
     return (model, vectors) ->
         CompletableFuture.supplyAsync(
@@ -63,11 +65,12 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
                       .map(Vector::value)
                       .map(Example::toByteArray)
                       .toArray(byte[][]::new);
+              final NdArray<byte[]> examplesNdArray = NdArrays.vectorOfObjects(bytes);
 
-              try (final Tensor<String> t = Tensors.create(bytes)) {
+              try (final Tensor<TString> t = TString.tensorOfBytes(examplesNdArray)) {
                 final Session.Runner runner =
                     model.instance().session().runner().feed("input_example_tensor", t);
-                final Map<String, JTensor> result =
+                final Map<String, Tensor<?>> result =
                     TensorFlowExtras.runAndExtract(runner, fetchOps);
 
                 final Iterator<Vector<InputT, Example>> vectorIterator = vectors.iterator();
@@ -86,20 +89,21 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
    * TensorFlow Example prediction function.
    *
    * @deprecated Use {@link #example(Function, String...)}
-   * @param outTensorExtractor Function to extract the output value from JTensor's
+   * @param outTensorExtractor Function to extract the output value from Tensor's
    * @param fetchOps operations to fetch.
    */
   @Deprecated
   static <InputT, ValueT> TensorFlowPredictFn<InputT, List<Example>, ValueT> exampleBatch(
-      final Function<Map<String, JTensor>, ValueT> outTensorExtractor, final String... fetchOps) {
+      final Function<Map<String, Tensor<?>>, ValueT> outTensorExtractor, final String... fetchOps) {
     final BiFunction<TensorFlowModel, List<Example>, ValueT> predictFn =
         (model, examples) -> {
           final byte[][] bytes = examples.stream().map(Example::toByteArray).toArray(byte[][]::new);
+          final NdArray<byte[]> examplesNdArray = NdArrays.vectorOfObjects(bytes);
 
-          try (final Tensor<String> t = Tensors.create(bytes)) {
+          try (final Tensor<TString> t = TString.tensorOfBytes(examplesNdArray)) {
             final Session.Runner runner =
                 model.instance().session().runner().feed("input_example_tensor", t);
-            final Map<String, JTensor> result = TensorFlowExtras.runAndExtract(runner, fetchOps);
+            final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, fetchOps);
 
             return outTensorExtractor.apply(result);
           }

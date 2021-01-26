@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>ml.dmlc</groupId>
-      <artifactId>xgboost4j</artifactId>
+      <artifactId>xgboost4j_2.12</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

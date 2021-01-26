@@ -24,13 +24,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.tensorflow.SavedModelBundle;
-import org.tensorflow.framework.MetaGraphDef;
-import org.tensorflow.framework.SignatureDef;
-import org.tensorflow.framework.TensorInfo;
+import org.tensorflow.proto.framework.MetaGraphDef;
+import org.tensorflow.proto.framework.SignatureDef;
+import org.tensorflow.proto.framework.TensorInfo;
 
 import com.google.auto.value.AutoValue;
 import com.google.cloud.storage.contrib.nio.CloudStorageFileSystem;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
@@ -102,7 +101,8 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
       final Options options,
       final String signatureDefinition)
       throws IOException {
-    // GCS requires that directory URIs have a trailing slash, so add the slash if it's missing
+    // GCS requires that directory URIs have a trailing slash, so add the slash if
+    // it's missing
     // and the URI starts with 'gs'.
     final URI normalizedUri =
         !CloudStorageFileSystem.URI_SCHEME.equalsIgnoreCase(modelResource.getScheme())
@@ -112,19 +112,14 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
     final URI localDir = FileSystemExtras.downloadIfNonLocal(normalizedUri);
     final SavedModelBundle model =
         SavedModelBundle.load(localDir.toString(), options.tags().toArray(new String[0]));
-    final MetaGraphDef metaGraphDef;
-    try {
-      metaGraphDef = extractMetaGraphDefinition(model);
-    } catch (TensorflowMetaGraphDefParsingException e) {
-      throw new IOException(e);
-    }
-    final SignatureDef signatureDef = metaGraphDef.getSignatureDefOrThrow(signatureDefinition);
+    final SignatureDef signatureDef =
+        model.metaGraphDef().getSignatureDefOrThrow(signatureDefinition);
 
     return new AutoValue_TensorFlowModel(
         id,
         model,
         options,
-        metaGraphDef,
+        model.metaGraphDef(),
         signatureDef,
         toNameMap(signatureDef.getInputsMap()),
         toNameMap(signatureDef.getOutputsMap()));
@@ -158,8 +153,8 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
   public abstract static class Options implements Serializable {
 
     /**
-     * Returns a list of Tags, see <a
-     * href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py#L26">tags</a>.
+     * Returns a list of Tags, see <a href=
+     * "https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py#L26">tags</a>.
      */
     public abstract List<String> tags();
 
@@ -175,19 +170,6 @@ public abstract class TensorFlowModel implements Model<SavedModelBundle> {
 
       public abstract Options build();
     }
-  }
-
-  private static MetaGraphDef extractMetaGraphDefinition(final SavedModelBundle bundle)
-      throws TensorflowMetaGraphDefParsingException {
-    final MetaGraphDef metaGraphDef;
-    try {
-      metaGraphDef = MetaGraphDef.parseFrom(bundle.metaGraphDef());
-    } catch (InvalidProtocolBufferException e) {
-      throw new TensorflowMetaGraphDefParsingException(
-          "Failed parsing tensorflow metagraph " + "definition", e);
-    }
-
-    return metaGraphDef;
   }
 
   private static Map<String, String> toNameMap(final Map<String, TensorInfo> infoMap) {

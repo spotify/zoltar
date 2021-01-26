@@ -20,7 +20,7 @@ import java.net.URI;
 import javax.annotation.Nullable;
 
 import org.tensorflow.Graph;
-import org.tensorflow.framework.ConfigProto;
+import org.tensorflow.proto.framework.ConfigProto;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;

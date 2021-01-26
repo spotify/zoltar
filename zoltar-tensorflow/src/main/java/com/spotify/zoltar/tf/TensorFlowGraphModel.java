@@ -25,9 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tensorflow.Graph;
 import org.tensorflow.Session;
-import org.tensorflow.framework.ConfigProto;
+import org.tensorflow.proto.framework.ConfigProto;
+import org.tensorflow.proto.framework.GraphDef;
 
 import com.google.auto.value.AutoValue;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
@@ -112,14 +114,18 @@ public abstract class TensorFlowGraphModel implements Model<Session>, AutoClosea
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
     final Graph graph = new Graph();
-    final Session session = new Session(graph, config != null ? config.toByteArray() : null);
+    final Session session = new Session(graph, config);
     final long loadStart = System.currentTimeMillis();
-    if (prefix == null) {
-      LOG.debug("Loading graph definition without prefix");
-      graph.importGraphDef(graphDef);
-    } else {
-      LOG.debug("Loading graph definition with prefix: {}", prefix);
-      graph.importGraphDef(graphDef, prefix);
+    try {
+      if (prefix == null) {
+        LOG.debug("Loading graph definition without prefix");
+        graph.importGraphDef(GraphDef.parseFrom(graphDef));
+      } else {
+        LOG.debug("Loading graph definition with prefix: {}", prefix);
+        graph.importGraphDef(GraphDef.parseFrom(graphDef), prefix);
+      }
+    } catch (InvalidProtocolBufferException e) {
+      throw new IllegalArgumentException(e.getMessage());
     }
     LOG.info("TensorFlow graph loaded in {} ms", System.currentTimeMillis() - loadStart);
     return new AutoValue_TensorFlowGraphModel(id, graph, session);

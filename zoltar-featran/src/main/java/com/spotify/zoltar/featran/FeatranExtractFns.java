@@ -17,7 +17,7 @@ package com.spotify.zoltar.featran;
 
 import ml.dmlc.xgboost4j.LabeledPoint;
 
-import org.tensorflow.example.Example;
+import org.tensorflow.proto.example.Example;
 
 import com.spotify.featran.FeatureSpec;
 import com.spotify.featran.java.DoubleSparseArray;

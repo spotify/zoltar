@@ -139,7 +139,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>completable-futures</artifactId>
-        <version>0.3.2</version>
+        <version>0.3.4</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>

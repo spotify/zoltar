@@ -25,13 +25,8 @@ import org.tensorflow.proto.framework.GraphDef;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
-import com.spotify.zoltar.loaders.ModelMemoizer;
-import com.spotify.zoltar.loaders.Preloader;
 
-/**
- * {@link TensorFlowGraphModel} loader. This loader is composed with {@link ModelMemoizer} and
- * {@link Preloader}.
- */
+/** {@link TensorFlowGraphModel} loader. */
 @FunctionalInterface
 public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel> {
 

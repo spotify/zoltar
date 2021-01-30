@@ -37,13 +37,13 @@ import com.spotify.zoltar.fs.FileSystemExtras;
 /**
  * This model can be used to load protobuf definition of a TensorFlow {@link Graph}.
  *
- * <p>For an easy model freezing function see <a
- * href="https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py">spotify-tensorflow</a>
+ * <p>For an easy model freezing function see <a href=
+ * "https://github.com/spotify/spotify-tensorflow/blob/master/spotify_tensorflow/freeze_graph.py">spotify-tensorflow</a>
  *
  * <p>TensorFlowGraphModel is thread-safe.
  */
 @AutoValue
-public abstract class TensorFlowGraphModel implements Model<Session>, AutoCloseable {
+public abstract class TensorFlowGraphModel implements Model<Session> {
 
   private static final Logger LOG = LoggerFactory.getLogger(TensorFlowGraphModel.class);
   private static final Model.Id DEFAULT_ID = Id.create("tensorflow-graph");

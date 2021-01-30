@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 
 import org.tensorflow.Graph;
 import org.tensorflow.proto.framework.ConfigProto;
+import org.tensorflow.proto.framework.GraphDef;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.ModelLoader;
@@ -79,6 +80,18 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
   /**
    * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
    *
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param config optional TensorFlow {@link ConfigProto} config.
+   * @param prefix optional prefix that will be prepended to names in the graph.
+   */
+  static TensorFlowGraphLoader create(
+      final GraphDef graphDef, @Nullable final ConfigProto config, @Nullable final String prefix) {
+    return create(() -> TensorFlowGraphModel.create(graphDef, config, prefix));
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
    * @param id model id @{link Model.Id}.
    * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
    * @param config optional TensorFlow {@link ConfigProto} config.
@@ -87,6 +100,22 @@ public interface TensorFlowGraphLoader extends ModelLoader<TensorFlowGraphModel>
   static TensorFlowGraphLoader create(
       final Model.Id id,
       final byte[] graphDef,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix) {
+    return create(() -> TensorFlowGraphModel.create(id, graphDef, config, prefix));
+  }
+
+  /**
+   * Returns a TensorFlow model loader based on a serialized TensorFlow {@link Graph}.
+   *
+   * @param id model id @{link Model.Id}.
+   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param config optional TensorFlow {@link ConfigProto} config.
+   * @param prefix optional prefix that will be prepended to names in the graph.
+   */
+  static TensorFlowGraphLoader create(
+      final Model.Id id,
+      final GraphDef graphDef,
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
     return create(() -> TensorFlowGraphModel.create(id, graphDef, config, prefix));

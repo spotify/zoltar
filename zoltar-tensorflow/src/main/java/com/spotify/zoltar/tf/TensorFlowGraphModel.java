@@ -29,7 +29,6 @@ import org.tensorflow.proto.framework.ConfigProto;
 import org.tensorflow.proto.framework.GraphDef;
 
 import com.google.auto.value.AutoValue;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
@@ -80,7 +79,8 @@ public abstract class TensorFlowGraphModel implements Model<Session> {
       @Nullable final String prefix)
       throws IOException {
     final byte[] graphBytes = Files.readAllBytes(FileSystemExtras.path(graphUri));
-    return create(id, graphBytes, config, prefix);
+    final GraphDef graphDef = GraphDef.parseFrom(graphBytes);
+    return create(id, graphDef, config, prefix);
   }
 
   /**
@@ -88,14 +88,49 @@ public abstract class TensorFlowGraphModel implements Model<Session> {
    *
    * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
    *
-   * @param graphDef byte array representing the TensorFlow {@link Graph} definition.
+   * @param graphBytes byte array representing the TensorFlow {@link Graph} definition.
    * @param config ConfigProto config for TensorFlow {@link Session}.
    * @param prefix a prefix that will be prepended to names in graphDef.
    */
   public static TensorFlowGraphModel create(
-      final byte[] graphDef, @Nullable final ConfigProto config, @Nullable final String prefix)
+      final byte[] graphBytes, @Nullable final ConfigProto config, @Nullable final String prefix)
+      throws IOException {
+    final GraphDef graphDef = GraphDef.parseFrom(graphBytes);
+    return create(graphDef, config, prefix);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
+   *
+   * @param graphDef representing the TensorFlow {@link Graph} definition.
+   * @param config ConfigProto config for TensorFlow {@link Session}.
+   * @param prefix a prefix that will be prepended to names in graphDef.
+   */
+  public static TensorFlowGraphModel create(
+      final GraphDef graphDef, @Nullable final ConfigProto config, @Nullable final String prefix)
       throws IOException {
     return create(DEFAULT_ID, graphDef, config, prefix);
+  }
+
+  /**
+   * Note: Please use Models from zoltar-models module.
+   *
+   * <p>Creates a TensorFlow model based on a frozen, serialized TensorFlow {@link Graph}.
+   *
+   * @param id model id @{link Model.Id}.
+   * @param graphBytes byte array representing the TensorFlow {@link Graph} definition.
+   * @param config ConfigProto config for TensorFlow {@link Session}.
+   * @param prefix a prefix that will be prepended to names in graphDef.
+   */
+  public static TensorFlowGraphModel create(
+      final Model.Id id,
+      final byte[] graphBytes,
+      @Nullable final ConfigProto config,
+      @Nullable final String prefix)
+      throws IOException {
+    return create(id, GraphDef.parseFrom(graphBytes), config, prefix);
   }
 
   /**
@@ -110,23 +145,21 @@ public abstract class TensorFlowGraphModel implements Model<Session> {
    */
   public static TensorFlowGraphModel create(
       final Model.Id id,
-      final byte[] graphDef,
+      final GraphDef graphDef,
       @Nullable final ConfigProto config,
       @Nullable final String prefix) {
     final Graph graph = new Graph();
     final Session session = new Session(graph, config);
     final long loadStart = System.currentTimeMillis();
-    try {
-      if (prefix == null) {
-        LOG.debug("Loading graph definition without prefix");
-        graph.importGraphDef(GraphDef.parseFrom(graphDef));
-      } else {
-        LOG.debug("Loading graph definition with prefix: {}", prefix);
-        graph.importGraphDef(GraphDef.parseFrom(graphDef), prefix);
-      }
-    } catch (InvalidProtocolBufferException e) {
-      throw new IllegalArgumentException(e.getMessage());
+
+    if (prefix == null) {
+      LOG.debug("Loading graph definition without prefix");
+      graph.importGraphDef(graphDef);
+    } else {
+      LOG.debug("Loading graph definition with prefix: {}", prefix);
+      graph.importGraphDef(graphDef, prefix);
     }
+
     LOG.info("TensorFlow graph loaded in {} ms", System.currentTimeMillis() - loadStart);
     return new AutoValue_TensorFlowGraphModel(id, graph, session);
   }

@@ -16,6 +16,7 @@
 package com.spotify.zoltar.tf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -70,17 +71,23 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
               try (final Tensor<TString> t = TString.tensorOfBytes(examplesNdArray)) {
                 final Session.Runner runner =
                     model.instance().session().runner().feed("input_example_tensor", t);
-                final Map<String, Tensor<?>> result =
-                    TensorFlowExtras.runAndExtract(runner, fetchOps);
 
-                final Iterator<Vector<InputT, Example>> vectorIterator = vectors.iterator();
-                final Iterator<ValueT> valueTIterator = outTensorExtractor.apply(result).iterator();
-                final List<Prediction<InputT, ValueT>> predictions = new ArrayList<>();
-                while (vectorIterator.hasNext() && valueTIterator.hasNext()) {
-                  predictions.add(
-                      Prediction.create(vectorIterator.next().input(), valueTIterator.next()));
-                }
-                return predictions;
+                return TensorFlowExtras.runAndExtract(
+                    runner,
+                    Arrays.asList(fetchOps),
+                    result -> {
+                      final Iterator<Vector<InputT, Example>> vectorIterator = vectors.iterator();
+                      final Iterator<ValueT> valueTIterator =
+                          outTensorExtractor.apply(result).iterator();
+                      final List<Prediction<InputT, ValueT>> predictions = new ArrayList<>();
+
+                      while (vectorIterator.hasNext() && valueTIterator.hasNext()) {
+                        predictions.add(
+                            Prediction.create(
+                                vectorIterator.next().input(), valueTIterator.next()));
+                      }
+                      return predictions;
+                    });
               }
             });
   }
@@ -103,9 +110,13 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
           try (final Tensor<TString> t = TString.tensorOfBytes(examplesNdArray)) {
             final Session.Runner runner =
                 model.instance().session().runner().feed("input_example_tensor", t);
-            final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, fetchOps);
 
-            return outTensorExtractor.apply(result);
+            return TensorFlowExtras.runAndExtract(
+                runner,
+                Arrays.asList(fetchOps),
+                tensorMap -> {
+                  return outTensorExtractor.apply(tensorMap);
+                });
           }
         };
 

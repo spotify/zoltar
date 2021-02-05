@@ -17,6 +17,7 @@ package com.spotify.zoltar.tf;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
@@ -29,29 +30,32 @@ public class TensorFlowExtras {
   private TensorFlowExtras() {}
 
   /**
-   * Fetch a list of operations from a {@link Session.Runner}, run it, extract output {@link
-   * Tensor}s as {@link Tensor}s and close them.
+   * Fetch a list of operations from a {@link Session.Runner} and return the respective {@link
+   * Tensor}.
    *
    * @param runner {@link Session.Runner} to fetch operations and extract outputs from.
    * @param fetchOps operations to fetch.
    * @return a {@link Map} of operations and output {@link Tensor}s. Map keys are in the same order
    *     as {@code fetchOps}.
    */
-  public static Map<String, Tensor<?>> runAndExtract(
-      final Session.Runner runner, final String... fetchOps) {
+  public static <A> A runAndExtract(
+      final Session.Runner runner,
+      final List<String> fetchOps,
+      Function<Map<String, Tensor<?>>, A> fn) {
     for (final String op : fetchOps) {
       runner.fetch(op);
     }
-    final Map<String, Tensor<?>> result = Maps.newLinkedHashMapWithExpectedSize(fetchOps.length);
+    final Map<String, Tensor<?>> tensorMap = Maps.newLinkedHashMapWithExpectedSize(fetchOps.size());
     final List<Tensor<?>> tensors = runner.run();
-    // try {
-    for (int i = 0; i < fetchOps.length; i++) {
-      final Tensor<?> tensor = tensors.get(i);
-      result.put(fetchOps[i], tensor);
+
+    for (int i = 0; i < fetchOps.size(); i++) {
+      tensorMap.put(fetchOps.get(i), tensors.get(i));
     }
-    // } finally {
-    // tensors.forEach(Tensor::close);
-    // }
+
+    A result = fn.apply(tensorMap);
+
+    tensorMap.values().forEach(Tensor::close);
+
     return result;
   }
 }

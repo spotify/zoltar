@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <packaging>pom</packaging>
   <properties>
     <apiclient.version>1.31.1</apiclient.version>
-    <boringssl.version>2.0.28.Final</boringssl.version>
+    <boringssl.version>2.0.36.Final</boringssl.version>
     <errorprone.version>2.5.1</errorprone.version>
     <featran.version>0.8.0-RC1</featran.version>
     <google.auth.version>0.23.0</google.auth.version>

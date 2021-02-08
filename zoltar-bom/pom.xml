@@ -23,7 +23,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <guava.version>30.1-jre</guava.version>
     <httpclient.version>1.38.1</httpclient.version>
     <jackson.version>2.12.1</jackson.version>
-    <joda.version>2.10.5</joda.version>
+    <joda.version>2.10.10</joda.version>
     <netty.version>4.1.52.Final</netty.version>
     <opencensus.version>0.28.3</opencensus.version>
     <proto.version>3.14.0</proto.version>

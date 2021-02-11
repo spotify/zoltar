@@ -300,7 +300,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-ml</artifactId>
-        <version>v1-rev20201207-1.31.0</version>
+        <version>v1-rev20210206-1.31.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>

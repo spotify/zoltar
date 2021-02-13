@@ -18,7 +18,7 @@ package com.spotify.zoltar.tf;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.tensorflow.Graph;
@@ -27,6 +27,7 @@ import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.types.TFloat64;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -72,9 +73,17 @@ public class TensorFlowExtrasTest {
     final Session session = new Session(graph);
     final Session.Runner runner = session.runner();
     runner.feed("input", TFloat64.scalarOf(10.0));
-    final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, mul2);
-    assertEquals(Sets.newHashSet(mul2), result.keySet());
-    assertScalar(result.get(mul2), 20.0);
+
+    TensorFlowExtras.runAndExtract(
+        runner,
+        Collections.singletonList(mul2),
+        result -> {
+          assertEquals(Sets.newHashSet(mul2), result.keySet());
+          assertScalar(result.get(mul2), 20.0);
+
+          return null;
+        });
+
     session.close();
     graph.close();
   }
@@ -85,10 +94,18 @@ public class TensorFlowExtrasTest {
     final Session session = new Session(graph);
     final Session.Runner runner = session.runner();
     runner.feed("input", TFloat64.scalarOf(10.0));
-    final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, mul2, mul3);
-    assertEquals(Lists.newArrayList(mul2, mul3), new ArrayList<>(result.keySet()));
-    assertScalar(result.get(mul2), 20.0);
-    assertScalar(result.get(mul3), 30.0);
+
+    TensorFlowExtras.runAndExtract(
+        runner,
+        ImmutableList.of(mul2, mul3),
+        result -> {
+          assertEquals(Lists.newArrayList(mul2, mul3), new ArrayList<>(result.keySet()));
+          assertScalar(result.get(mul2), 20.0);
+          assertScalar(result.get(mul3), 30.0);
+
+          return null;
+        });
+
     session.close();
     graph.close();
   }
@@ -99,10 +116,18 @@ public class TensorFlowExtrasTest {
     final Session session = new Session(graph);
     final Session.Runner runner = session.runner();
     runner.feed("input", TFloat64.scalarOf(10.0));
-    final Map<String, Tensor<?>> result = TensorFlowExtras.runAndExtract(runner, mul3, mul2);
-    assertEquals(Lists.newArrayList(mul3, mul2), new ArrayList<>(result.keySet()));
-    assertScalar(result.get(mul2), 20.0);
-    assertScalar(result.get(mul3), 30.0);
+
+    TensorFlowExtras.runAndExtract(
+        runner,
+        ImmutableList.of(mul3, mul2),
+        result -> {
+          assertEquals(Lists.newArrayList(mul3, mul2), new ArrayList<>(result.keySet()));
+          assertScalar(result.get(mul2), 20.0);
+          assertScalar(result.get(mul3), 30.0);
+
+          return null;
+        });
+
     session.close();
     graph.close();
   }

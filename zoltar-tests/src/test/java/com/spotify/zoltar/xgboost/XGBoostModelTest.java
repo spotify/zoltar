@@ -34,9 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import ml.dmlc.xgboost4j.LabeledPoint;
-import ml.dmlc.xgboost4j.java.DMatrix;
-
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -51,6 +48,9 @@ import com.spotify.zoltar.Prediction;
 import com.spotify.zoltar.Predictor;
 import com.spotify.zoltar.PredictorsTest;
 import com.spotify.zoltar.featran.FeatranExtractFns;
+
+import ml.dmlc.xgboost4j.LabeledPoint;
+import ml.dmlc.xgboost4j.java.DMatrix;
 
 public class XGBoostModelTest {
 

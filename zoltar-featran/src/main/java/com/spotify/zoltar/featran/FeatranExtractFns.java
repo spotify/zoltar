@@ -15,8 +15,6 @@
  */
 package com.spotify.zoltar.featran;
 
-import ml.dmlc.xgboost4j.LabeledPoint;
-
 import org.tensorflow.proto.example.Example;
 
 import com.spotify.featran.FeatureSpec;
@@ -26,6 +24,8 @@ import com.spotify.featran.java.JFeatureSpec;
 import com.spotify.featran.xgboost.SparseLabeledPoint;
 import com.spotify.zoltar.FeatureExtractFns.ExtractFn;
 import com.spotify.zoltar.FeatureExtractor;
+
+import ml.dmlc.xgboost4j.LabeledPoint;
 
 /**
  * Featran extraction functions. Functions used to transform raw input into extracted features,

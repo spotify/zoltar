@@ -19,10 +19,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import scala.Option;
-
 import com.spotify.zoltar.IrisFeaturesSpec;
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
+
+import scala.Option;
 
 /** Helper class to generate Iris test data. */
 public class IrisHelper {

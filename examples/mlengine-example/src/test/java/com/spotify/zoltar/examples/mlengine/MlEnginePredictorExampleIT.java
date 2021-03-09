@@ -21,10 +21,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import scala.Option;
-
 import com.spotify.zoltar.IrisFeaturesSpec.Iris;
 import com.spotify.zoltar.Prediction;
+
+import scala.Option;
 
 public class MlEnginePredictorExampleIT {
 

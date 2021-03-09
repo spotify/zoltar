@@ -20,15 +20,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 
-import ml.dmlc.xgboost4j.java.Booster;
-import ml.dmlc.xgboost4j.java.GompLoader;
-import ml.dmlc.xgboost4j.java.XGBoost;
-import ml.dmlc.xgboost4j.java.XGBoostError;
-
 import com.google.auto.value.AutoValue;
 
 import com.spotify.zoltar.Model;
 import com.spotify.zoltar.fs.FileSystemExtras;
+
+import ml.dmlc.xgboost4j.java.Booster;
+import ml.dmlc.xgboost4j.java.GompLoader;
+import ml.dmlc.xgboost4j.java.XGBoost;
+import ml.dmlc.xgboost4j.java.XGBoostError;
 
 /**
  * XGBoost model.

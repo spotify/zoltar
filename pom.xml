@@ -3,7 +3,7 @@
 
   <name>zoltar-parent</name>
   <artifactId>zoltar-parent</artifactId>
-  <version>0.6.0-M2</version>
+  <version>0.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <parent>
@@ -38,7 +38,7 @@
     <url>https://github.com/spotify/zoltar</url>
     <connection>scm:git:git@github.com:spotify/zoltar.git</connection>
     <developerConnection>scm:git:git@github.com:spotify/zoltar.git</developerConnection>
-    <tag>v0.6.0-M2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>

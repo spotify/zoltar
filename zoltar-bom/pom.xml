@@ -298,7 +298,7 @@
       <dependency>
         <groupId>com.google.apis</groupId>
         <artifactId>google-api-services-ml</artifactId>
-        <version>v1-rev20210209-1.31.0</version>
+        <version>v1-rev20210212-1.31.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>

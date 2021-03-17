@@ -24,7 +24,7 @@
     <joda.version>2.10.10</joda.version>
     <netty.version>4.1.52.Final</netty.version>
     <opencensus.version>0.28.3</opencensus.version>
-    <proto.version>3.15.5</proto.version>
+    <proto.version>3.15.6</proto.version>
     <scala.version>2.12.13</scala.version>
     <scio.version>0.5.7</scio.version>
     <tensorFlow.version>0.2.0</tensorFlow.version>

@@ -26,14 +26,6 @@
       <groupId>com.spotify</groupId>
       <artifactId>zoltar-core</artifactId>
     </dependency>
-    <!-- <dependency>
-      <groupId>org.tensorflow</groupId>
-      <artifactId>tensorflow</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.tensorflow</groupId>
-      <artifactId>proto</artifactId>
-    </dependency> -->
     <dependency>
       <groupId>org.tensorflow</groupId>
       <artifactId>tensorflow-core-platform</artifactId>

@@ -42,7 +42,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.tensorflow.Tensor;
 import org.tensorflow.ndarray.LongNdArray;
 import org.tensorflow.proto.example.Example;
 import org.tensorflow.types.TInt64;
@@ -111,7 +110,7 @@ public class BenchmarkTensorFlow {
         modelUri,
         extractFn(),
         tensors -> {
-          final TInt64 data = ((Tensor<TInt64>) tensors.get(op)).data();
+          final TInt64 data = (TInt64) tensors.get(op);
           return StreamSupport.stream(data.scalars().spliterator(), false)
               .map(LongNdArray::getObject)
               .collect(Collectors.toList());

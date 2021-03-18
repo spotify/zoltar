@@ -25,6 +25,7 @@ import org.tensorflow.Graph;
 import org.tensorflow.Output;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
+import org.tensorflow.proto.framework.DataType;
 import org.tensorflow.types.TFloat64;
 
 import com.google.common.collect.ImmutableList;
@@ -37,12 +38,16 @@ public class TensorFlowExtrasTest {
   private static final String mul3 = "mul3";
 
   private static Graph createDummyGraph() {
-    final Tensor<TFloat64> t2 = TFloat64.scalarOf(2.0);
-    final Tensor<TFloat64> t3 = TFloat64.scalarOf(3.0);
+    final Tensor t2 = TFloat64.scalarOf(2.0);
+    final Tensor t3 = TFloat64.scalarOf(3.0);
 
     final Graph graph = new Graph();
     final Output<TFloat64> input =
-        graph.opBuilder("Placeholder", "input").setAttr("dtype", TFloat64.DTYPE).build().output(0);
+        graph
+            .opBuilder("Placeholder", "input")
+            .setAttr("dtype", DataType.DT_DOUBLE)
+            .build()
+            .output(0);
 
     final Output<TFloat64> two =
         graph
@@ -132,11 +137,9 @@ public class TensorFlowExtrasTest {
     graph.close();
   }
 
-  private void assertScalar(final Tensor<?> jt, final Double value) {
-    assert (jt.dataType().isFloating());
+  private void assertScalar(final Tensor jt, final Double value) {
     assertEquals(0, jt.shape().numDimensions());
     assertEquals(0, jt.shape().asArray().length);
-    // final double[] expected = {value};
-    assertEquals(value, ((Tensor<TFloat64>) jt).data().getDouble(), 0.0);
+    assertEquals(value, ((TFloat64) jt).getDouble(), 0.0);
   }
 }

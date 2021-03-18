@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <parent>
     <artifactId>zoltar-parent</artifactId>
     <groupId>com.spotify</groupId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
   <artifactId>zoltar-tests</artifactId>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -20,7 +21,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>com.spotify</groupId>
@@ -39,9 +39,18 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-tensorflow_2.12</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.tensorflow</groupId>
+          <artifactId>tensorflow-core-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.tensorflow</groupId>
+          <artifactId>ndarray</artifactId>
+        </exclusion>
+      </exclusions>
       <scope>provided</scope>
     </dependency>
-
     <!-- Required to please enforcer plugin -->
     <!-- <dependency> -->
     <!--   <groupId>com.google.cloud</groupId> -->
@@ -53,7 +62,6 @@
       <artifactId>grpc-all</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.spotify</groupId>
@@ -92,7 +100,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <finalName>${project.artifactId}</finalName>
     <plugins>

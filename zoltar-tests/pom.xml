@@ -39,24 +39,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>featran-tensorflow_2.12</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.tensorflow</groupId>
-          <artifactId>tensorflow-core-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.tensorflow</groupId>
-          <artifactId>ndarray</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>provided</scope>
     </dependency>
     <!-- Required to please enforcer plugin -->
-    <!-- <dependency> -->
-    <!--   <groupId>com.google.cloud</groupId> -->
-    <!--   <artifactId>google-cloud-core</artifactId> -->
-    <!--   <scope>provided</scope> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-all</artifactId>

@@ -55,7 +55,7 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
    * @param fetchOps operations to fetch.
    */
   static <InputT, ValueT> TensorFlowPredictFn<InputT, Example, ValueT> example(
-      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor>, List<ValueT>> outTensorExtractor,
       final String... fetchOps) {
     return (model, vectors) ->
         CompletableFuture.supplyAsync(
@@ -68,7 +68,7 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
                       .toArray(byte[][]::new);
               final NdArray<byte[]> examplesNdArray = NdArrays.vectorOfObjects(bytes);
 
-              try (final Tensor<TString> t = TString.tensorOfBytes(examplesNdArray)) {
+              try (final Tensor t = TString.tensorOfBytes(examplesNdArray)) {
                 final Session.Runner runner =
                     model.instance().session().runner().feed("input_example_tensor", t);
 
@@ -101,13 +101,13 @@ public interface TensorFlowPredictFn<InputT, VectorT, ValueT>
    */
   @Deprecated
   static <InputT, ValueT> TensorFlowPredictFn<InputT, List<Example>, ValueT> exampleBatch(
-      final Function<Map<String, Tensor<?>>, ValueT> outTensorExtractor, final String... fetchOps) {
+      final Function<Map<String, Tensor>, ValueT> outTensorExtractor, final String... fetchOps) {
     final BiFunction<TensorFlowModel, List<Example>, ValueT> predictFn =
         (model, examples) -> {
           final byte[][] bytes = examples.stream().map(Example::toByteArray).toArray(byte[][]::new);
           final NdArray<byte[]> examplesNdArray = NdArrays.vectorOfObjects(bytes);
 
-          try (final Tensor<TString> t = TString.tensorOfBytes(examplesNdArray)) {
+          try (final Tensor t = TString.tensorOfBytes(examplesNdArray)) {
             final Session.Runner runner =
                 model.instance().session().runner().feed("input_example_tensor", t);
 

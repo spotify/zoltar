@@ -239,7 +239,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
-      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor>, List<ValueT>> outTensorExtractor,
       final String... fetchOps) {
     return tensorFlow(modelUri, FeatureExtractor.create(extractFn), outTensorExtractor, fetchOps);
   }
@@ -260,7 +260,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final ExtractFn<InputT, Example> extractFn,
-      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics<InputT, Example, ValueT> metrics) {
     return tensorFlow(
@@ -281,7 +281,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
-      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor>, List<ValueT>> outTensorExtractor,
       final String... fetchOps) {
     final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
     final TensorFlowPredictFn<InputT, Example, ValueT> predictFn =
@@ -306,7 +306,7 @@ public final class Predictors {
   public static <InputT, ValueT> Predictor<InputT, ValueT> tensorFlow(
       final String modelUri,
       final FeatureExtractor<TensorFlowModel, InputT, Example> featureExtractor,
-      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics<InputT, Example, ValueT> metrics) {
     final ModelLoader<TensorFlowModel> modelLoader = TensorFlowLoader.create(modelUri);
@@ -330,7 +330,7 @@ public final class Predictors {
    */
   public static <ValueT> Predictor<Example, ValueT> tensorFlow(
       final String modelUri,
-      final Function<Map<String, Tensor<?>>, List<ValueT>> outTensorExtractor,
+      final Function<Map<String, Tensor>, List<ValueT>> outTensorExtractor,
       final String[] fetchOps,
       final PredictorMetrics<Example, Example, ValueT> metrics) {
     return tensorFlow(modelUri, ExtractFn.identity(), outTensorExtractor, fetchOps, metrics);

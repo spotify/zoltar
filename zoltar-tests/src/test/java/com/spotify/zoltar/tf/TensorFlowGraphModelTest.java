@@ -37,7 +37,6 @@ import org.tensorflow.Graph;
 import org.tensorflow.Output;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
-import org.tensorflow.ndarray.NdArrays;
 import org.tensorflow.types.TFloat64;
 
 import com.spotify.featran.java.JFeatureSpec;
@@ -62,7 +61,7 @@ public class TensorFlowGraphModelTest {
   private Path createADummyTFGraph() throws IOException {
     final Path graphFile;
     try (final Graph graph = new Graph();
-        final Tensor<TFloat64> t = TFloat64.scalarOf(2.0D)) {
+        final TFloat64 t = TFloat64.scalarOf(2.0D)) {
       final Output<TFloat64> input =
           graph
               .opBuilder("Placeholder", inputOpName)
@@ -114,11 +113,11 @@ public class TensorFlowGraphModelTest {
     try (final TensorFlowGraphModel model =
             TensorFlowGraphModel.create(graphFile.toUri(), null, null);
         final Session session = model.instance();
-        final Tensor<TFloat64> double3 = TFloat64.scalarOf(3.0D)) {
-      List<Tensor<?>> result = null;
+        final TFloat64 double3 = TFloat64.scalarOf(3.0D)) {
+      List<Tensor> result = null;
       try {
         result = session.runner().fetch(mulResult).feed(inputOpName, double3).run();
-        assertEquals(result.get(0).data(), NdArrays.scalarOf(6.0D));
+        assertEquals(6.0D, ((TFloat64) result.get(0)).getDouble(), 0.1);
       } finally {
         if (result != null) {
           result.forEach(Tensor::close);
@@ -134,8 +133,8 @@ public class TensorFlowGraphModelTest {
     try (final TensorFlowGraphModel model =
             TensorFlowGraphModel.create(graphFile.toUri(), null, prefix);
         final Session session = model.instance();
-        final Tensor<TFloat64> double3 = TFloat64.scalarOf(3.0D)) {
-      List<Tensor<?>> result = null;
+        final TFloat64 double3 = TFloat64.scalarOf(3.0D)) {
+      List<Tensor> result = null;
       try {
         result =
             session
@@ -143,7 +142,7 @@ public class TensorFlowGraphModelTest {
                 .fetch(prefix + "/" + mulResult)
                 .feed(prefix + "/" + inputOpName, double3)
                 .run();
-        assertEquals(result.get(0).rawData().asDoubles().getDouble(0), 6.0D, Double.MIN_VALUE);
+        assertEquals(6.0D, ((TFloat64) result.get(0)).getDouble(), Double.MIN_VALUE);
       } finally {
         if (result != null) {
           result.forEach(Tensor::close);
@@ -170,8 +169,8 @@ public class TensorFlowGraphModelTest {
                 .stream()
                 .map(
                     vector -> {
-                      try (Tensor<TFloat64> input = TFloat64.scalarOf(vector.value()[0])) {
-                        List<Tensor<?>> results = null;
+                      try (TFloat64 input = TFloat64.scalarOf(vector.value()[0])) {
+                        List<Tensor> results = null;
                         try {
                           results =
                               model
@@ -181,7 +180,7 @@ public class TensorFlowGraphModelTest {
                                   .feed(inputOpName, input)
                                   .run();
                           return Prediction.create(
-                              vector.input(), results.get(0).rawData().asDoubles().getDouble(0));
+                              vector.input(), ((TFloat64) results.get(0)).getDouble());
                         } finally {
                           if (results != null) {
                             results.forEach(Tensor::close);

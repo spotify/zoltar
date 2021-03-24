@@ -41,12 +41,12 @@ public class TensorFlowExtras {
   public static <A> A runAndExtract(
       final Session.Runner runner,
       final List<String> fetchOps,
-      Function<Map<String, Tensor<?>>, A> fn) {
+      Function<Map<String, Tensor>, A> fn) {
     for (final String op : fetchOps) {
       runner.fetch(op);
     }
-    final Map<String, Tensor<?>> tensorMap = Maps.newLinkedHashMapWithExpectedSize(fetchOps.size());
-    final List<Tensor<?>> tensors = runner.run();
+    final Map<String, Tensor> tensorMap = Maps.newLinkedHashMapWithExpectedSize(fetchOps.size());
+    final List<Tensor> tensors = runner.run();
 
     for (int i = 0; i < fetchOps.size(); i++) {
       tensorMap.put(fetchOps.get(i), tensors.get(i));

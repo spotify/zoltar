@@ -69,9 +69,9 @@ public class TensorFlowModelTest {
         FeatranExtractFns.example(IrisFeaturesSpec.irisFeaturesSpec(), settings);
 
     final String op = "linear/head/predictions/class_ids";
-    final Function<Map<String, Tensor<?>>, List<Long>> tensorEctractorFn =
+    final Function<Map<String, Tensor>, List<Long>> tensorEctractorFn =
         tensors -> {
-          final TInt64 data = ((Tensor<TInt64>) tensors.get(op)).data();
+          final TInt64 data = (TInt64) tensors.get(op);
           return StreamSupport.stream(data.scalars().spliterator(), false)
               .map(LongNdArray::getObject)
               .collect(Collectors.toList());

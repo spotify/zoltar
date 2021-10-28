@@ -11,6 +11,7 @@ jobs:
         with:
           distribution: "adopt"
           java-version: "11"
+          cache: "maven"
       - run: |
           mvn -Dbigquery.project.arg="-Dbigquery.project=dummy-project" \
             clean \

@@ -1,0 +1,20 @@
+name: main
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+      - run: |
+          mvn -Dbigquery.project.arg="-Dbigquery.project=dummy-project" \
+            clean \
+            spotless:check \
+            checkstyle:checkstyle \
+            findbugs:findbugs \
+            test

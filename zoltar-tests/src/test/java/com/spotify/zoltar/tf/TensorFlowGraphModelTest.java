@@ -64,6 +64,7 @@ public class TensorFlowGraphModelTest {
         final TFloat64 t = TFloat64.scalarOf(2.0D)) {
       final Output<TFloat64> input =
           graph
+              .baseScope()
               .opBuilder("Placeholder", inputOpName)
               .setAttr("dtype", t.dataType())
               .build()
@@ -71,13 +72,14 @@ public class TensorFlowGraphModelTest {
 
       final Output<TFloat64> two =
           graph
+              .baseScope()
               .opBuilder("Const", "two")
               .setAttr("dtype", t.dataType())
               .setAttr("value", t)
               .build()
               .output(0);
 
-      graph.opBuilder("Mul", mulResult).addInput(two).addInput(input).build();
+      graph.baseScope().opBuilder("Mul", mulResult).addInput(two).addInput(input).build();
 
       graphFile = Files.createTempFile("tf-graph", ".bin");
       Files.write(graphFile, graph.toGraphDef().toByteArray());

@@ -44,6 +44,7 @@ public class TensorFlowExtrasTest {
     final Graph graph = new Graph();
     final Output<TFloat64> input =
         graph
+            .baseScope()
             .opBuilder("Placeholder", "input")
             .setAttr("dtype", DataType.DT_DOUBLE)
             .build()
@@ -51,6 +52,7 @@ public class TensorFlowExtrasTest {
 
     final Output<TFloat64> two =
         graph
+            .baseScope()
             .opBuilder("Const", "two")
             .setAttr("dtype", t2.dataType())
             .setAttr("value", t2)
@@ -59,15 +61,16 @@ public class TensorFlowExtrasTest {
 
     final Output<TFloat64> three =
         graph
+            .baseScope()
             .opBuilder("Const", "three")
             .setAttr("dtype", t3.dataType())
             .setAttr("value", t3)
             .build()
             .output(0);
 
-    graph.opBuilder("Mul", mul2).addInput(input).addInput(two).build();
+    graph.baseScope().opBuilder("Mul", mul2).addInput(input).addInput(two).build();
 
-    graph.opBuilder("Mul", mul3).addInput(input).addInput(three).build();
+    graph.baseScope().opBuilder("Mul", mul3).addInput(input).addInput(three).build();
 
     return graph;
   }

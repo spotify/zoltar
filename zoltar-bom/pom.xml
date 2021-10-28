@@ -326,8 +326,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <url>
       https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
-  </distributionManagement>
-  <repositories>
     <repository>
       <id>tensorflow-snapshots</id>
       <url>
@@ -336,5 +334,5 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <enabled>true</enabled>
       </snapshots>
     </repository>
-  </repositories>
+  </distributionManagement>
 </project>

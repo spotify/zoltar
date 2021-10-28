@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -27,7 +29,7 @@
     <proto.version>3.15.8</proto.version>
     <scala.version>2.12.13</scala.version>
     <scio.version>0.5.7</scio.version>
-    <tensorFlow.version>0.3.0</tensorFlow.version>
+    <tensorFlow.version>0.4.0-SNAPSHOT</tensorFlow.version>
     <xgboost.version>1.3.1</xgboost.version>
   </properties>
   <dependencyManagement>
@@ -325,4 +327,14 @@
       https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+  <repositories>
+    <repository>
+      <id>tensorflow-snapshots</id>
+      <url>
+      https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>

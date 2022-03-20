@@ -10,7 +10,7 @@
   <artifactId>zoltar-jmh</artifactId>
 
   <properties>
-    <jmh.version>1.29</jmh.version>
+    <jmh.version>1.34</jmh.version>
   </properties>
 
   <dependencyManagement>

@@ -22,7 +22,7 @@
     <httpclient.version>1.39.2</httpclient.version>
     <jackson.version>2.12.3</jackson.version>
     <joda.version>2.10.10</joda.version>
-    <netty.version>4.1.52.Final</netty.version>
+    <netty.version>4.1.75.Final</netty.version>
     <opencensus.version>0.28.3</opencensus.version>
     <proto.version>3.17.3</proto.version>
     <scala.version>2.12.13</scala.version>

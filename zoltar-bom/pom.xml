@@ -35,7 +35,7 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-bom</artifactId>
-        <version>0.158.0</version>
+        <version>0.172.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -132,7 +132,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>futures-extra</artifactId>
-        <version>4.3.0</version>
+        <version>4.3.1</version>
       </dependency>
       <dependency>
         <groupId>com.spotify</groupId>

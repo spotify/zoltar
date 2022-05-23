@@ -13,7 +13,7 @@ jobs:
           java-version: "17"
           cache: "maven"
       - run: |
-          mvn -Dbigquery.project.arg="-Dbigquery.project=dummy-project" \
+          ./mvnw -Dbigquery.project.arg="-Dbigquery.project=dummy-project" \
             clean \
             spotless:check \
             checkstyle:checkstyle \
